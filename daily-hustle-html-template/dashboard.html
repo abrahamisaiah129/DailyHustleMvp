@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Daily Hustle Dashboard</title>
+
+        <!-- Bootstrap & Icons -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        />
+
+        <style>
+            body {
+                font-family: "Poppins", sans-serif;
+                background: #f5f6fa;
+                margin: 0;
+                overflow-x: hidden;
+            }
+
+            /* Sidebar */
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 250px;
+                background: linear-gradient(180deg, #1e1e2f, #2d2d44);
+                color: #fff;
+                padding: 20px;
+                overflow-y: auto;
+                z-index: 1000;
+            }
+
+            .sidebar h3 {
+                font-weight: 700;
+                margin-bottom: 40px;
+            }
+
+            .sidebar a {
+                color: #b0b3c0;
+                display: block;
+                margin: 12px 0;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 10px 15px;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+
+            .sidebar a:hover {
+                background: #ff007a;
+                color: #fff;
+            }
+
+            /* Main content */
+            main {
+                margin-left: 270px; /* Space for fixed sidebar */
+                padding: 40px;
+                transition: margin-left 0.3s ease;
+            }
+
+            /* Dashboard sections */
+            .dashboard-section {
+                margin-bottom: 60px;
+                animation: fadeInUp 1s ease forwards;
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            .card-custom {
+                border: none;
+                border-radius: 20px;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+                transition: all 0.3s ease;
+                background: #fff;
+                text-align: center;
+                padding: 25px;
+            }
+
+            .card-custom:hover {
+                transform: translateY(-7px);
+                box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+            }
+
+            .card-custom i {
+                font-size: 40px;
+                color: #ff007a;
+                margin-bottom: 10px;
+            }
+
+            .card-custom h5 {
+                font-weight: 600;
+                margin-bottom: 8px;
+            }
+
+            /* List cards */
+            .list-card {
+                background: #fff;
+                padding: 25px;
+                border-radius: 18px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+                margin-top: 25px;
+            }
+
+            .list-card ul {
+                list-style: none;
+                padding-left: 0;
+                margin-bottom: 0;
+            }
+
+            .list-card ul li {
+                border: 1px solid #eee;
+                border-radius: 10px;
+                padding: 12px 15px;
+                margin-bottom: 10px;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+
+            .list-card ul li:hover {
+                background: rgba(255, 0, 122, 0.1);
+                border-color: #ff007a;
+            }
+
+            /* Progress bars */
+            .progress {
+                height: 10px;
+                border-radius: 5px;
+                background: #e9ecef;
+                margin-top: 10px;
+            }
+
+            .progress-bar {
+                background-color: #ff007a;
+                width: 0;
+                transition: width 1.5s ease-in-out;
+            }
+
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(40px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Responsive */
+            @media (max-width: 768px) {
+                .sidebar {
+                    display: none;
+                }
+                main {
+                    margin-left: 0;
+                    padding: 20px;
+                }
+                h2 {
+                    text-align: center;
+                }
+            }
+        </style>
+    </head>
+
+    <body>
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <h3>🚀 Daily Hustle</h3>
+            <a href="#"><i class="bi bi-house-door-fill me-2"></i> Dashboard</a>
+
+            <a
+                class="d-block"
+                data-bs-toggle="collapse"
+                href="#tasksDropdown"
+                role="button"
+            >
+                <i class="bi bi-briefcase-fill me-2"></i> tasks
+                <i class="bi bi-chevron-down float-end"></i>
+            </a>
+
+            <div class="collapse ps-3" id="tasksDropdown">
+                <a href="dashboard 2.html"
+                    ><i class="bi bi-list-ul me-2"></i> Available tasks</a
+                >
+                <a href="#"
+                    ><i class="bi bi-send-check-fill me-2"></i> Submitted
+                    tasks</a
+                >
+                <a href="#"
+                    ><i class="bi bi-arrow-repeat me-2"></i> Re-Submit tasks</a
+                >
+                <a href="hire.html"
+                    ><i class="bi bi-people-fill me-2"></i> Hire
+                    Micro-Workers</a
+                >
+            </div>
+
+            <a href="#"><i class="bi bi-wallet2 me-2"></i> Wallet</a>
+            <a href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+        </aside>
+
+        <!-- Main Content -->
+        <main>
+            <!-- USER DASHBOARD -->
+            <section class="dashboard-section" id="user-dashboard">
+                <h2>👷‍♂️ User Dashboard</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-wallet2"></i>
+                            <h5>Wallet Balance</h5>
+                            <p>₦12,500.00</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="80"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-clipboard-check"></i>
+                            <h5>Completed tasks</h5>
+                            <p>58 / 100</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="58"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-people"></i>
+                            <h5>Referrals</h5>
+                            <p>25 / 50</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="50"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-card mt-4">
+                    <h5>Available tasks</h5>
+                    <ul>
+                        <li>Follow a page on Instagram</li>
+                        <li>Subscribe to a YouTube Channel</li>
+                        <li>Write a product review</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- JOB POSTER DASHBOARD -->
+            <section class="dashboard-section" id="poster-dashboard">
+                <h2>💼 Job Poster Dashboard</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-bar-chart"></i>
+                            <h5>Active Campaigns</h5>
+                            <p>12 / 20</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="60"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-check-circle"></i>
+                            <h5>Completed Campaigns</h5>
+                            <p>43 / 50</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="86"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-wallet"></i>
+                            <h5>Total Spent</h5>
+                            <p>₦250,000 / ₦500,000</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="50"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-card mt-4">
+                    <h5>Recent Job Campaigns</h5>
+                    <ul>
+                        <li>Promote YouTube Channel - 500 Workers</li>
+                        <li>App Download - 1,000 Workers</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- ADMIN DASHBOARD -->
+            <section class="dashboard-section" id="admin-dashboard">
+                <h2>⚙️ Admin Dashboard</h2>
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-person-badge"></i>
+                            <h5>Total Users</h5>
+                            <p>5,842</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="90"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-clipboard-data"></i>
+                            <h5>Pending Campaigns</h5>
+                            <p>15 / 30</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="50"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card-custom">
+                            <i class="bi bi-graph-up"></i>
+                            <h5>Total Payouts</h5>
+                            <p>₦1,200,000</p>
+                            <div class="progress">
+                                <div class="progress-bar" data-value="70"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="list-card mt-4">
+                    <h5>Admin Notifications</h5>
+                    <ul>
+                        <li>New withdrawal request (₦15,000)</li>
+                        <li>New user registered - Ayo Martins</li>
+                    </ul>
+                </div>
+            </section>
+        </main>
+
+        <!-- JavaScript -->
+        <script>
+            // Fade-in on scroll
+            const sections = document.querySelectorAll(".dashboard-section");
+            window.addEventListener("scroll", () => {
+                sections.forEach((section) => {
+                    const rect = section.getBoundingClientRect();
+                    if (rect.top < window.innerHeight - 100) {
+                        section.style.opacity = "1";
+                        section.style.transform = "translateY(0)";
+                    }
+                });
+            });
+
+            // Animate progress bars
+            window.addEventListener("load", () => {
+                const bars = document.querySelectorAll(".progress-bar");
+                bars.forEach((bar) => {
+                    const value = bar.getAttribute("data-value");
+                    bar.style.width = value + "%";
+                });
+            });
+        </script>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

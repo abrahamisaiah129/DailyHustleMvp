@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Dashboard — Daily Hustle</title>
+
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap"
+            rel="stylesheet"
+        />
+
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css"
+            rel="stylesheet"
+        />
+
+        <style>
+            /* BASE & THEME */
+            :root {
+                --dh-blue: #1e6fff;
+                --dh-red: #ff4b4b;
+                --dh-green: #28c76f;
+                --dh-yellow: #ffc107;
+                --dh-muted: #6c757d;
+                --dh-card-bg: #ffffff;
+                --dh-soft-bg: #f6f8ff;
+                --dh-sidebar-bg: linear-gradient(180deg, #0f254f, #16386b);
+                --dh-sidebar-width: 240px;
+            }
+
+            body {
+                font-family: "Poppins", system-ui, -apple-system, "Segoe UI",
+                    Roboto, "Helvetica Neue", Arial;
+                background: linear-gradient(180deg, #f3f6fb 0%, #eef4ff 100%);
+                color: #343a40;
+                overflow-x: hidden;
+            }
+
+            /* 1. LAYOUT & SIDEBAR */
+            .sidebar {
+                width: var(--dh-sidebar-width);
+                height: 100vh;
+                background: var(--dh-sidebar-bg);
+                color: #fff;
+                padding: 26px 18px;
+                position: fixed;
+                left: 0;
+                top: 0;
+                box-shadow: 4px 0 18px rgba(20, 40, 80, 0.1);
+                z-index: 10;
+                overflow-y: auto;
+            }
+            .sidebar h3 {
+                font-weight: 700;
+                color: #fff;
+                margin-bottom: 18px;
+                letter-spacing: 0.2px;
+            }
+            .sidebar a {
+                color: #d8e6ff;
+                display: block;
+                padding: 10px 12px;
+                border-radius: 8px;
+                text-decoration: none;
+                margin: 6px 0;
+                transition: all 0.2s ease;
+            }
+            .sidebar a:hover,
+            .sidebar a.active {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.1);
+                transform: translateX(4px);
+            }
+
+            .page {
+                margin-left: var(--dh-sidebar-width);
+                padding: 28px;
+                width: calc(100% - var(--dh-sidebar-width));
+            }
+
+            /* Dashboard Summary Panel (New Section) */
+            .summary-card {
+                background: var(--dh-card-bg);
+                border-radius: 15px;
+                padding: 20px;
+                box-shadow: 0 4px 15px rgba(30, 70, 120, 0.05);
+                transition: transform 0.2s;
+                border: 1px solid #e9ecef;
+                display: flex;
+                align-items: center;
+            }
+            .summary-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 20px rgba(30, 70, 120, 0.1);
+            }
+            .summary-card .icon-wrapper {
+                width: 50px;
+                height: 50px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.8rem;
+                color: white;
+                margin-right: 15px;
+            }
+            .summary-card .value {
+                font-weight: 700;
+                font-size: 1.5rem;
+            }
+            .summary-card .label {
+                font-size: 0.85rem;
+                color: var(--dh-muted);
+            }
+
+            /* Earnings Wallet specific styles (New Section) */
+            .wallet-history-table {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(18, 66, 135, 0.06);
+                overflow: hidden;
+            }
+
+            /* Available Jobs (From previous iteration) */
+            .filter-card {
+                background: var(--dh-card-bg);
+                border-radius: 12px;
+                padding: 14px;
+                box-shadow: 0 6px 18px rgba(30, 70, 120, 0.06);
+            }
+            .jobs-table {
+                background: white;
+                border-radius: 12px;
+                padding: 0;
+                overflow: hidden;
+                box-shadow: 0 10px 30px rgba(18, 66, 135, 0.08);
+            }
+            /* ... (Include all other existing styles from the previous version here for brevity) ... */
+
+            /* Job Table/Row styles (kept for Task List view) */
+            .jobs-header {
+                background: #f8fafd;
+                padding: 15px 20px;
+                border-bottom: 1px solid #f1f4fb;
+            }
+            .job-row {
+                display: flex;
+                align-items: center;
+                padding: 16px 20px;
+                border-bottom: 1px solid #f6f8ff;
+                transition: background 0.12s, transform 0.12s;
+            }
+            .job-row:hover {
+                background: var(--dh-soft-bg);
+            }
+            .job-icon {
+                width: 40px;
+                height: 40px;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.1rem;
+                flex-shrink: 0;
+                margin-right: 15px;
+                color: white;
+            }
+            .job-icon.social {
+                background: var(--dh-blue);
+            }
+            .job-icon.bounty {
+                background: var(--dh-red);
+            }
+            .job-icon.app {
+                background: var(--dh-green);
+            }
+            .job-icon.field {
+                background: var(--dh-yellow);
+            }
+            .job-title {
+                font-weight: 600;
+                font-size: 1.05rem;
+            }
+            .job-meta {
+                color: var(--dh-muted);
+                font-size: 0.85rem;
+            }
+            .payout-badge {
+                font-weight: 700;
+                border-radius: 8px;
+                padding: 8px 12px;
+                background: #212529;
+                color: #fff;
+                font-size: 1.1rem;
+            }
+            .apply-btn {
+                background: linear-gradient(90deg, var(--dh-blue), #5e9cff);
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-weight: 600;
+                transition: all 0.2s;
+            }
+            .apply-btn:hover {
+                background: linear-gradient(90deg, #165be0, #5e9cff);
+                box-shadow: 0 4px 8px rgba(30, 110, 255, 0.3);
+            }
+
+            /* Responsive */
+            @media (max-width: 991.98px) {
+                .sidebar {
+                    transform: translateX(-100%);
+                    height: 100%;
+                    width: 70%;
+                    z-index: 1050;
+                    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+                }
+                .sidebar.show {
+                    transform: translateX(0);
+                }
+                .page {
+                    margin-left: 0;
+                    padding: 18px;
+                    width: 100%;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <aside class="sidebar" id="sidebar">
+            <h3 class="mb-5">🚀 Daily Hustle</h3>
+
+            <a
+                href="#dashboard"
+                class="nav-link-item active"
+                data-page="dashboard"
+                ><i class="bi bi-house-door-fill me-2"></i> Dashboard</a
+            >
+
+            <a
+                class="d-block"
+                data-bs-toggle="collapse"
+                href="#jobsDropdown"
+                role="button"
+            >
+                <i class="bi bi-briefcase-fill me-2"></i> jobs
+                <i class="bi bi-chevron-down float-end"></i>
+            </a>
+            <div class="collapse show ps-3" id="jobsDropdown">
+                <a
+                    href="#available-jobs"
+                    class="nav-link-item"
+                    data-page="available-jobs"
+                    ><i class="bi bi-list-ul me-2"></i> Find jobs</a
+                >
+                <a href="#my-jobs" class="nav-link-item" data-page="my-jobs"
+                    ><i class="bi bi-send-check-fill me-2"></i> My Jobs</a
+                >
+            </div>
+
+            <a href="#wallet" class="nav-link-item" data-page="wallet"
+                ><i class="bi bi-wallet2 me-2"></i> Wallet</a
+            >
+            <a href="#referrals" class="nav-link-item" data-page="referrals"
+                ><i class="bi bi-people-fill me-2"></i> Referrals</a
+            >
+            <a href="#leaderboard" class="nav-link-item" data-page="leaderboard"
+                ><i class="bi bi-trophy-fill me-2"></i> Leaderboard</a
+            >
+            <a
+                href="#notifications"
+                class="nav-link-item"
+                data-page="notifications"
+                ><i class="bi bi-bell-fill me-2"></i> Notifications</a
+            >
+            <a href="#settings" class="nav-link-item" data-page="settings"
+                ><i class="bi bi-gear me-2"></i> Settings</a
+            >
+            <a href="#support" class="nav-link-item" data-page="support"
+                ><i class="bi bi-headset me-2"></i> Support</a
+            >
+        </aside>
+
+        <div class="page container-fluid">
+            <div class="d-flex justify-content-end d-lg-none mb-3">
+                <button class="btn btn-outline-dark" id="menuToggle">
+                    <i class="bi bi-list"></i> Menu
+                </button>
+            </div>
+
+            <div
+                class="alert alert-warning sticky-alert d-flex align-items-center justify-content-between"
+                role="alert"
+            >
+                <div class="d-flex align-items-center">
+                    <i class="bi bi-exclamation-triangle-fill me-3 fs-5"></i>
+                    <span class="small-muted fw-semibold"
+                        >Action Required:</span
+                    >
+                    <span class="ms-2"
+                        >Your KYC is incomplete. Please
+                        <a href="#" class="alert-link fw-bold"
+                            >verify your account</a
+                        >
+                        to unlock bounty jobs!</span
+                    >
+                </div>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="alert"
+                    aria-label="Close"
+                ></button>
+            </div>
+
+            <div id="pageContent" class="mt-4"></div>
+        </div>
+
+        <div class="modal fade" id="jobModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content rounded-4">
+                    <div class="modal-header border-0">
+                        <h5 class="modal-title" id="jobModalTitle"></h5>
+                        <button
+                            type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"
+                            aria-label="Close"
+                        ></button>
+                    </div>
+                    <div class="modal-body">
+                        <p id="jobModalDesc" class="small-muted"></p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 bg-light">
+                                    <div class="small-muted">Reward</div>
+                                    <div
+                                        id="jobModalReward"
+                                        class="fw-bold fs-5 text-success"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="border rounded p-3 bg-light">
+                                    <div class="small-muted">
+                                        Proof Required
+                                    </div>
+                                    <div
+                                        id="jobModalProof"
+                                        class="fw-bold"
+                                    ></div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="border rounded p-3">
+                                    <div class="small-muted fw-bold mb-2">
+                                        Step-by-Step Instructions
+                                    </div>
+                                    <ul
+                                        id="jobModalInstructions"
+                                        class="list-unstyled"
+                                    ></ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-4 p-3 border-top">
+                            <h6 class="fw-bold">Submit Your Proof</h6>
+                            <label class="form-label small-muted"
+                                >Upload proof (screenshot / link)</label
+                            >
+                            <input
+                                id="proofUpload"
+                                type="file"
+                                class="form-control form-control-sm mb-2"
+                            />
+                            <input
+                                id="proofText"
+                                type="text"
+                                class="form-control form-control-sm"
+                                placeholder="Or paste link / notes here"
+                            />
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button
+                            type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            id="startTaskBtn"
+                            type="button"
+                            class="btn btn-primary"
+                        >
+                            <i class="bi bi-check-circle-fill me-1"></i> Submit
+                            Proof
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // --- DATA ---
+            const jobs = [
+                {
+                    id: 1,
+                    title: "Complete 25 Sales Challenge",
+                    category: "bounty",
+                    payout: 15000,
+                    progress: [0, 25],
+                    locked: true,
+                    short: "Affiliate sales challenge to earn bonus",
+                    proof: "Sales screenshot & proof",
+                    instructions: [
+                        "Promote using your affiliate link",
+                        "Collect sales screenshots",
+                        "Submit combined proof",
+                    ],
+                },
+                {
+                    id: 2,
+                    title: "30-Day Sales Streak (Bonus)",
+                    category: "bounty",
+                    payout: 10000,
+                    progress: [0, 30],
+                    locked: true,
+                    short: "Maintain a 30-day sales streak",
+                    proof: "Sales report screenshot",
+                    instructions: [
+                        "Make one sale per day",
+                        "Keep receipts",
+                        "Submit summary",
+                    ],
+                },
+                {
+                    id: 3,
+                    title: "Promote Cashback Deal",
+                    category: "social",
+                    payout: 2500,
+                    progress: [15, 50],
+                    locked: false,
+                    short: "Promote Any Cashback Deal And Make Your First Sale",
+                    proof: "Order screenshot",
+                    instructions: [
+                        "Share deal on social media",
+                        "Get first sale",
+                        "Submit proof of order/sale",
+                    ],
+                },
+                {
+                    id: 4,
+                    title: "Reach 100 Sales – Champion Affiliate",
+                    category: "bounty",
+                    payout: 50000,
+                    progress: [0, 100],
+                    locked: true,
+                    short: "100 sales milestone",
+                    proof: "Sales dashboard",
+                    instructions: [
+                        "Use campaigns",
+                        "Drive conversions",
+                        "Submit aggregated proof",
+                    ],
+                },
+                {
+                    id: 5,
+                    title: "Spotify Music Job",
+                    category: "social",
+                    payout: 30,
+                    progress: [80, 100],
+                    locked: false,
+                    short: "Listen & follow on Spotify",
+                    proof: "Screenshot of follow",
+                    instructions: [
+                        "Open Spotify playlist",
+                        "Follow artist",
+                        "Screenshot of completed action",
+                    ],
+                },
+                {
+                    id: 6,
+                    title: "Instagram Like/Comment",
+                    category: "social",
+                    payout: 10,
+                    progress: [68, 100],
+                    locked: false,
+                    short: "Like & comment on post",
+                    proof: "Screenshot of like/comment",
+                    instructions: [
+                        "Open post",
+                        "Like and comment",
+                        "Screenshot proof",
+                    ],
+                },
+                {
+                    id: 7,
+                    title: "Youtube Watch & Like",
+                    category: "social",
+                    payout: 15,
+                    progress: [33, 100],
+                    locked: false,
+                    short: "Watch & like video for 30s",
+                    proof: "Watch time screenshot",
+                    instructions: [
+                        "Play video for 30s",
+                        "Like & comment",
+                        "Screenshot",
+                    ],
+                },
+                {
+                    id: 8,
+                    title: "Field Task: Street Flyer",
+                    category: "field",
+                    payout: 500,
+                    progress: [0, 5],
+                    locked: false,
+                    short: "Distribute 100 flyers in your area",
+                    proof: "Photo of distribution location",
+                    instructions: [
+                        "Distribute flyers",
+                        "Take photos of 3 locations",
+                        "Submit all photos",
+                    ],
+                },
+            ];
+
+            // --- UTILS ---
+            function formatCurrency(n) {
+                return "₦" + n.toLocaleString();
+            }
+            function getCategoryIcon(category) {
+                switch (category) {
+                    case "social":
+                        return { icon: "bi-share-fill", class: "social" };
+                    case "bounty":
+                        return { icon: "bi-star-fill", class: "bounty" };
+                    case "app":
+                        return { icon: "bi-phone-fill", class: "app" };
+                    case "field":
+                        return { icon: "bi-geo-alt-fill", class: "field" };
+                    default:
+                        return { icon: "bi-briefcase-fill", class: "social" };
+                }
+            }
+            function getJobById(id) {
+                return jobs.find((j) => j.id === id);
+            }
+
+            // --- PAGE RENDERING LOGIC ---
+            const pageContent = document.getElementById("pageContent");
+
+            // 1. Dashboard Summary Panel
+            function renderDashboard() {
+                pageContent.innerHTML = `
+                <h1 class="fw-bold text-dark mb-4">Dashboard Summary</h1>
+                <div class="row g-4 mb-5">
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="icon-wrapper bg-success"><i class="bi bi-wallet2"></i></div>
+                            <div>
+                                <div class="label">Earnings</div>
+                                <div class="value text-success">${formatCurrency(
+                                    124500
+                                )}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="icon-wrapper bg-primary"><i class="bi bi-cash-stack"></i></div>
+                            <div>
+                                <div class="label">Available Balance</div>
+                                <div class="value text-primary">${formatCurrency(
+                                    4500
+                                )}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="icon-wrapper bg-info"><i class="bi bi-check2-circle"></i></div>
+                            <div>
+                                <div class="label">Jobs Completed (30 days)</div>
+                                <div class="value text-info">142</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <div class="summary-card">
+                            <div class="icon-wrapper bg-warning"><i class="bi bi-hourglass-split"></i></div>
+                            <div>
+                                <div class="label">Pending Review</div>
+                                <div class="value text-white">5</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-8">
+                        <h4 class="fw-bold mb-3">Quick Access: Recent Activity</h4>
+                        <div class="jobs-table">
+                            <div class="jobs-header">
+                                <div class="small-muted">ACTIVITY DESCRIPTION</div>
+                                <div class="small-muted">STATUS</div>
+                                <div class="small-muted">PAYOUT</div>
+                            </div>
+                            <div class="job-row">
+                                <div style="flex: 1;">
+                                    <div class="job-title">Job #142 Approved: Instagram Like/Comment</div>
+                                    <div class="job-meta">2 hours ago</div>
+                                </div>
+                                <div class="text-success fw-bold me-4">Approved</div>
+                                <div class="payout-badge" style="background: var(--dh-green);">${formatCurrency(
+                                    10
+                                )}</div>
+                            </div>
+                             <div class="job-row">
+                                <div style="flex: 1;">
+                                    <div class="job-title">Withdrawal Request</div>
+                                    <div class="job-meta">Yesterday (Bank Transfer)</div>
+                                </div>
+                                <div class="text-white fw-bold me-4">Pending</div>
+                                <div class="payout-badge" style="background: var(--dh-red);">${formatCurrency(
+                                    10000
+                                )}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                         <h4 class="fw-bold mb-3">Referral Status</h4>
+                         <div class="summary-card p-4">
+                            <div class="d-flex align-items-center mb-3 w-100">
+                                <div class="icon-wrapper bg-info me-3"><i class="bi bi-people-fill"></i></div>
+                                <div>
+                                    <div class="label">Total Referral Income</div>
+                                    <div class="value text-info">${formatCurrency(
+                                        12500
+                                    )}</div>
+                                </div>
+                            </div>
+                            <div class="w-100">
+                                <div class="small-muted mb-2">Referral Progress to Next Tier</div>
+                                <div class="progress" style="height: 10px;">
+                                    <div class="progress-bar bg-primary" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <div class="small-muted mt-1">45/100 referrals reached.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            }
+
+            // 2. Available Jobs (Reused from previous iteration)
+            function makeJobRow(job) {
+                const div = document.createElement("div");
+                div.className = "job-row";
+
+                const cat = getCategoryIcon(job.category);
+                const percent = Math.min(
+                    100,
+                    Math.round((job.progress[0] / job.progress[1]) * 100)
+                );
+
+                div.innerHTML = `
+                <div class="job-icon ${cat.class}">
+                    <i class="bi ${cat.icon}"></i>
+                </div>
+                <div style="flex: 1;">
+                    <div class="job-title">${
+                        job.locked
+                            ? '<i class="bi bi-lock-fill text-white me-2"></i>'
+                            : ""
+                    } ${job.title}</div>
+                    <div class="job-meta">${
+                        job.short
+                    } &middot; <span class="text-capitalize">${
+                    job.category
+                }</span></div>
+                </div>
+                <div style="width:200px;" class="d-none d-md-block">
+                    <div class="small-muted mb-1" style="font-size:.85rem">${
+                        job.progress[0]
+                    }/${job.progress[1]} Slots Left</div>
+                    <div class="progress-mini">
+                        <div class="bar" style="width:${percent}%; background: ${
+                    job.locked
+                        ? "linear-gradient(90deg,var(--dh-red),#ff8f8f)"
+                        : "linear-gradient(90deg,var(--dh-blue),#6fa8ff)"
+                }"></div>
+                    </div>
+                </div>
+                <div style="min-width:140px;" class="d-flex flex-column align-items-end gap-2">
+                    <div class="payout-badge">${formatCurrency(
+                        job.payout
+                    )}</div>
+                    <button class="apply-btn btn btn-sm" onclick="openJobModal(${
+                        job.id
+                    })">${job.locked ? "View Details" : "Start Task"}</button>
+                </div>
+            `;
+                return div.outerHTML;
+            }
+
+            function renderAvailableJobs(jobs = jobs) {
+                let jobRowsHtml = jobs.map(makeJobRow).join("");
+
+                pageContent.innerHTML = `
+                <h1 class="fw-bold text-primary mb-4">Find jobs</h1>
+                <div class="filter-card mb-4 d-flex gap-3 align-items-center flex-wrap">
+                    <div class="d-flex gap-2 align-items-center flex-wrap">
+                        <select id="sortSelect" class="form-select form-select-sm" style="min-width:150px;">
+                            <option value="newest">Newest</option>
+                            <option value="highest">Highest paying</option>
+                            <option value="popular">Most popular</option>
+                        </select>
+                        <div class="input-group" style="min-width:360px;">
+                            <input id="searchInput" type="text" class="form-control form-control-sm" placeholder="Search title, category or payout ..." />
+                            <button id="searchBtn" class="btn btn-sm btn-primary" type="button"><i class="bi bi-search"></i> Search</button>
+                        </div>
+                    </div>
+                    <div class="ms-auto d-flex gap-2 flex-wrap" id="filterPills">
+                        <button class="btn btn-sm btn-outline-secondary pill active" data-filter="all">All</button>
+                        <button class="btn btn-sm btn-outline-primary pill" data-filter="social">Social Media</button>
+                        <button class="btn btn-sm btn-outline-success pill" data-filter="app">App Installs</button>
+                        <button class="btn btn-sm btn-outline-warning pill" data-filter="surveys">Surveys</button>
+                        <button class="btn btn-sm btn-outline-danger pill" data-filter="referrals">Referrals</button>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-12">
+                        <div class="jobs-table">
+                            <div class="jobs-header d-flex justify-content-between">
+                                <div class="d-flex gap-3 align-items-center">
+                                    <div class="small-muted">MICRO-jobs & BOUNTY REWARDS</div>
+                                    <div class="small-muted ms-2 d-none d-md-block">|</div>
+                                    <div class="small-muted d-none d-md-block">PROGRESS</div>
+                                </div>
+                                <div class="small-muted">PAYOUT</div>
+                            </div>
+                            <div id="jobsContainer">${jobRowsHtml}</div>
+                            <div class="p-3 text-center bg-white border-top">
+                                <button id="loadMore" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-down-circle me-1"></i> Load More jobs</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+                // Re-attach event listeners after DOM is updated (required for SPA)
+                attachAvailableJobsListeners();
+            }
+
+            // 3. Earnings Wallet
+            function renderWallet() {
+                pageContent.innerHTML = `
+                <h1 class="fw-bold text-dark mb-4">Earnings Wallet</h1>
+                <div class="row g-4 mb-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="summary-card p-4">
+                            <div>
+                                <div class="label fs-6">Available for Withdrawal</div>
+                                <div class="value fs-2 text-success mb-3">${formatCurrency(
+                                    4500
+                                )}</div>
+                                <p class="small-muted mb-2">Minimum withdrawal: ${formatCurrency(
+                                    1000
+                                )}</p>
+                                <button class="btn btn-success btn-lg w-100 fw-bold">
+                                    <i class="bi bi-arrow-down-up me-2"></i> Withdraw Now
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 col-md-6">
+                        <div class="summary-card p-4">
+                            <div class="icon-wrapper bg-primary"><i class="bi bi-currency-dollar"></i></div>
+                            <div>
+                                <div class="label">Total Lifetime Earnings</div>
+                                <div class="value">${formatCurrency(
+                                    124500
+                                )}</div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="col-lg-4 col-md-6">
+                        <div class="summary-card p-4">
+                            <div class="icon-wrapper bg-warning"><i class="bi bi-clock-history"></i></div>
+                            <div>
+                                <div class="label">Pending Withdrawal Requests</div>
+                                <div class="value text-white">${formatCurrency(
+                                    10000
+                                )}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="fw-bold mb-3">Payment History</h4>
+                <div class="wallet-history-table">
+                    <table class="table table-striped mb-0">
+                        <thead>
+                            <tr>
+                                <th scope="col">Date</th>
+                                <th scope="col">Description</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Oct 8, 2025</td>
+                                <td>Task Approval: Youtube Watch & Like</td>
+                                <td class="text-success">+ ${formatCurrency(
+                                    15
+                                )}</td>
+                                <td><span class="badge bg-success">Approved</span></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 5, 2025</td>
+                                <td>Withdrawal to Bank (Ref #987)</td>
+                                <td class="text-danger">- ${formatCurrency(
+                                    25000
+                                )}</td>
+                                <td><span class="badge bg-primary">Completed</span></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 4, 2025</td>
+                                <td>Referral Bonus (Level 1)</td>
+                                <td class="text-success">+ ${formatCurrency(
+                                    500
+                                )}</td>
+                                <td><span class="badge bg-success">Approved</span></td>
+                            </tr>
+                            <tr>
+                                <td>Oct 2, 2025</td>
+                                <td>Task Submission: Field Task</td>
+                                <td class="text-white">+ ${formatCurrency(
+                                    500
+                                )}</td>
+                                <td><span class="badge bg-warning">Under Review</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            }
+
+            // 4. Placeholder Pages
+            function renderPlaceholder(title) {
+                pageContent.innerHTML = `
+                <h1 class="fw-bold text-dark mb-4">${title}</h1>
+                <div class="p-5 text-center bg-white rounded-4 shadow-sm">
+                    <i class="bi bi-gear-fill display-4 text-white mb-3"></i>
+                    <h4 class="fw-bold">Section Under Construction</h4>
+                    <p class="text-white">This is where the detailed content for **${title}** will live, as described in your documentation.</p>
+                    <button class="btn btn-outline-primary mt-3" onclick="loadPage('dashboard')">Go to Dashboard</button>
+                </div>
+            `;
+            }
+
+            // --- NAVIGATION & INIT ---
+            function loadPage(pageId) {
+                const pageMap = {
+                    dashboard: renderDashboard,
+                    "available-jobs": renderAvailableJobs,
+                    wallet: renderWallet,
+                    "my-jobs": () =>
+                        renderPlaceholder("My Jobs (Ongoing/Completed)"),
+                    referrals: () => renderPlaceholder("Referral Dashboard"),
+                    leaderboard: () =>
+                        renderPlaceholder("Leaderboard & Badges"),
+                    notifications: () =>
+                        renderPlaceholder("Notifications & Alerts"),
+                    settings: () => renderPlaceholder("Settings & Profile"),
+                    support: () => renderPlaceholder("Support/Help Center"),
+                };
+
+                // 1. Render content
+                const renderer = pageMap[pageId] || renderDashboard;
+                renderer();
+
+                // 2. Update active link in sidebar
+                document.querySelectorAll(".nav-link-item").forEach((link) => {
+                    link.classList.remove("active");
+                    if (link.getAttribute("data-page") === pageId) {
+                        link.classList.add("active");
+                    }
+                });
+
+                // 3. Close sidebar on mobile
+                document.getElementById("sidebar").classList.remove("show");
+
+                // 4. Update URL hash (for back button support)
+                window.location.hash = pageId;
+            }
+
+            // --- ATTACH EVENT LISTENERS (required after DOM updates) ---
+            function attachAvailableJobsListeners() {
+                const jobsContainer = document.getElementById("jobsContainer");
+                if (!jobsContainer) return; // Exit if not on the jobs page
+
+                // Note: In a real app, filtering should be done by re-rendering the list.
+                const applySearch = () => {
+                    const q = document
+                        .getElementById("searchInput")
+                        .value.trim()
+                        .toLowerCase();
+                    const sort = document.getElementById("sortSelect").value;
+                    const activeFilter =
+                        document
+                            .querySelector("#filterPills .pill.active")
+                            ?.getAttribute("data-filter") || "all";
+
+                    let filtered = jobs.filter(
+                        (j) =>
+                            (activeFilter === "all" ||
+                                (j.category || "other")
+                                    .toLowerCase()
+                                    .includes(activeFilter)) &&
+                            (j.title.toLowerCase().includes(q) ||
+                                (j.short || "").toLowerCase().includes(q) ||
+                                (j.category || "").toLowerCase().includes(q))
+                    );
+
+                    if (sort === "highest")
+                        filtered.sort((a, b) => b.payout - a.payout);
+                    else if (sort === "popular")
+                        filtered.sort(
+                            (a, b) =>
+                                b.progress[0] / b.progress[1] -
+                                a.progress[0] / a.progress[1]
+                        );
+
+                    jobsContainer.innerHTML = filtered.map(makeJobRow).join("");
+                };
+
+                // Re-attach filter/sort events
+                document.querySelectorAll("[data-filter]").forEach((btn) => {
+                    btn.addEventListener("click", () => {
+                        document
+                            .querySelectorAll("#filterPills .pill")
+                            .forEach((b) => b.classList.remove("active"));
+                        btn.classList.add("active");
+                        applySearch();
+                    });
+                });
+                document
+                    .getElementById("searchBtn")
+                    ?.addEventListener("click", applySearch);
+                document
+                    .getElementById("searchInput")
+                    ?.addEventListener("keypress", (e) => {
+                        if (e.key === "Enter") applySearch();
+                    });
+                document
+                    .getElementById("sortSelect")
+                    ?.addEventListener("change", applySearch);
+                document
+                    .getElementById("loadMore")
+                    ?.addEventListener("click", () => {
+                        alert(
+                            "Simulating load more... In a real app, this would fetch the next batch of jobs."
+                        );
+                        // For demo: reload initial list to simplify
+                        renderAvailableJobs();
+                    });
+            }
+
+            // --- INITIALIZATION ---
+            document.addEventListener("DOMContentLoaded", () => {
+                // Setup main navigation click handlers
+                document.querySelectorAll(".nav-link-item").forEach((link) => {
+                    link.addEventListener("click", (e) => {
+                        e.preventDefault();
+                        loadPage(link.getAttribute("data-page"));
+                    });
+                });
+
+                // Mobile menu toggle
+                document
+                    .getElementById("menuToggle")
+                    .addEventListener("click", () => {
+                        document
+                            .getElementById("sidebar")
+                            .classList.toggle("show");
+                    });
+
+                // Initial load based on hash or default to dashboard
+                const initialPage =
+                    window.location.hash.replace("#", "") || "dashboard";
+                loadPage(initialPage);
+            });
+
+            // Modal logic (for Job Submission)
+            const jobModal = new bootstrap.Modal(
+                document.getElementById("jobModal")
+            );
+            function openJobModal(jobId) {
+                // This function remains globally accessible for the job rows created by JS
+                const job = getJobById(jobId);
+                // ... (rest of the modal logic is in the original script) ...
+                if (!job) return;
+
+                document.getElementById("jobModalTitle").innerText = job.title;
+                document.getElementById("jobModalDesc").innerText = job.short;
+                document.getElementById("jobModalReward").innerText =
+                    formatCurrency(job.payout);
+                document.getElementById("jobModalProof").innerText =
+                    job.proof || "Screenshot / Link";
+
+                const ul = document.getElementById("jobModalInstructions");
+                ul.innerHTML = "";
+                job.instructions.forEach((i) => {
+                    const li = document.createElement("li");
+                    li.textContent = i;
+                    ul.appendChild(li);
+                });
+
+                const startBtn = document.getElementById("startTaskBtn");
+                if (job.locked) {
+                    startBtn.classList.remove("btn-primary");
+                    startBtn.classList.add("btn-danger");
+                    startBtn.innerText = "KYC Required to Start";
+                    startBtn.disabled = true;
+                } else {
+                    startBtn.classList.add("btn-primary");
+                    startBtn.classList.remove("btn-danger");
+                    startBtn.innerHTML =
+                        '<i class="bi bi-check-circle-fill me-1"></i> Submit Proof';
+                    startBtn.disabled = false;
+
+                    startBtn.onclick = () => {
+                        if (
+                            document.getElementById("proofText").value ||
+                            document.getElementById("proofUpload").files
+                                .length > 0
+                        ) {
+                            startBtn.disabled = true;
+                            startBtn.innerHTML =
+                                '<i class="bi bi-cloud-arrow-up-fill me-1"></i> Submitting...';
+                            setTimeout(() => {
+                                jobModal.hide();
+                                alert(
+                                    `Proof submitted for job #${job.id}: Pending review. Status will update soon!`
+                                );
+                                startBtn.disabled = false;
+                                startBtn.innerHTML =
+                                    '<i class="bi bi-check-circle-fill me-1"></i> Submit Proof';
+                            }, 1200);
+                        } else {
+                            alert(
+                                "Please provide proof (link or file) before submitting."
+                            );
+                        }
+                    };
+                }
+                // Reset proof inputs
+                document.getElementById("proofUpload").value = "";
+                document.getElementById("proofText").value = "";
+
+                jobModal.show();
+            }
+        </script>
+    </body>
+</html>

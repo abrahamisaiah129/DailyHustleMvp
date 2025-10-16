@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Daily Hustle Onboarding</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        />
+        <style>
+            body {
+                background: linear-gradient(135deg, #f5f6fa, #e9ecef);
+                font-family: "Poppins", sans-serif;
+            }
+
+            .onboarding-container {
+                max-width: 700px;
+                margin: 50px auto;
+                background: #ffffff;
+                border-radius: 20px;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+                padding: 40px 30px;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .onboarding-container:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            h2 {
+                font-weight: 700;
+                color: #007bff;
+                margin-bottom: 30px;
+            }
+
+            .step-title {
+                font-weight: 600;
+                margin-bottom: 20px;
+                color: #1e1e2f;
+            }
+
+            .step {
+                display: none;
+                animation: fadeIn 0.5s ease;
+            }
+
+            .step.active {
+                display: block;
+            }
+
+            .form-control {
+                border-radius: 12px;
+                border: 1px solid #ced4da;
+                padding: 12px 15px;
+                transition: all 0.3s ease;
+            }
+
+            .form-control:focus {
+                box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+                border-color: #007bff;
+            }
+
+            .btn-step {
+                border-radius: 50px;
+                padding: 10px 30px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .btn-step:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 123, 255, 0.3);
+            }
+
+            .progress {
+                height: 14px;
+                border-radius: 50px;
+                overflow: hidden;
+                background: #e0e0e0;
+                margin-bottom: 30px;
+            }
+
+            .progress-bar {
+                background: linear-gradient(90deg, #007bff, #00d4ff);
+                transition: width 0.4s ease;
+            }
+
+            select.form-select {
+                border-radius: 12px;
+                padding: 10px 15px;
+            }
+
+            video {
+                border-radius: 12px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            /* Keep the button at top-left fixed (optional) */
+            .container.mt-3 {
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                z-index: 1000;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Back to Home Button -->
+        <div class="container mt-3">
+            <a href="index.html" class="btn btn-outline-primary">
+                <i class="bi bi-house-door-fill"></i> Home
+            </a>
+        </div>
+
+        <div class="onboarding-container">
+            <h2 class="text-center">🚀 Daily Hustle Onboarding</h2>
+
+            <!-- Progress Bar -->
+            <div class="progress">
+                <div
+                    class="progress-bar"
+                    role="progressbar"
+                    style="width: 14%"
+                    id="progressBar"
+                ></div>
+            </div>
+
+            <form id="onboardingForm">
+                <!-- Step 1: Registration -->
+                <div class="step active">
+                    <h4 class="step-title">1. Registration</h4>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Location</label>
+                        <input type="text" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" required />
+                    </div>
+                    <button type="button" class="btn btn-primary btn-step next">
+                        Next
+                    </button>
+                </div>
+
+                <!-- Step 2: Profile Setup -->
+                <div class="step">
+                    <h4 class="step-title">2. Profile Setup</h4>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Profile Picture (Optional)</label
+                        >
+                        <input type="file" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Select Skills/Interests</label
+                        >
+                        <select class="form-select" multiple>
+                            <option>Social Media Tasks</option>
+                            <option>Flyer Distribution</option>
+                            <option>App Testing</option>
+                            <option>Data Entry</option>
+                            <option>Marketing</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Verification -->
+                <div class="step">
+                    <h4 class="step-title">3. Verification (Light KYC)</h4>
+                    <p>Verify your contact details.</p>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Phone/Email Verification</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Enter OTP"
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >National ID or BVN (Optional)</label
+                        >
+                        <input type="text" class="form-control" />
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Subscription -->
+                <div class="step">
+                    <h4 class="step-title">4. Subscription Plan</h4>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="plan"
+                            checked
+                        />
+                        <label class="form-check-label"
+                            >DH Basic (Free) → Entry-level micro-tasks</label
+                        >
+                    </div>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="plan"
+                        />
+                        <label class="form-check-label"
+                            >DH Premium (Paid) → Unlocks higher-value
+                            tasks</label
+                        >
+                    </div>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="plan"
+                        />
+                        <label class="form-check-label"
+                            >DH Ultimate (Paid) → Access to all micro-tasks &
+                            DDSA</label
+                        >
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Training -->
+                <div class="step">
+                    <h4 class="step-title">5. Training Module</h4>
+                    <p>
+                        Watch this short training video and complete the quiz.
+                    </p>
+                    <div class="mb-3">
+                        <video controls width="100%">
+                            <source src="training.mp4" type="video/mp4" />
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Quiz: What is required for proof submission?</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Your Answer"
+                        />
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 6: Marketplace -->
+                <div class="step">
+                    <h4 class="step-title">6. Access to Marketplace</h4>
+                    <p>Customize your job feed by location, skill, and plan.</p>
+                    <div class="mb-3">
+                        <label class="form-label">Filter by Job Type</label>
+                        <select class="form-select">
+                            <option>All</option>
+                            <option>Digital</option>
+                            <option>Field Work</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Filter by Payout</label>
+                        <select class="form-select">
+                            <option>Any</option>
+                            <option>₦500 - ₦1000</option>
+                            <option>₦1000 - ₦5000</option>
+                            <option>₦5000+</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 7: Dashboard Activation -->
+                <div class="step">
+                    <h4 class="step-title">7. Dashboard Activation</h4>
+                    <p>🎉 Congratulations! Your account is ready.</p>
+                    <ul>
+                        <li>Wallet linked</li>
+                        <li>Leaderboard participation activated</li>
+                        <li>Access to badges and referral system</li>
+                    </ul>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-success btn-step finish"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            // Redirect when the "Finish/Next" button is clicked
+            document.querySelector(".finish").addEventListener("click", () => {
+                alert("✅ Onboarding Completed! Redirecting to dashboard...");
+                window.location.href = "dashboard.html"; // Replace with your actual dashboard URL
+            });
+
+            const steps = document.querySelectorAll(".step");
+            const nextBtns = document.querySelectorAll(".next");
+            const prevBtns = document.querySelectorAll(".prev");
+            const progressBar = document.getElementById("progressBar");
+            let currentStep = 0;
+
+            function showStep(index) {
+                steps.forEach((step, i) =>
+                    step.classList.toggle("active", i === index)
+                );
+                progressBar.style.width =
+                    ((index + 1) / steps.length) * 100 + "%";
+            }
+
+            nextBtns.forEach((btn) =>
+                btn.addEventListener("click", () => {
+                    if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        showStep(currentStep);
+                    }
+                })
+            );
+
+            prevBtns.forEach((btn) =>
+                btn.addEventListener("click", () => {
+                    if (currentStep > 0) {
+                        currentStep--;
+                        showStep(currentStep);
+                    }
+                })
+            );
+
+            document
+                .getElementById("onboardingForm")
+                .addEventListener("submit", (e) => {
+                    e.preventDefault();
+                    alert(
+                        "✅ Onboarding Completed! Redirecting to dashboard..."
+                    );
+                });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Daily Hustle Dashboard</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        />
+
+        <style>
+            body {
+                font-family: "Poppins", sans-serif;
+                background: #f5f6fa;
+            }
+
+            /* Sidebar */
+            .sidebar {
+                min-height: 100vh;
+                background: linear-gradient(180deg, #1e1e2f, #2d2d44);
+                color: #fff;
+                padding: 20px;
+                position: sticky;
+                top: 0;
+            }
+            .sidebar h3 {
+                font-weight: 700;
+                margin-bottom: 40px;
+            }
+            .sidebar a {
+                color: #b0b3c0;
+                display: block;
+                margin: 12px 0;
+                text-decoration: none;
+                font-weight: 500;
+                padding: 10px 15px;
+                border-radius: 8px;
+                transition: all 0.3s ease;
+            }
+            .sidebar a:hover {
+                background: #007bff;
+                color: #fff;
+            }
+
+            /* Main */
+            main {
+                background: #fff;
+                border-radius: 15px;
+                padding: 25px;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+                margin-top: 20px;
+            }
+            h2 {
+                font-weight: 700;
+                color: #333;
+            }
+
+            /* Wallet Section */
+            .wallet-card {
+                border-radius: 20px;
+                padding: 30px;
+                background: linear-gradient(135deg, #007bff, #28a745, #dc3545);
+                color: #fff;
+                text-align: center;
+                box-shadow: 0 6px 18px rgba(0, 0, 0, 0.2);
+                position: relative;
+                overflow: hidden;
+            }
+            .wallet-card::before {
+                content: "";
+                position: absolute;
+                top: -50px;
+                left: -50px;
+                width: 150px;
+                height: 150px;
+                background: rgba(255, 255, 255, 0.15);
+                border-radius: 50%;
+            }
+            .wallet-card i {
+                font-size: 3rem;
+            }
+            .wallet-balance {
+                font-size: 2.8rem;
+                font-weight: 700;
+                margin: 10px 0;
+            }
+            .wallet-actions .btn {
+                border-radius: 30px;
+                padding: 10px 25px;
+                font-weight: 600;
+            }
+
+            /* Wallet Stats */
+            .wallet-stats {
+                margin-top: 30px;
+            }
+            .wallet-stats .stat-box {
+                background: #fff;
+                color: #333;
+                border-radius: 12px;
+                padding: 20px;
+                text-align: center;
+                box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+                transition: 0.3s;
+            }
+            .wallet-stats .stat-box:hover {
+                transform: translateY(-5px);
+            }
+            .stat-box i {
+                font-size: 1.5rem;
+                margin-bottom: 8px;
+            }
+            .stat-earn {
+                border-top: 4px solid #28a745;
+            }
+            .stat-withdraw {
+                border-top: 4px solid #dc3545;
+            }
+            .stat-pending {
+                border-top: 4px solid #007bff;
+            }
+
+            /* Transaction History */
+            .transaction-history {
+                margin-top: 40px;
+            }
+            .transaction-history h5 {
+                font-weight: 700;
+                margin-bottom: 15px;
+                color: #333;
+            }
+            .transaction-history ul {
+                list-style: none;
+                padding: 0;
+            }
+            .transaction-history li {
+                background: #fafafa;
+                padding: 15px;
+                border-radius: 12px;
+                margin-bottom: 10px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border: 1px solid #eee;
+                transition: 0.3s;
+            }
+            .transaction-history li:hover {
+                background: #f0f7ff;
+                border-color: #007bff;
+            }
+            .transaction-history li span {
+                font-weight: 600;
+            }
+            .transaction-history li small {
+                font-size: 0.85rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <nav class="col-md-3 col-lg-2 sidebar d-none d-md-block p-3">
+                    <h3 class="mb-4">🚀 Daily Hustle</h3>
+                    <a href="#">🏠 Dashboard</a>
+                    <a href="#">💼 tasks</a>
+                    <a href="#">💰 Wallet</a>
+                    <a href="#">⚙️ Settings</a>
+                    <a href="#">🚪 Logout</a>
+                </nav>
+
+                <!-- Main Content -->
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                    <h2 class="mb-4">Wallet Overview 👛</h2>
+
+                    <!-- Wallet -->
+                    <div class="wallet-card mb-4">
+                        <i class="bi bi-wallet2"></i>
+                        <p class="mt-3">Current Balance</p>
+                        <p class="wallet-balance">₦12,500</p>
+                        <div class="wallet-actions mt-3">
+                            <button class="btn btn-light text-success me-2">
+                                <i class="bi bi-plus-circle me-1"></i>Deposit
+                            </button>
+                            <button class="btn btn-dark">
+                                <i class="bi bi-arrow-down-circle me-1"></i
+                                >Withdraw
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Stats Row -->
+                    <div class="row wallet-stats g-4">
+                        <div class="col-md-4">
+                            <div class="stat-box stat-earn">
+                                <i class="bi bi-cash-coin text-success"></i>
+                                <h6>₦50,000</h6>
+                                <p>Total Earned</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-box stat-withdraw">
+                                <i class="bi bi-bank text-danger"></i>
+                                <h6>₦30,000</h6>
+                                <p>Total Withdrawn</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="stat-box stat-pending">
+                                <i
+                                    class="bi bi-hourglass-split text-primary"
+                                ></i>
+                                <h6>₦2,500</h6>
+                                <p>Pending Balance</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction History -->
+                    <div class="transaction-history">
+                        <h5>Recent Transactions</h5>
+                        <ul>
+                            <li>
+                                <span class="text-success">+ ₦500</span> Social
+                                Media Task
+                                <small class="text-white">Today</small>
+                            </li>
+                            <li>
+                                <span class="text-danger">- ₦2,000</span>
+                                Withdrawal
+                                <small class="text-white">Yesterday</small>
+                            </li>
+                            <li>
+                                <span class="text-success">+ ₦1,200</span>
+                                Survey Job
+                                <small class="text-white">2 days ago</small>
+                            </li>
+                        </ul>
+                        <a href="#" class="btn btn-primary btn-sm mt-2"
+                            ><i class="bi bi-list"></i> View Full History</a
+                        >
+                    </div>
+                </main>
+            </div>
+        </div>
+
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    </body>
+</html>

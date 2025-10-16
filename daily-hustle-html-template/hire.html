@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width,initial-scale=1" />
+        <title>Hire Micro-Workers — Daily Hustle</title>
+
+        <!-- Fonts / Bootstrap / Icons -->
+        <link
+            href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+            rel="stylesheet"
+        />
+
+        <style>
+            :root {
+                --accent: #0d6efd;
+                --muted: #6c757d;
+                --card-bg: #ffffff;
+                --soft: #f8fafc;
+            }
+
+            body {
+                font-family: "Poppins", system-ui, -apple-system, "Segoe UI",
+                    Roboto, "Helvetica Neue", Arial;
+                background: linear-gradient(180deg, #f6f8fb 0%, #f3f6fa 100%);
+                color: #222;
+            }
+
+            /* layout */
+            .sidebar {
+                min-height: 100vh;
+                background: linear-gradient(180deg, #1e1e2f, #2d2d44);
+                color: #fff;
+                padding: 28px 18px;
+            }
+            .sidebar h3 {
+                font-weight: 700;
+                margin-bottom: 22px;
+                letter-spacing: 0.2px;
+            }
+            .sidebar a {
+                color: #c7cbe0;
+                display: block;
+                padding: 9px 12px;
+                border-radius: 8px;
+                text-decoration: none;
+                margin: 8px 0;
+                transition: all 0.18s;
+            }
+            .sidebar a:hover {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.06);
+                transform: translateX(6px);
+            }
+
+            main {
+                padding: 28px;
+            }
+
+            /* hire card */
+            .hire-card {
+                background: var(--card-bg);
+                border-radius: 14px;
+                box-shadow: 0 8px 28px rgba(32, 40, 60, 0.06);
+                overflow: hidden;
+                display: flex;
+                gap: 0;
+                border: 1px solid rgba(13, 110, 253, 0.04);
+            }
+
+            .hire-left,
+            .hire-right {
+                padding: 22px;
+            }
+
+            .hire-left {
+                flex: 1.1;
+                min-width: 320px;
+                border-right: 1px solid rgba(15, 20, 30, 0.03);
+            }
+            .hire-right {
+                width: 360px;
+                background: linear-gradient(180deg, #fbfdff, #f9fbff);
+            }
+
+            .section-title {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-weight: 700;
+                font-size: 1.05rem;
+                margin-bottom: 14px;
+            }
+
+            .form-label {
+                font-weight: 600;
+                color: #333;
+                font-size: 0.92rem;
+            }
+
+            .input-with-icon .input-group-text {
+                background: transparent;
+                border-right: 0;
+                color: var(--muted);
+            }
+            .input-with-icon input.form-control,
+            .input-with-icon select.form-select,
+            .input-with-icon textarea.form-control {
+                border-left: 0;
+                border-radius: 8px;
+                border: 1px solid #e7eaf0;
+                padding-left: 12px;
+            }
+            .input-with-icon .form-control:focus,
+            .input-with-icon .form-select:focus,
+            .input-with-icon textarea:focus {
+                box-shadow: 0 6px 18px rgba(13, 110, 253, 0.08);
+                border-color: var(--accent);
+            }
+
+            .small-muted {
+                color: var(--muted);
+                font-size: 0.85rem;
+            }
+
+            /* file input style */
+            .file-label {
+                display: inline-flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 12px;
+                border-radius: 8px;
+                background: #fff;
+                border: 1px dashed #e2e6ef;
+                cursor: pointer;
+            }
+            .file-name {
+                font-size: 0.9rem;
+                color: var(--muted);
+                margin-left: 8px;
+            }
+
+            /* total & preview */
+            .total-box {
+                background: linear-gradient(90deg, #f0f9ff, #f7fbff);
+                border-radius: 10px;
+                padding: 12px;
+                text-align: center;
+                border: 1px solid rgba(13, 110, 253, 0.06);
+            }
+            .total-value {
+                font-weight: 800;
+                font-size: 1.25rem;
+                color: #0b6b2d;
+            }
+
+            .preview-card {
+                background: #fff;
+                border-radius: 10px;
+                padding: 12px;
+                box-shadow: 0 6px 20px rgba(20, 30, 60, 0.04);
+            }
+
+            /* section-card */
+            .section-card {
+                background: #fff;
+                border-radius: 12px;
+                padding: 16px;
+                margin-bottom: 20px;
+                box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
+                border: 1px solid rgba(0, 0, 0, 0.05);
+            }
+
+            /* buttons */
+            .btn-primary {
+                border-radius: 10px;
+                padding: 10px 18px;
+                font-weight: 600;
+            }
+            .btn-outline {
+                border-radius: 10px;
+                padding: 10px 18px;
+            }
+
+            /* responsive */
+            @media (max-width: 991.98px) {
+                .hire-card {
+                    flex-direction: column;
+                }
+                .hire-right {
+                    width: 100%;
+                    border-top: 1px solid rgba(15, 20, 30, 0.03);
+                    border-right: none;
+                }
+            }
+            .section-card {
+                display: flex;
+                justify-content: center; /* centers horizontally */
+                gap: 20px; /* space between */
+                flex-wrap: wrap;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container-fluid">
+            <div class="row">
+                <!-- Sidebar -->
+                <aside class="col-md-3 col-lg-2 sidebar d-none d-md-block">
+                    <h3>🚀 Daily Hustle</h3>
+                    <a href="dashboard.html"
+                        ><i class="bi bi-house-door-fill me-2"></i> Dashboard</a
+                    >
+                    <a
+                        class="d-block"
+                        data-bs-toggle="collapse"
+                        href="#tasksDropdown"
+                        role="button"
+                        ><i class="bi bi-briefcase-fill me-2"></i> tasks
+                        <i class="bi bi-chevron-down float-end"></i
+                    ></a>
+                    <div class="collapse ps-3" id="tasksDropdown">
+                        <a href="dashboard 2.html" class="mb-1"
+                            ><i class="bi bi-list-ul me-2"></i> Available
+                            tasks</a
+                        >
+                        <a href="#" class="mb-1"
+                            ><i class="bi bi-send-check-fill me-2"></i>
+                            Submitted tasks</a
+                        >
+                        <a href="#" class="mb-1"
+                            ><i class="bi bi-arrow-repeat me-2"></i> Re-Submit
+                            tasks</a
+                        >
+                        <a href="#hireWorkers" class="mb-1"
+                            ><i class="bi bi-people-fill me-2"></i> Hire
+                            Micro-Workers</a
+                        >
+                        <a href="#" class="mb-1"
+                            ><i class="bi bi-bullseye me-2"></i> My Job
+                            Campaign</a
+                        >
+                        <a href="#"
+                            ><i class="bi bi-check2-circle me-2"></i> Review
+                            Resubmission</a
+                        >
+                    </div>
+                    <a href="#"><i class="bi bi-wallet2 me-2"></i> Wallet</a>
+                    <a href="#"><i class="bi bi-gem me-2"></i> Plans</a>
+                    <a href="#"
+                        ><i class="bi bi-journal-text me-2"></i> Training</a
+                    >
+                    <a href="#"
+                        ><i class="bi bi-trophy me-2"></i> Leaderboard</a
+                    >
+                    <a href="#"><i class="bi bi-gear me-2"></i> Settings</a>
+                </aside>
+
+                <!-- Content column (center) -->
+                <main class="col-md-9 ms-sm-auto col-lg-10">
+                    <section id="hireWorkers" class="mb-5">
+                        <div class="section-title">
+                            <i
+                                class="bi bi-people-fill text-primary"
+                                style="font-size: 1.2rem"
+                            ></i>
+                            <div>
+                                <div style="font-size: 1.05rem">
+                                    Hire Micro-Workers
+                                </div>
+                                <div class="small-muted">
+                                    Create a campaign and assign micro-tasks to
+                                    workers
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Country -->
+                        <div
+                            class="section-card d-flex gap-4 flex-wrap align-items-start"
+                        >
+                            <!-- Country Side -->
+                            <div class="flex-fill" style="min-width: 250px">
+                                <h5>
+                                    <i class="bi bi-globe me-2"></i>Select
+                                    Country
+                                </h5>
+                                <select
+                                    id="country"
+                                    multiple
+                                    class="form-control"
+                                    size="6"
+                                >
+                                    <option>All (Worldwide)</option>
+                                    <option>Nigeria (37093)</option>
+                                    <option>Africa (37183)</option>
+                                    <option>United States (34)</option>
+                                    <option>Canada (13)</option>
+                                    <option>United Kingdom (19)</option>
+                                </select>
+                            </div>
+
+                            <!-- Instruction Side -->
+                            <div class="flex-fill" style="min-width: 250px">
+                                <h5>
+                                    <i class="bi bi-info-circle-fill me-2"></i
+                                    >Instructions
+                                </h5>
+                                <div
+                                    style="
+                                        background: #fff;
+                                        border: 1px solid #ddd;
+                                        border-radius: 10px;
+                                        padding: 15px;
+                                        font-size: 13px;
+                                        line-height: 1.6;
+                                        height: 208px;
+                                        overflow-y: auto;
+                                    "
+                                >
+                                    <ul style="padding-left: 18px; margin: 0">
+                                        <li>
+                                            Post full job details. “Optional”
+                                            steps are not allowed.
+                                        </li>
+                                        <li>
+                                            No threats — tasks with threats will
+                                            be rejected.
+                                        </li>
+                                        <li>
+                                            Need more workers? Use
+                                            <strong>“Add More”</strong> in My
+                                            tasks.
+                                        </li>
+                                        <li>
+                                            If hiring via OwoDaily, reviews must
+                                            be public & screenshots enabled.
+                                        </li>
+                                        <li>
+                                            Requesting extra tasks after job
+                                            completion is not allowed.
+                                        </li>
+                                        <li>
+                                            WhatsApp/Group tasks are
+                                            <strong>discontinued</strong>.
+                                        </li>
+                                        <li>
+                                            <span
+                                                style="
+                                                    color: #d9534f;
+                                                    font-weight: 600;
+                                                "
+                                                >Be creative:</span
+                                            >
+                                            YouTube/Google tasks may drop
+                                            actions if detected.
+                                        </li>
+                                        <li>
+                                            Bounty tasks require a bounty code
+                                            (OwoDaily+ only).
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job + Sub Category Section -->
+                        <div class="section-card d-flex gap-3 flex-wrap">
+                            <!-- Job Category -->
+                            <div class="flex-fill" style="min-width: 250px">
+                                <h5>
+                                    <i class="bi bi-tags-fill me-2"></i>Select
+                                    Job Category
+                                </h5>
+                                <p class="text-white">
+                                    Pick the category that best fits your job.
+                                </p>
+                                <select
+                                    id="jobCategoryMain"
+                                    class="form-control"
+                                    size="7"
+                                >
+                                    <option value="affiliate">
+                                        Affiliate Rewards
+                                    </option>
+                                    <option value="app">App Download</option>
+                                    <option value="artist">
+                                        Artist Engagement
+                                    </option>
+                                    <option value="content">
+                                        Content Rewards
+                                    </option>
+                                    <option value="discord">Discord</option>
+                                    <option value="facebook">Facebook</option>
+                                    <option value="instagram">Instagram</option>
+                                </select>
+                            </div>
+
+                            <!-- Sub Job Category -->
+                            <div class="flex-fill" style="min-width: 250px">
+                                <h5>
+                                    <i class="bi bi-list-task me-2"></i>Select
+                                    Sub Job Category
+                                </h5>
+                                <p class="text-white">
+                                    Sub options will appear based on the job
+                                    category selected.
+                                </p>
+                                <select
+                                    id="subCategory"
+                                    class="form-control"
+                                    size="7"
+                                >
+                                    <option disabled selected>
+                                        — Please select a job category first —
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Hire card (form + preview) -->
+                        <div class="hire-card">
+                            <!-- Left: Form -->
+                            <div class="hire-left">
+                                <form id="hireForm" novalidate>
+                                    <div class="row g-3">
+                                        <div class="col-12">
+                                            <label
+                                                class="form-label"
+                                                for="jobTitle"
+                                                >Job Title</label
+                                            >
+                                            <div
+                                                class="input-with-icon input-group"
+                                            >
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="bi bi-pencil-fill"
+                                                    ></i
+                                                ></span>
+                                                <input
+                                                    id="jobTitle"
+                                                    name="jobTitle"
+                                                    class="form-control"
+                                                    placeholder="e.g. Share flyer on WhatsApp groups"
+                                                    required
+                                                />
+                                            </div>
+                                            <div class="small-muted mt-1">
+                                                Keep it clear and short — this
+                                                appears in the job feed.
+                                            </div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label
+                                                class="form-label"
+                                                for="jobDetails"
+                                                >Job Description &
+                                                Instructions</label
+                                            >
+                                            <div
+                                                class="input-with-icon input-group"
+                                            >
+                                                <span
+                                                    class="input-group-text align-items-start pt-2"
+                                                    ><i
+                                                        class="bi bi-card-text"
+                                                    ></i
+                                                ></span>
+                                                <textarea
+                                                    id="jobDetails"
+                                                    name="jobDetails"
+                                                    class="form-control"
+                                                    rows="4"
+                                                    placeholder="Explain task steps and required proof (e.g. screenshots, links)"
+                                                ></textarea>
+                                            </div>
+                                            <div class="small-muted mt-1">
+                                                Explain proof rules clearly to
+                                                avoid disputes.
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label
+                                                class="form-label"
+                                                for="workersNeeded"
+                                                >Workers Needed</label
+                                            >
+                                            <div
+                                                class="input-with-icon input-group"
+                                            >
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="bi bi-people-fill"
+                                                    ></i
+                                                ></span>
+                                                <input
+                                                    id="workersNeeded"
+                                                    name="workersNeeded"
+                                                    type="number"
+                                                    min="1"
+                                                    class="form-control"
+                                                    placeholder="10"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label
+                                                class="form-label"
+                                                for="amountPerWorker"
+                                                >Amount per Worker (₦)</label
+                                            >
+                                            <div
+                                                class="input-with-icon input-group"
+                                            >
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="bi bi-currency-naira"
+                                                    ></i
+                                                ></span>
+                                                <input
+                                                    id="amountPerWorker"
+                                                    name="amountPerWorker"
+                                                    type="number"
+                                                    min="0"
+                                                    class="form-control"
+                                                    placeholder="15"
+                                                    required
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <label
+                                                class="form-label"
+                                                for="approvalDays"
+                                                >Approval Days</label
+                                            >
+                                            <div
+                                                class="input-with-icon input-group"
+                                            >
+                                                <span class="input-group-text"
+                                                    ><i class="bi bi-clock"></i
+                                                ></span>
+                                                <input
+                                                    id="approvalDays"
+                                                    name="approvalDays"
+                                                    type="number"
+                                                    min="1"
+                                                    class="form-control"
+                                                    placeholder="3"
+                                                    required
+                                                />
+                                            </div>
+                                            <div class="small-muted mt-1">
+                                                Max days before auto-approval
+                                                (if enabled).
+                                            </div>
+                                        </div>
+
+                                        <div
+                                            class="col-md-6 d-flex align-items-center"
+                                        >
+                                            <div class="form-check">
+                                                <input
+                                                    id="screenshotProof"
+                                                    name="screenshotProof"
+                                                    class="form-check-input"
+                                                    type="checkbox"
+                                                />
+                                                <label
+                                                    class="form-check-label"
+                                                    for="screenshotProof"
+                                                    >Require Screenshot
+                                                    Proof</label
+                                                >
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label
+                                                class="form-label"
+                                                for="jobLink"
+                                                >Job Link (optional)</label
+                                            >
+                                            <div
+                                                class="input-with-icon input-group"
+                                            >
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="bi bi-link-45deg"
+                                                    ></i
+                                                ></span>
+                                                <input
+                                                    id="jobLink"
+                                                    name="jobLink"
+                                                    type="url"
+                                                    class="form-control"
+                                                    placeholder="https://example.com"
+                                                />
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <label class="form-label"
+                                                >Attachment (optional)</label
+                                            >
+                                            <label class="file-label w-100">
+                                                <i class="bi bi-upload"></i>
+                                                <span
+                                                    class="file-label-text small"
+                                                    >Upload sample image or
+                                                    brief (PNG, JPG, PDF)</span
+                                                >
+                                                <input
+                                                    id="fileUpload"
+                                                    name="fileUpload"
+                                                    type="file"
+                                                    class="visually-hidden"
+                                                />
+                                            </label>
+                                            <div
+                                                id="fileName"
+                                                class="file-name"
+                                            ></div>
+                                        </div>
+
+                                        <div class="col-12">
+                                            <label
+                                                class="form-label"
+                                                for="approvalMode"
+                                                >Approval Mode</label
+                                            >
+                                            <div
+                                                class="input-with-icon input-group"
+                                            >
+                                                <span class="input-group-text"
+                                                    ><i
+                                                        class="bi bi-check2-circle"
+                                                    ></i
+                                                ></span>
+                                                <select
+                                                    id="approvalMode"
+                                                    name="approvalMode"
+                                                    class="form-select"
+                                                    required
+                                                >
+                                                    <option
+                                                        value=""
+                                                        disabled
+                                                        selected
+                                                    >
+                                                        Select approval mode
+                                                    </option>
+                                                    <option>
+                                                        Self Approval
+                                                    </option>
+                                                    <option>
+                                                        Platform Approval
+                                                    </option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- total will be mirrored in preview too -->
+                                        <div class="col-12">
+                                            <div
+                                                class="total-box d-flex justify-content-between align-items-center"
+                                            >
+                                                <div class="small-muted">
+                                                    Estimated Total
+                                                </div>
+                                                <div
+                                                    class="total-value"
+                                                    id="totalBudget"
+                                                >
+                                                    ₦0
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div
+                                        class="d-flex gap-2 justify-content-end mt-3"
+                                    >
+                                        <button
+                                            id="previewBtn"
+                                            type="button"
+                                            class="btn btn-outline btn-outline-dark"
+                                        >
+                                            Preview
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            class="btn btn-primary"
+                                        >
+                                            Post Job
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Right: Preview & tips -->
+                            <aside class="hire-right">
+                                <div class="mb-3">
+                                    <div class="small-muted">
+                                        Campaign Preview
+                                    </div>
+                                    <div class="preview-card mt-2">
+                                        <h5 id="previewTitle" class="mb-1">
+                                            — Job title preview —
+                                        </h5>
+                                        <div
+                                            id="previewMeta"
+                                            class="small-muted mb-2"
+                                        >
+                                            Category — Country — ₦0 total
+                                        </div>
+                                        <p
+                                            id="previewDesc"
+                                            class="small-muted mb-2"
+                                        >
+                                            Job description preview will appear
+                                            here when you click Preview.
+                                        </p>
+
+                                        <div class="d-flex gap-2 mt-2">
+                                            <span
+                                                class="badge bg-light text-dark"
+                                                ><i
+                                                    class="bi bi-people-fill me-1"
+                                                ></i>
+                                                <span id="previewWorkers"
+                                                    >0</span
+                                                >
+                                                workers</span
+                                            >
+                                            <span
+                                                class="badge bg-light text-dark"
+                                                ><i
+                                                    class="bi bi-clock me-1"
+                                                ></i>
+                                                <span id="previewDays">0</span>
+                                                days</span
+                                            >
+                                            <span
+                                                class="badge bg-light text-dark"
+                                                ><i
+                                                    class="bi bi-geo-alt me-1"
+                                                ></i
+                                                ><span id="previewCountry"
+                                                    >—</span
+                                                ></span
+                                            >
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr />
+
+                                <div>
+                                    <div class="small-muted mb-2">
+                                        Posting Tips
+                                    </div>
+                                    <ul
+                                        class="small-muted mb-0"
+                                        style="line-height: 1.6"
+                                    >
+                                        <li>
+                                            Be specific with proof rules —
+                                            workers must know what counts as
+                                            valid proof.
+                                        </li>
+                                        <li>
+                                            Use short clear steps in the job
+                                            description to reduce
+                                            re-submissions.
+                                        </li>
+                                        <li>
+                                            Start small if this is your first
+                                            campaign to test delivery quality.
+                                        </li>
+                                    </ul>
+                                </div>
+                            </aside>
+                        </div>
+                    </section>
+                </main>
+            </div>
+        </div>
+
+        <!-- scripts -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            // Elements
+            const workers = document.getElementById("workersNeeded");
+            const amount = document.getElementById("amountPerWorker");
+            const totalBudget = document.getElementById("totalBudget");
+
+            const previewBtn = document.getElementById("previewBtn");
+            const previewTitle = document.getElementById("previewTitle");
+            const previewDesc = document.getElementById("previewDesc");
+            const previewMeta = document.getElementById("previewMeta");
+            const previewWorkers = document.getElementById("previewWorkers");
+            const previewDays = document.getElementById("previewDays");
+            const previewCountry = document.getElementById("previewCountry");
+
+            const jobTitle = document.getElementById("jobTitle");
+            const jobDetails = document.getElementById("jobDetails");
+            const jobCategory = document.getElementById("jobCategoryMain");
+            const subCategory = document.getElementById("subCategory");
+            const countrySelect = document.getElementById("countrySelect");
+            const approvalDays = document.getElementById("approvalDays");
+            const fileUpload = document.getElementById("fileUpload");
+            const fileNameEl = document.getElementById("fileName");
+            const form = document.getElementById("hireForm");
+
+            // Subcategories data
+            const subCategories = {
+                affiliate: ["Sign up", "Referral", "Purchase Bonus"],
+                app: ["Install only", "Install + Register", "Install + Use"],
+                artist: ["Follow", "Stream Song", "Share Music"],
+                content: ["Write Article", "Post Blog", "Comment"],
+                discord: ["Join Server", "React to Post", "Invite Friends"],
+                facebook: [
+                    "Like Page",
+                    "Share Post",
+                    "Repost Video",
+                    "Join Group",
+                ],
+                instagram: ["Follow", "Like Post", "Comment", "Share Story"],
+            };
+
+            // Handle category change
+            jobCategory?.addEventListener("change", function () {
+                const selected = this.value;
+                subCategory.innerHTML = "";
+
+                if (subCategories[selected]) {
+                    subCategories[selected].forEach((sub) => {
+                        const option = document.createElement("option");
+                        option.textContent = sub;
+                        option.value = sub.toLowerCase().replace(/\s+/g, "_");
+                        subCategory.appendChild(option);
+                    });
+                } else {
+                    const option = document.createElement("option");
+                    option.textContent = "No sub-categories available";
+                    option.disabled = true;
+                    subCategory.appendChild(option);
+                }
+            });
+
+            // Update total budget
+            function updateTotal() {
+                const w = parseInt(workers?.value) || 0;
+                const a = parseInt(amount?.value) || 0;
+                const total = w * a;
+                totalBudget.textContent = "₦" + total.toLocaleString();
+            }
+            workers?.addEventListener("input", updateTotal);
+            amount?.addEventListener("input", updateTotal);
+
+            // File upload display
+            fileUpload?.addEventListener("change", () => {
+                fileNameEl.textContent = fileUpload.files[0]?.name || "";
+            });
+
+            // Preview button click
+            previewBtn?.addEventListener("click", () => {
+                previewTitle.textContent =
+                    jobTitle?.value || "— Job title preview —";
+                previewDesc.textContent =
+                    jobDetails?.value || "— Description preview —";
+
+                const w = workers?.value || 0;
+                const d = approvalDays?.value || 0;
+                const c = countrySelect?.selectedOptions[0]?.text || "—";
+                const j =
+                    jobCategory?.options[jobCategory.selectedIndex]?.text ||
+                    "—";
+                const s =
+                    subCategory?.options[subCategory.selectedIndex]?.text ||
+                    "—";
+                const total = totalBudget.textContent;
+
+                previewMeta.textContent = `${j} — ${s} — ${c} — ${total}`;
+                previewWorkers.textContent = w;
+                previewDays.textContent = d;
+                previewCountry.textContent = c;
+            });
+
+            // Form submit
+            form?.addEventListener("submit", (e) => {
+                e.preventDefault();
+                alert("Job submitted successfully!");
+                form.reset();
+                updateTotal();
+                fileNameEl.textContent = "";
+
+                // Reset subcategory
+                subCategory.innerHTML =
+                    "<option disabled selected>— Please select a job category first —</option>";
+
+                // Reset preview
+                previewTitle.textContent = "— Job title preview —";
+                previewDesc.textContent =
+                    "Job description preview will appear here when you click Preview.";
+                previewMeta.textContent =
+                    "Category — Sub Category — Country — ₦0 total";
+                previewWorkers.textContent = "0";
+                previewDays.textContent = "0";
+                previewCountry.textContent = "—";
+            });
+        </script>
+    </body>
+</html>

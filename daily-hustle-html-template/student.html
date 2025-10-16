@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Student Gigs Onboarding — Daily Hustle</title>
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+        />
+        <link
+            rel="stylesheet"
+            href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+        />
+        <style>
+            body {
+                background: linear-gradient(135deg, #f0f4ff, #e0e8ff);
+                font-family: "Poppins", sans-serif;
+            }
+
+            .onboarding-container {
+                max-width: 700px;
+                margin: 50px auto;
+                background: #fff;
+                border-radius: 20px;
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+                padding: 40px 30px;
+                transition: all 0.3s ease-in-out;
+            }
+
+            .onboarding-container:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            }
+
+            h2 {
+                font-weight: 700;
+                color: #0066ff;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+
+            .step-title {
+                font-weight: 600;
+                margin-bottom: 20px;
+                color: #1e1e2f;
+            }
+
+            .step {
+                display: none;
+                animation: fadeIn 0.5s ease;
+            }
+
+            .step.active {
+                display: block;
+            }
+
+            .form-control,
+            .form-select {
+                border-radius: 12px;
+                border: 1px solid #ced4da;
+                padding: 12px 15px;
+                transition: all 0.3s ease;
+            }
+
+            .form-control:focus,
+            .form-select:focus {
+                box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2);
+                border-color: #0066ff;
+            }
+
+            .btn-step {
+                border-radius: 50px;
+                padding: 10px 30px;
+                font-weight: 600;
+                transition: all 0.3s ease;
+            }
+
+            .btn-step:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+            }
+
+            .progress {
+                height: 14px;
+                border-radius: 50px;
+                overflow: hidden;
+                background: #e0e0e0;
+                margin-bottom: 30px;
+            }
+
+            .progress-bar {
+                background: linear-gradient(90deg, #0066ff, #00ccff);
+                transition: width 0.4s ease;
+            }
+
+            video {
+                border-radius: 12px;
+                box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            /* Keep the button at top-left fixed (optional) */
+            .container.mt-3 {
+                position: absolute;
+                top: 15px;
+                left: 15px;
+                z-index: 1000;
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Back to Home Button -->
+        <div class="container mt-3">
+            <a href="index.html" class="btn btn-outline-primary">
+                <i class="bi bi-house-door-fill"></i> Home
+            </a>
+        </div>
+
+        <div class="onboarding-container">
+            <h2>🎓 Student Gigs Onboarding</h2>
+
+            <!-- Progress Bar -->
+            <div class="progress">
+                <div
+                    class="progress-bar"
+                    role="progressbar"
+                    style="width: 16%"
+                    id="progressBar"
+                ></div>
+            </div>
+
+            <form id="studentOnboardingForm">
+                <!-- Step 1: Registration -->
+                <div class="step active">
+                    <h4 class="step-title">1. Registration</h4>
+                    <div class="mb-3">
+                        <label class="form-label">Full Name</label>
+                        <input type="text" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">School</label>
+                        <input type="text" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Year of Study</label>
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="e.g., 2nd Year"
+                            required
+                        />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-control" required />
+                    </div>
+                    <button type="button" class="btn btn-primary btn-step next">
+                        Next
+                    </button>
+                </div>
+
+                <!-- Step 2: Verification (Student KYC) -->
+                <div class="step">
+                    <h4 class="step-title">2. Verification (Student KYC)</h4>
+                    <p>Upload your student documents to verify your account.</p>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Student ID / Admission Letter / School Email</label
+                        >
+                        <input type="file" class="form-control" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >For DH Ultimate: Upload CV + LinkedIn/Portfolio
+                            link</label
+                        >
+                        <input type="file" class="form-control" />
+                        <input
+                            type="text"
+                            class="form-control mt-2"
+                            placeholder="LinkedIn or Portfolio URL"
+                        />
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 3: Subscription Plan Selection -->
+                <div class="step">
+                    <h4 class="step-title">3. Subscription Plan</h4>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="plan"
+                            checked
+                        />
+                        <label class="form-check-label"
+                            >DH Basic (Free) → Small digital & campus
+                            gigs</label
+                        >
+                    </div>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="plan"
+                        />
+                        <label class="form-check-label"
+                            >DH Premium (Paid) → Higher-value gigs & brand
+                            ambassador roles</label
+                        >
+                    </div>
+                    <div class="form-check mb-2">
+                        <input
+                            class="form-check-input"
+                            type="radio"
+                            name="plan"
+                        />
+                        <label class="form-check-label"
+                            >DH Ultimate (Paid) → All gigs, internships & DDSA
+                            Basic tasks</label
+                        >
+                    </div>
+                    <div class="d-flex justify-content-between mt-3">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 4: Training -->
+                <div class="step">
+                    <h4 class="step-title">4. Onboarding Training</h4>
+                    <p>
+                        Learn how to manage gigs alongside academics and submit
+                        proofs professionally.
+                    </p>
+                    <div class="mb-3">
+                        <video controls width="100%">
+                            <source
+                                src="student_training.mp4"
+                                type="video/mp4"
+                            />
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Quiz: What is required for proof submission?</label
+                        >
+                        <input
+                            type="text"
+                            class="form-control"
+                            placeholder="Your Answer"
+                        />
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 5: Gig Marketplace Access -->
+                <div class="step">
+                    <h4 class="step-title">5. Gig Marketplace</h4>
+                    <p>
+                        Explore student gigs categorized by type and apply
+                        instantly.
+                    </p>
+                    <div class="mb-3">
+                        <label class="form-label">Filter by Gig Type</label>
+                        <select class="form-select">
+                            <option>All</option>
+                            <option>Digital</option>
+                            <option>Campus</option>
+                            <option>Skill-based</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label"
+                            >Filter by Payout / Points</label
+                        >
+                        <select class="form-select">
+                            <option>Any</option>
+                            <option>₦500 - ₦1000 / 50-100 pts</option>
+                            <option>₦1000 - ₦5000 / 100-500 pts</option>
+                            <option>₦5000+ / 500+ pts</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-primary btn-step next"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Step 6: Dashboard Activation -->
+                <div class="step">
+                    <h4 class="step-title">6. Dashboard Activation</h4>
+                    <p>🎉 Congratulations! Your student account is ready.</p>
+                    <ul>
+                        <li>
+                            Wallet integrated with Daily Hustle points &
+                            earnings
+                        </li>
+                        <li>
+                            Performance analytics: completed gigs, ratings,
+                            earnings history
+                        </li>
+                        <li>
+                            Career Pathway Module: CV visibility, internships
+                        </li>
+                        <li>
+                            Gamification: Campus Hustler, Top Recruiter, Digital
+                            Wiz
+                        </li>
+                    </ul>
+                    <div class="d-flex justify-content-between">
+                        <button
+                            type="button"
+                            class="btn btn-secondary btn-step prev"
+                        >
+                            Back
+                        </button>
+                        <button
+                            type="button"
+                            class="btn btn-success btn-step finish"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            // Redirect when the "Finish/Next" button is clicked
+            document.querySelector(".finish").addEventListener("click", () => {
+                alert("✅ Student Gigs Completed! Redirecting to dashboard...");
+                window.location.href = "dashboard.html"; // Replace with your actual dashboard URL
+            });
+
+            const steps = document.querySelectorAll(".step");
+            const nextBtns = document.querySelectorAll(".next");
+            const prevBtns = document.querySelectorAll(".prev");
+            const progressBar = document.getElementById("progressBar");
+            let currentStep = 0;
+
+            function showStep(index) {
+                steps.forEach((step, i) =>
+                    step.classList.toggle("active", i === index)
+                );
+                progressBar.style.width =
+                    ((index + 1) / steps.length) * 100 + "%";
+            }
+
+            nextBtns.forEach((btn) =>
+                btn.addEventListener("click", () => {
+                    if (currentStep < steps.length - 1) {
+                        currentStep++;
+                        showStep(currentStep);
+                    }
+                })
+            );
+
+            prevBtns.forEach((btn) =>
+                btn.addEventListener("click", () => {
+                    if (currentStep > 0) {
+                        currentStep--;
+                        showStep(currentStep);
+                    }
+                })
+            );
+
+            document
+                .getElementById("studentOnboardingForm")
+                .addEventListener("submit", (e) => {
+                    e.preventDefault();
+                    alert(
+                        "✅ Student Onboarding Completed! Redirecting to dashboard..."
+                    );
+                });
+        </script>
+    </body>
+</html>

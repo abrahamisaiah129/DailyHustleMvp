@@ -1,0 +1,139 @@
+/* Basic layout styles adapted from your HTML */
+body {
+    font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial;
+    background: linear-gradient(180deg, #f3f6fb 0%, #eef4ff 100%);
+    color: #343a40;
+    margin: 0;
+}
+
+/* Dark mode */
+body.dh-dark {
+    background: linear-gradient(180deg, #06070a 0%, #071026 100%);
+    color: #e6eef8;
+}
+
+/* Sidebar */
+.sidebar {
+    width: var(--dh-sidebar-width);
+    height: 100vh;
+    background: var(--dh-sidebar-bg);
+    color: #fff;
+    padding: 26px 18px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    box-shadow: 4px 0 18px rgba(20, 40, 80, 0.1);
+    z-index: 10;
+    overflow-y: auto;
+}
+.sidebar .nav-link-item {
+    color: #d8e6ff;
+    display: block;
+    padding: 10px 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    margin: 6px 0;
+    transition: all 0.15s ease;
+}
+.sidebar .nav-link-item:hover,
+.sidebar .nav-link-item.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateX(4px);
+}
+
+/* page */
+.page {
+    margin-left: var(--dh-sidebar-width);
+    padding: 28px;
+    width: calc(100% - var(--dh-sidebar-width));
+}
+
+/* summary card */
+.summary-card {
+    background: var(--dh-card-bg);
+    border-radius: 12px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(30, 70, 120, 0.06);
+    display: flex;
+    align-items: center;
+}
+.icon-wrapper {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    color: white;
+    margin-right: 12px;
+}
+.label {
+    font-size: 0.85rem;
+    color: var(--dh-muted);
+}
+.value {
+    font-weight: 700;
+    font-size: 1.25rem;
+}
+
+/* tasks table */
+.tasks-table {
+    background: white;
+    border-radius: 12px;
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(18, 66, 135, 0.06);
+}
+.job-row {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    border-bottom: 1px solid #f6f8ff;
+}
+.job-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    margin-right: 12px;
+    color: white;
+}
+.job-icon.social {
+    background: var(--dh-blue);
+}
+.job-icon.bounty {
+    background: var(--dh-red);
+}
+.job-icon.field {
+    background: var(--dh-yellow);
+    color: #333;
+}
+.payout-badge {
+    font-weight: 700;
+    border-radius: 8px;
+    padding: 6px 10px;
+    background: #212529;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+/* responsive */
+@media (max-width: 991.98px) {
+    .sidebar {
+        transform: translateX(-100%);
+        width: 70%;
+    }
+    .sidebar.show {
+        transform: translateX(0);
+    }
+    .page {
+        margin-left: 0;
+        padding: 18px;
+        width: 100%;
+    }
+}

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Hustle - Turn Your Hustle Into Earnings</title>
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+  <style>
+    /* Global */
+    body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; color:#222; }
+    a { text-decoration: none; }
+
+    /* Navbar */
+    .navbar {
+      background: rgba(0,0,0,0.6);
+      backdrop-filter: blur(12px);
+      transition: 0.3s;
+    }
+    .navbar-brand { font-weight: 800; color: #fff !important; letter-spacing: 1px; }
+    .navbar-nav .nav-link { color: #ddd !important; margin: 0 10px; font-weight: 500; transition: 0.2s; }
+    .navbar-nav .nav-link:hover { color: #fff !important; }
+
+    /* Hero */
+    .hero {
+      position: relative;
+      background: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f') center/cover no-repeat;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #fff;
+    }
+    .hero::before {
+      content:"";
+      position:absolute; top:0; left:0; right:0; bottom:0;
+      background: linear-gradient(135deg, rgba(0,0,0,0.6), rgba(0,0,0,0.7));
+    }
+    .hero-content { position: relative; z-index: 2; max-width: 700px; }
+    .hero h1 { font-size: 3rem; font-weight: 800; line-height: 1.2; }
+    .hero p { font-size: 1.2rem; margin: 20px 0 30px; }
+    .hero .btn { border-radius: 50px; padding: 12px 28px; font-weight: 600; }
+
+    /* Sections */
+    .section-title { font-weight: 700; margin-bottom: 40px; font-size: 2rem; text-align: center; position: relative; }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: #007bff;
+      margin: 10px auto 0;
+      border-radius: 2px;
+    }
+
+    /* Features */
+    .feature-card {
+      padding: 35px 25px;
+      border-radius: 15px;
+      background: #fff;
+      transition: 0.3s;
+      text-align: center;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    .feature-card:hover { transform: translateY(-10px); box-shadow: 0 12px 25px rgba(0,0,0,0.15); }
+    .feature-card i { font-size: 2.5rem; margin-bottom: 15px; color: #007bff; }
+
+    /* tasks */
+    #tasks { background: #f9fafc; }
+    .job-list { display: grid; gap: 15px; }
+    .job-card {
+      background:#fff; border-radius:12px; padding:15px;
+      font-weight:500; cursor:pointer; transition:0.3s;
+      border:1px solid #e3e6ea; box-shadow:0 4px 8px rgba(0,0,0,0.05);
+    }
+    .job-card:hover { transform:translateY(-5px) scale(1.03); border-color:#007bff; box-shadow:0 8px 16px rgba(0,0,0,0.1); }
+
+    /* Plans */
+    #plans { background: linear-gradient(135deg, #f9fafc, #eef2f7); }
+    .plan-card {
+      background: rgba(255,255,255,0.95); border-radius:16px; padding:30px; text-align:center;
+      box-shadow:0 6px 20px rgba(0,0,0,0.08); position:relative; transition:0.3s;
+    }
+    .plan-card:hover { transform: translateY(-10px) scale(1.03); box-shadow:0 12px 30px rgba(0,0,0,0.12); }
+    .plan-title { font-size: 22px; font-weight: 700; margin-bottom: 10px; color: #222; }
+    .plan-desc { font-size: 15px; color:#555; margin-bottom: 15px; }
+    .featured-badge { position:absolute; top:-12px; right:20px; font-size:12px; padding:5px 10px; border-radius:12px; }
+
+    /* Metrics */
+    .metric h1 { font-size: 2.8rem; font-weight: 800; color: #007bff; }
+    .metric p { font-weight:500; }
+
+    /* CTA */
+    .cta-section { background: linear-gradient(135deg,#007bff,#28a745); color:#fff; padding:70px 20px; text-align:center; }
+    .cta-section h2 { font-weight:800; margin-bottom:15px; }
+    .cta-section .btn { padding:12px 30px; font-size:1.1rem; border-radius:50px; }
+
+    /* Footer */
+    footer { background:#111; color:#bbb; padding:40px 20px; text-align:center; }
+    footer a { color:#bbb; margin:0 10px; transition:0.2s; }
+    footer a:hover { color:#fff; }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg fixed-top">
+    <div class="container">
+<a class="navbar-brand" href="#">
+  <img src="home/image/logo.png" alt="Daily Hustle" height="50" class="me-2">
+  Daily Hustle
+</a>
+      <button class="navbar-toggler bg-light" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="#Overview">Overview</a></li>
+          <li class="nav-item"><a class="nav-link" href="#why">Why Us</a></li>
+          <li class="nav-item"><a class="nav-link" href="#how">How It Works</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tasks">tasks</a></li>
+          <li class="nav-item"><a class="nav-link" href="#plans">Plans</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content" data-aos="fade-up">
+      <h1>Turn Your Hustle Into Earnings. Anytime. Anywhere.</h1>
+      <p>Simple micro-tasks & student gigs under the DDSA ecosystem.<br>Earn instantly while building your career.</p>
+      <!-- Hero Buttons -->
+<!-- Hero Buttons -->
+<div class="hero-buttons">
+  <a href="onboarding.html" class="btn btn-light btn-sm">Micro-Workers Onboarding</a>
+  <a href="student.html" class="btn btn-primary btn-sm">Student Gigs Onboarding</a>
+</div>
+
+<style>
+/* Light Button Default & Hover */
+.btn-light {
+  background-color: #f8f9fa; /* default light gray */
+  color: #222;
+  border: 2px solid #f8f9fa;
+  padding: 6px 16px; /* smaller padding */
+  font-size: 0.9rem; /* smaller font */
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-light:hover {
+  background-color: #007bff; /* blue on hover */
+  color: #fff;
+  border-color: #007bff;
+}
+
+/* Primary Button Default & Hover */
+.btn-primary {
+  background-color: #007bff; /* default blue */
+  color: #fff;
+  border: 2px solid #007bff;
+  padding: 6px 16px; /* smaller padding */
+  font-size: 0.9rem; /* smaller font */
+  border-radius: 25px;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: #28a745; /* green on hover */
+  border-color: #28a745;
+}
+
+/* Click (active) Effects */
+.btn-light:active {
+  background-color: #007bff !important;
+  color: #fff !important;
+  transform: scale(0.95);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.btn-primary:active {
+  background-color: #28a745 !important;
+  border-color: #28a745 !important;
+  transform: scale(0.95);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+</style>
+
+
+  </section>
+
+  <!-- Overview -->
+  <section id="Overview" class="container py-5" data-aos="fade-up">
+    <h2 class="section-title mb-4">Daily Hustle – Overview</h2>
+    <p class="lead text-center">
+      Daily Hustle is a micro-job and freelance earning platform connecting businesses with individuals seeking online income. 
+      Opportunities for students, professionals, or stay-at-home earners to perform simple digital tasks and earn instantly.
+    </p>
+  </section>
+
+  <!-- Why Daily Hustle -->
+  <section id="why" class="container py-5">
+    <h2 class="section-title mb-5" data-aos="fade-up">✨ Why Daily Hustle?</h2>
+    <div class="row g-4">
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="100">
+        <div class="feature-card"><i class="bi bi-clock"></i><h5>Flexible tasks</h5><p>Work from your phone, at your pace.</p></div>
+      </div>
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="200">
+        <div class="feature-card"><i class="bi bi-wallet2 text-success"></i><h5>Instant Earnings</h5><p>Wallet payouts, withdraw in 24–48hrs.</p></div>
+      </div>
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="300">
+        <div class="feature-card"><i class="bi bi-trophy text-white"></i><h5>Gamified Rewards</h5><p>Earn points, badges, and bonuses.</p></div>
+      </div>
+      <div class="col-md-3" data-aos="fade-up" data-aos-delay="400">
+        <div class="feature-card"><i class="bi bi-mortarboard text-info"></i><h5>Career Growth</h5><p>From small hustles → internships.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works -->
+  <section id="how" class="bg-light py-5">
+    <div class="container">
+      <h2 class="section-title mb-5">🔗 How It Works</h2>
+      <div class="row g-4 justify-content-center how-cards">
+  <!-- Steps -->
+  <div class="col-md-4 col-lg-2" data-aos="fade-up">
+    <div class="card border-primary shadow-lg text-center p-3 h-100">
+      <h1 class="fw-bold text-primary">1</h1>
+      <p>Sign Up</p>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2" data-aos="fade-up">
+    <div class="card border-primary shadow-lg text-center p-3 h-100">
+      <h1 class="fw-bold text-primary">2</h1>
+      <p>Pick tasks</p>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2" data-aos="fade-up">
+    <div class="card border-primary shadow-lg text-center p-3 h-100">
+      <h1 class="fw-bold text-primary">3</h1>
+      <p>Complete Tasks</p>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2" data-aos="fade-up">
+    <div class="card border-primary shadow-lg text-center p-3 h-100">
+      <h1 class="fw-bold text-primary">4</h1>
+      <p>Submit Proof</p>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2" data-aos="fade-up">
+    <div class="card border-primary shadow-lg text-center p-3 h-100">
+      <h1 class="fw-bold text-primary">5</h1>
+      <p>Get Paid</p>
+    </div>
+  </div>
+  <div class="col-md-4 col-lg-2" data-aos="fade-up">
+    <div class="card border-primary shadow-lg text-center p-3 h-100">
+      <h1 class="fw-bold text-primary">6</h1>
+      <p>Level Up</p>
+    </div>
+  </div>
+</div>
+
+<style>
+.how-cards .card {
+  border-radius: 15px; /* adds rounded corners */
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.how-cards .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.15);
+}
+</style>
+
+    </div>
+  </section>
+
+  <!-- Job Categories -->
+  <section id="tasks" class="container py-5">
+    <h2 class="section-title mb-5">💼 Job Categories</h2>
+    <div class="row g-4">
+      <div class="col-md-6">
+        <h4 class="mb-3">📌 Micro-tasks</h4>
+        <div class="job-list">
+          <div class="job-card">Social media tasks</div>
+          <div class="job-card">Surveys & polls</div>
+          <div class="job-card">App downloads & testing</div>
+          <div class="job-card">Website reviews</div>
+          <div class="job-card">Flyer distribution</div>
+          <div class="job-card">Promos</div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <h4 class="mb-3">🎓 Student Gigs</h4>
+        <div class="job-list">
+          <div class="job-card">Tutoring & support</div>
+          <div class="job-card">Research & data collection</div>
+          <div class="job-card">Event activations</div>
+          <div class="job-card">Brand ambassador roles</div>
+          <div class="job-card">Internships & projects</div>
+          <div class="job-card">Creative services</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Subscription Plans -->
+  <section id="plans" class="pricing py-5">
+    <div class="container">
+      <h2 class="section-title mb-5">🎯 Subscription Plans</h2>
+      <div class="row g-4">
+        <div class="col-md-4"><div class="plan-card border border-success"><h5 class="plan-title">DH Basic</h5><p class="plan-desc">Free entry-level gigs</p><a href="#basic" class="btn btn-outline-success mt-3">Choose</a></div></div>
+        <div class="col-md-4"><div class="plan-card border border-primary position-relative"><span class="badge bg-primary featured-badge">Most Popular</span><h5 class="plan-title">DH Premium</h5><p class="plan-desc">Higher-value gigs + DDSA Basic</p><a href="#premium" class="btn btn-primary mt-3">Choose</a></div></div>
+        <div class="col-md-4"><div class="plan-card border border-danger"><h5 class="plan-title">DH Ultimate</h5><p class="plan-desc">All gigs + internships (KYC)</p><a href="#ultimate" class="btn btn-danger mt-3">Choose</a></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Impact Metrics -->
+  <section id="impact" class="container py-5 text-center">
+    <h2 class="section-title mb-5">📈 Impact Metrics</h2>
+    <div class="row g-4">
+      <div class="col-md-4 metric"><h1>250k+</h1><p>Workers Target</p></div>
+      <div class="col-md-4 metric"><h1>85%+</h1><p>Completion Rate</p></div>
+      <div class="col-md-4 metric"><h1>₦15k–₦50k</h1><p>Avg. Monthly Earnings</p></div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta-section" data-aos="fade-up">
+    <h2>🌟 Join the Movement</h2>
+    <p class="lead mb-4">Students, freelancers, hustlers: Turn your phone into an earning tool.</p>
+    <a href="#signup" class="btn btn-light btn-lg me-3">Start Earning</a>
+    <a href="#postjob" class="btn btn-dark btn-lg">Post a Job</a>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    <p><a href="#">About Us</a> | <a href="#">FAQs</a> | <a href="#">Contact</a> | <a href="#">Privacy Policy</a></p>
+    <p>© 2025 Daily Hustle (A DDSA Initiative by D-Degree Digital Hub)</p>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script>AOS.init({ duration: 1000, once: true });</script>
+</body>
+</html>
