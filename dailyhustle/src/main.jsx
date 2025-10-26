@@ -1,11 +1,17 @@
-import ReactDOM from "react-dom/client";
+// index.jsx
 import React from "react";
+import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import UserDataProvider from "./context/userDataProvider.jsx";
-import { GeneralProvider } from "./context/GeneralContextProvider.jsx";
-import { ThemeProvider } from "./context/ThemeProvider";
-// Import ThemeProvider
 import App from "./App.jsx";
+
+// ✅ Correct import for your context
+// Use default import, NOT `{ AppDataProvider }`
+import AppDataProvider from "./context/App/AppDataContext.jsx";
+
+// ✅ Theme Provider (you can keep this named if it's exported that way)
+import { ThemeProvider } from "./context/Theme/ThemeProvider.jsx";
+
+// ✅ Styles
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import "bootstrap-icons/font/bootstrap-icons.css";
@@ -13,19 +19,52 @@ import "react-toastify/dist/ReactToastify.css";
 import "./index.css";
 import "./App.css";
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error) {
+    console.error("ErrorBoundary caught:", error);
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error, info) {
+    console.error("ErrorBoundary stack:", info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="error-container text-center mt-5">
+          <h1>Something went wrong</h1>
+          <p>{this.state.error?.message || "Please refresh the page."}</p>
+          <button
+            className="btn btn-primary mt-3"
+            onClick={() => window.location.reload()}
+          >
+            Refresh
+          </button>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ✅ Proper hierarchical structure
 ReactDOM.createRoot(document.getElementById("root")).render(
-    <React.StrictMode>
-        <BrowserRouter>
-            <UserDataProvider>
-                {/*  for user site data , such as tasks, notification */}
-                <ThemeProvider>
-                    {/*  for theme site data , such as tasks, notification */}
-                    <GeneralProvider>
-                        {/*  for general site data , such as tasks, notification */}
-                        <App />
-                    </GeneralProvider>
-                </ThemeProvider>
-            </UserDataProvider>
-        </BrowserRouter>
-    </React.StrictMode>
+  <React.StrictMode>
+    <ErrorBoundary>
+      <BrowserRouter>
+        {/* ✅ Provider Order — AppDataProvider wraps ThemeProvider, which wraps App */}
+        <AppDataProvider>
+          <ThemeProvider>
+            <App />
+          </ThemeProvider>
+        </AppDataProvider>
+      </BrowserRouter>
+    </ErrorBoundary>
+  </React.StrictMode>
 );

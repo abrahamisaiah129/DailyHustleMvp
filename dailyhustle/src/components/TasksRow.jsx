@@ -1,5 +1,5 @@
 import React from "react";
-import { useTheme } from "../context/ThemeContext";
+import { useTheme } from "../context/Theme/useThemeContext";
 
 export default function JobRow({ job, onOpen }) {
     const { theme } = useTheme();

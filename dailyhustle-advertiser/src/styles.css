@@ -1,0 +1,209 @@
+/* for the posts page  */
+/* src/pages/Posts.css */
+.card {
+  background-color: var(--bs-body-bg);
+  border-radius: 1.2rem;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+}
+
+.preview-box {
+  background-color: #f8f9fa;
+  border-radius: 1rem;
+  padding: 1rem;
+  transition: all 0.3s ease;
+}
+
+.preview-box:hover {
+  background-color: #f3f0ff;
+}
+
+.btn-outline-primary {
+  border-color: #6f42c1;
+  color: #6f42c1;
+}
+
+.btn-outline-primary:hover {
+  background-color: #6f42c1;
+  color: white;
+}
+
+.text-primary {
+  color: #6f42c1 !important;
+}
+
+select.form-select:hover {
+  border-color: #6f42c1;
+}
+
+.modal-backdrop {
+  opacity: 0.5 !important;
+}
+
+/* ends here */
+
+body {
+  font-family: "Poppins", sans-serif;
+  background: linear-gradient(135deg, #f8f9fc, #eef0f7);
+  color: #333;
+}
+
+/* Sidebar */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 260px;
+  height: 100vh;
+  background: linear-gradient(180deg, #1e1e2f, #292942);
+  color: #fff;
+  padding: 25px 20px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.sidebar h4 {
+  font-weight: 700;
+  margin-bottom: 40px;
+  color: #ff007a;
+}
+
+.sidebar .nav-link {
+  color: #b0b3c0;
+  text-decoration: none;
+  display: block;
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: 0.3s ease;
+  font-weight: 500;
+}
+
+.sidebar .nav-link:hover,
+.sidebar .active {
+  background: #ff007a;
+  color: #fff;
+}
+
+/* Main content */
+.main-content {
+  margin-left: 280px;
+  padding: 40px 30px;
+}
+
+/* Stat Cards */
+.stat-card {
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 18px;
+  padding: 25px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+  text-align: center;
+}
+
+.stat-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+.stat-card i {
+  font-size: 42px;
+  color: #ff007a;
+  margin-bottom: 8px;
+}
+
+/* Campaign Cards */
+.campaign-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.05);
+  transition: 0.3s;
+}
+
+.campaign-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Status Badges */
+.campaign-status {
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 12px;
+  padding: 5px 10px;
+  display: inline-block;
+}
+
+.status-active {
+  background: rgba(0, 200, 83, 0.15);
+  color: #00c853;
+}
+
+.status-pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+}
+
+.status-paused {
+  background: rgba(244, 67, 54, 0.15);
+  color: #f44336;
+}
+
+/* Proof */
+.proof-box {
+  margin-top: 10px;
+  font-size: 14px;
+  background: #f8f9fb;
+  border-radius: 10px;
+  padding: 10px;
+  color: #555;
+}
+
+.proof-img {
+  border-radius: 10px;
+  max-width: 100%;
+  height: auto;
+}
+
+/* Buttons */
+.btn-custom {
+  background: #ff007a;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+}
+
+.btn-custom:hover {
+  background: #d80067;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  .main-content {
+    margin: 0;
+    padding: 20px;
+  }
+}
+body[data-theme='light'] {
+  --dh-red: #ed3224;
+  --background: #f8f9fa;
+  --card-bg: #fff;
+  --text: #212529;
+  --label: #6c757d;
+}
+
+body[data-theme='dark'] {
+  --dh-red: #ed3224;
+  --background: #121212;
+  --card-bg: #1c1c1e;
+  --text: #f8f9fa;
+  --label: #adb5bd;
+}
+
+/* Add any other global or utility styles here */

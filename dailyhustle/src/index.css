@@ -1,0 +1,274 @@
+/* ════════════════════════════════════════════════════════════════════════════
+ * 🌍 DAILY HUSTLE — REFINED RESPONSIVE DASHBOARD STYLE
+ * Sidebar Fixed | Smooth Transition | Zero Overlap
+ * ════════════════════════════════════════════════════════════════════════════ */
+
+
+/* ============================================================================ 
+ * 🎨 THEME VARIABLES
+ * ============================================================================ */
+:root {
+  --dh-sidebar-width: 240px;
+  --dh-sidebar-collapsed: 70px;
+  --dh-header-height: 70px;
+
+  --dh-blue: #007bff;
+  --dh-red: #e63946;
+  --dh-green: #198754;
+  --dh-yellow: #fbc531;
+  --dh-muted: #6c757d;
+
+  --dh-bg-gradient: linear-gradient(180deg, #f4f7fb, #e9f0ff);
+  --dh-bg-dark: #121212;
+  --dh-sidebar-bg: #0d1b2a;
+  --dh-card-bg: #ffffff;
+  --dh-text: #2c3e50;
+
+  --transition-fast: all 0.3s ease-in-out;
+}
+
+/* DARK MODE */
+body.dh-dark {
+  --dh-bg-gradient: linear-gradient(180deg, #05080f, #0a1426);
+  --dh-sidebar-bg: #0b1220;
+  --dh-card-bg: #1e1e29;
+  --dh-text: #e6eef8;
+  --dh-muted: #aab3c6;
+}
+
+/* ============================================================================ 
+ * 🧱 GLOBAL BASE
+ * ============================================================================ */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  font-family: "Poppins", system-ui, sans-serif;
+  background: var(--dh-bg-gradient);
+  color: var(--dh-text);
+  transition: var(--transition-fast);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* ============================================================================ 
+ * 🧭 MAIN LAYOUT
+ * ============================================================================ */
+.dashboard-layout {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* SIDEBAR - FIXED LEFT PANEL */
+.dashboard-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--dh-sidebar-width);
+  height: 100vh;
+  background: var(--dh-sidebar-bg);
+  color: #fff;
+  padding: 0.8rem;
+  box-shadow: 4px 0 18px rgba(0, 0, 0, 0.15);
+  transition: width 0.3s ease-in-out, background 0.3s ease;
+  z-index: 1030;
+  overflow-y: auto;
+}
+
+.dashboard-sidebar.collapsed {
+  width: var(--dh-sidebar-collapsed);
+}
+
+/* Sidebar scrollbar design */
+.dashboard-sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+.dashboard-sidebar::-webkit-scrollbar-thumb {
+  background: var(--dh-red);
+  border-radius: 4px;
+}
+
+/* Hide text labels when collapsed */
+.dashboard-sidebar.collapsed .nav-link-item span,
+.dashboard-sidebar.collapsed .logo span,
+.dashboard-sidebar.collapsed .btn-outline-red span {
+  display: none !important;
+}
+
+/* ============================================================================ 
+ * 🧩 MAIN AREA (NON-OVERLAPPING)
+ * ============================================================================ */
+.dashboard-main {
+  margin-left: var(--dh-sidebar-width);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease-in-out;
+  background: transparent;
+  position: relative;
+}
+
+.dashboard-sidebar.collapsed ~ .dashboard-main {
+  margin-left: var(--dh-sidebar-collapsed);
+}
+
+/* HEADER */
+.dashboard-header {
+  position: sticky;
+  top: 0;
+  height: var(--dh-header-height);
+  background: var(--dh-card-bg);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 1040;
+  transition: background 0.3s ease, border 0.3s ease;
+}
+
+/* CONTENT */
+.dashboard-content {
+  flex: 1;
+  min-height: calc(100vh - var(--dh-header-height));
+  padding: 1.25rem;
+  overflow-x: hidden;
+  animation: fadeIn 0.4s ease;
+}
+
+/* ============================================================================ 
+ * 📱 MOBILE RESPONSIVE
+ * ============================================================================ */
+@media (max-width: 991.98px) {
+  .dashboard-sidebar {
+    position: absolute;
+    transform: translateX(-100%);
+    width: 70vw;
+  }
+  .dashboard-sidebar.show {
+    transform: translateX(0%);
+  }
+  .dashboard-main {
+    margin-left: 0 !important;
+  }
+}
+
+/* ============================================================================ 
+ * 🎨 COMPONENT & UTILITY STYLES
+ * ============================================================================ */
+.logo {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 0.75rem;
+}
+
+.nav-link-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #b9cbe3;
+  font-size: 0.95rem;
+  padding: 0.5rem 0.8rem;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: var(--transition-fast);
+}
+.nav-link-item i {
+  font-size: 1.15rem;
+}
+.nav-link-item:hover,
+.nav-link-item.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  transform: translateX(4px);
+}
+
+/* Red outline buttons */
+.btn-outline-red {
+  border: 1px solid var(--dh-red);
+  color: var(--dh-red);
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: var(--transition-fast);
+}
+.btn-outline-red:hover {
+  background: var(--dh-red);
+  color: #fff !important;
+}
+
+/* Cards */
+.card-custom {
+  background: var(--dh-card-bg);
+  border-radius: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.card-custom:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================================================ 
+ * ⚙️ COLLAPSE TOGGLE 
+ * ============================================================================ */
+.toggle-btn {
+  text-align: right;
+  color: #fff;
+  background: none;
+  border: none;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+}
+.toggle-btn:hover {
+  opacity: 0.7;
+}
+
+/* ============================================================================ 
+ * ✨ ANIMATIONS
+ * ============================================================================ */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ════════════════════════════════════════════════
+   🔴 DAILY HUSTLE PAGINATION - RED THEME
+   ════════════════════════════════════════════════ */
+.custom-red-pagination .page-link {
+  color: var(--dh-red);
+  border-color: var(--dh-red);
+  transition: all 0.3s ease-in-out;
+}
+
+.custom-red-pagination .page-link:hover {
+  color: #fff;
+  background-color: var(--dh-red);
+  border-color: var(--dh-red);
+}
+
+.custom-red-pagination .page-item.active .page-link {
+  background-color: var(--dh-red);
+  border-color: var(--dh-red);
+  color: #fff;
+  font-weight: 700;
+}
+
+.custom-red-pagination .page-item.disabled .page-link {
+  background-color: #ccc;
+  border-color: #ddd;
+  color: #666;
+}

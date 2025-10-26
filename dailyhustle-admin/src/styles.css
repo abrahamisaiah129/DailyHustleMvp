@@ -1,0 +1,93 @@
+/* Global styles with CSS variables for theme switching */
+/* All code below is commented for clarity. */
+
+:root{
+  --bg: #fff;
+  --text: #111;
+  --card: #fff;
+  --primary: #c62828; /* red theme color */
+  --muted: #6b6b6b;
+}
+
+/* dark theme overrides */
+[data-theme="dark"]{
+  --bg: #0b0b0b;
+  --text: #e6e6e6;
+  --card: #111;
+  --muted: #9a9a9a;
+}
+
+/* layout basics */
+*{box-sizing:border-box}
+html,body,#root{height:100%}
+body{
+  margin:0;
+  font-family: Inter, Arial, sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+
+/* Header / Navbar */
+.header{
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  background:linear-gradient(90deg,var(--primary),#8b0000);
+  color:white;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
+
+/* Sidebar */
+.app{
+  display:flex;
+  min-height:calc(100vh - 64px);
+}
+.sidebar{
+  width:260px;
+  background:var(--card);
+  border-right:1px solid rgba(0,0,0,0.06);
+  padding:12px;
+}
+.main{
+  flex:1;
+  padding:16px;
+}
+
+/* responsive: collapse sidebar on small screens */
+@media (max-width:800px){
+  .sidebar{position:fixed;left:-320px;top:64px;width:240px;height:calc(100vh - 64px);transition:left .25s;box-shadow:0 10px 30px rgba(0,0,0,0.3)}
+  .sidebar.open{left:0}
+  .main{padding:12px}
+}
+
+/* Cards */
+.card{
+  background:var(--card);
+  border-radius:8px;
+  padding:14px;
+  box-shadow:0 4px 8px rgba(0,0,0,0.06);
+  margin-bottom:12px;
+}
+
+/* Buttons */
+.btn{display:inline-block;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+.btn-primary{background:var(--primary);color:white}
+.btn-ghost{background:transparent;border:1px solid rgba(0,0,0,0.08)}
+
+/* small utility */
+.flex{display:flex;gap:8px;align-items:center}
+.logo{
+  display:flex;align-items:center;gap:8px;font-weight:700
+}
+.logo img{width:36px;height:36px;border-radius:6px}
+
+/* form styles */
+.form-row{display:flex;flex-direction:column;margin-bottom:8px}
+.input{padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.12);background:transparent;color:var(--text)}
+.label{font-size:13px;color:var(--muted);margin-bottom:6px;font-weight:600}

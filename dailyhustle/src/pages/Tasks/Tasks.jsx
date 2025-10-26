@@ -1,480 +1,207 @@
-// src/pages/Tasks/Tasks.jsx
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-
-import ModalTask from "../../components/ModalTask";
-import { useTheme } from "../../context/ThemeContext";
-import { useUserData } from "../../context/UserDataContext";
-import { GeneralContext } from "../../context/GeneralContext";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
+import { Pagination } from "react-bootstrap";
+import { useAppData } from "../../context/App/AppDataContext";
+import { useTheme } from "../../hooks/useThemeContext";
+import ModalTask from "../../components/Modal/ModalTask";
 
 export default function Tasks() {
-    const navigate = useNavigate();
-    const { theme } = useTheme();
-    const { userData, apply } = useUserData();
-    const { tasks: alltasks } = useContext(GeneralContext);
+  const { theme } = useTheme();
+  const { userData, tasks, onApplyFunc } = useAppData();
 
-    const [selected, setSelected] = useState(null);
-    const [activeTab, setActiveTab] = useState("find");
-    const [search, setSearch] = useState("");
-    const [filter, setFilter] = useState("All");
-    // ✅ NEW: Pagination State
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 5; // Show 5 tasks per page
+  const [activeTab, setActiveTab] = useState("available");
+  const [filteredTasks, setFilteredTasks] = useState([]);
+  const [showModal, setShowModal] = useState(false);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [page, setPage] = useState(1);
+  const perPage = 6;
 
-    const isDark = theme === "dark";
+  const isDark = theme === "dark";
+  const palette = useMemo(
+    () => ({
+      bg: isDark ? "#121212" : "#f8f9fa",
+      cardBg: isDark ? "#1c1c1e" : "#fff",
+      text: isDark ? "#f8f9fa" : "#212529",
+      label: isDark ? "#adb5bd" : "#6c757d",
+      red: "var(--dh-red)",
+      redHover: "#c92b2b",
+    }),
+    [isDark]
+  );
 
-    // awodaily Theme colors
-    const primary = "#198754"; // Forest Green for awodaily
-    // const secondary = "#0d6efd";
-    const cardBg = isDark ? "#1c1c1e" : "#ffffff";
-    const containerBg = isDark ? "#121212" : "#f8f9fa";
-    const textColor = isDark ? "#f8f9fa" : "#212529";
-    const labelColor = isDark ? "#adb5bd" : "#6c757d";
-    const buttonActiveBg = primary;
-    const buttonInactiveBg = isDark ? "#343a40" : "#e9ecef";
-    const buttonActiveBorder = isDark ? "#20c997" : "#198754";
-
-    // ✅ NOW USING REAL CONTEXT DATA
-    const myTasks = userData?.myTasks || [];
-
-    // --- Displayed Tasks ---
-    const displayedTasks = activeTab === "find" ? alltasks : myTasks;
-
-    // --- Search + Filter ---
-    const filteredTasks = displayedTasks
-        .filter((task) =>
-            task.title.toLowerCase().includes(search.toLowerCase())
+  // Filter tasks based on active tab
+  useEffect(() => {
+    if (activeTab === "available") {
+      // Filter out tasks you have applied for and are neither rejected nor not_attempted
+      setFilteredTasks(
+        tasks.filter(
+          (task) =>
+            !userData.tasks?.some(
+              (myTask) =>
+                myTask.id === task.id &&
+                myTask.status !== "rejected" &&
+                myTask.status !== "not_attempted"
+            )
         )
-        .sort((a, b) => {
-            if (filter === "Highest Paying") return b.payout - a.payout;
-            if (filter === "Newest")
-                return new Date(b.dateAdded) - new Date(a.dateAdded);
-            if (filter === "Workers Needed") return b.slots - a.slots;
-            return 0;
-        });
+      );
+    } else {
+      setFilteredTasks(userData.tasks || []);
+    }
+    setPage(1);
+  }, [activeTab, tasks, userData.tasks]);
 
-    // ✅ NEW: Pagination Logic
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentTasks = filteredTasks.slice(indexOfFirstItem, indexOfLastItem);
-    const totalPages = Math.ceil(filteredTasks.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredTasks.length / perPage);
+  const visible = filteredTasks.slice((page - 1) * perPage, page * perPage);
 
-    const paginate = (pageNumber) => {
-        setCurrentPage(pageNumber);
-        // Scroll to top of tasks list
-        document.querySelector(".tasks-table")?.scrollIntoView({
-            behavior: "smooth",
-        });
-    };
+  const handleApply = useCallback(
+    (task) => {
+      onApplyFunc(task);
+      setShowModal(false);
+    },
+    [onApplyFunc]
+  );
 
-    // --- Handle Apply ---
-    const handleApply = (task) => {
-        if (!userData?.isAuthenticated) {
-            toast.error("Please log in to apply for tasks!", {
-                position: "top-center",
-            });
-            navigate("/login");
-            return;
-        }
+  const paginationStyle = `
+    .pagination .page-item .page-link {
+      color: var(--dh-red);
+      border-radius: 50%;
+      margin: 0 3px;
+      border: 1px solid var(--dh-red);
+    }
+    .pagination .page-item.active .page-link {
+      background-color: var(--dh-red);
+      color: #fff;
+      border-color: var(--dh-red);
+    }
+    .pagination .page-item .page-link:hover {
+      background-color: #c92b2b;
+      color: #fff;
+      border-color: #c92b2b;
+    }
+  `;
 
-        if (!userData?.kycVerified) {
-            toast.warning(
-                <div className="d-flex flex-column gap-2">
-                    <div className="d-flex align-items-center gap-2">
-                        <i className="bi bi-exclamation-triangle-fill fs-5 text-warning"></i>
-                        <div>
-                            <strong>Action Required:</strong> Complete your KYC
-                            verification
-                        </div>
-                    </div>
-                    <div>
-                        Verify your account to unlock earning opportunities on
-                        awodaily.
-                    </div>
-                    <button
-                        className="btn btn-sm btn-outline-warning fw-semibold"
-                        onClick={() => {
-                            navigate("/kyc");
-                            toast.dismiss();
-                        }}
-                    >
-                        Verify Now
-                    </button>
-                </div>,
-                { position: "top-center", autoClose: 6000 }
-            );
-            return;
-        }
+  return (
+    <div
+      className="container-fluid py-4 px-3 min-vh-100"
+      style={{ background: palette.bg, color: palette.text }}
+    >
+      <style>{paginationStyle}</style>
+      <h2 className="text-center fw-bold mb-4" style={{ color: palette.red }}>
+        Tasks
+      </h2>
 
-        apply(task.id);
-        toast.success(
-            <div className="d-flex align-items-center gap-2">
-                <i className="bi bi-check-circle-fill text-success"></i>
-                <span>
-                    Task applied successfully! Awaiting approval on awodaily.
-                </span>
-            </div>,
-            { position: "top-center" }
-        );
-        setSelected(null);
-    };
-
-    return (
-        <div
-            className="tasks-container p-3"
+      {/* Tabs */}
+      <div className="d-flex justify-content-center mb-4">
+        {["available", "myTasks"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            className={`btn mx-2 rounded-pill ${
+              activeTab === tab ? "text-white" : ""
+            }`}
             style={{
-                backgroundColor: containerBg,
-                color: textColor,
-                minHeight: "100vh",
-                transition: "background-color 0.3s ease, color 0.3s ease",
+              backgroundColor: activeTab === tab ? palette.red : "transparent",
+              color: activeTab === tab ? "#fff" : palette.label,
+              border: `1px solid ${palette.red}`,
+              transition: "all 0.3s ease",
             }}
-        >
-            {/* ✅ NEW: Breadcrumbs */}
-            <nav aria-label="breadcrumb" className="mb-3">
-                <ol
-                    className="breadcrumb breadcrumb-sm mb-0"
-                    style={{
-                        backgroundColor: "transparent",
-                        padding: "0.25rem 0",
-                    }}
-                >
-                    <li className="breadcrumb-item">
-                        <a
-                            href="/"
-                            style={{ color: primary, textDecoration: "none" }}
-                        >
-                            <i className="bi bi-house-door me-1"></i>dailyhustle
-                        </a>
-                    </li>
-                    <li
-                        className="breadcrumb-item active"
-                        aria-current="page"
-                        style={{ color: labelColor }}
-                    >
-                        {activeTab === "find" ? "Find Tasks" : "My Tasks"}
-                    </li>
-                </ol>
-            </nav>
+          >
+            {tab === "available" ? "Available Tasks" : "My Tasks"}
+          </button>
+        ))}
+      </div>
 
-            {/* awodaily Header */}
-            <div className="d-flex align-items-center justify-content-between mb-4">
-                <h1 className="fw-bold mb-0" style={{ color: primary }}>
-                    {activeTab === "find" ? "Find Tasks" : "My Tasks"}
-                </h1>
-                <div className="text-end">
-                    <small style={{ color: labelColor }}>
-                        Balance: ₦{userData?.balance?.toLocaleString() || "0"}
-                    </small>
+      {/* List */}
+      {visible.length ? (
+        visible.map((t) => (
+          <div
+            key={t.id}
+            className="p-3 mb-3 rounded shadow-sm"
+            style={{
+              backgroundColor: palette.cardBg,
+              border: "1px solid rgba(0,0,0,0.05)",
+            }}
+          >
+            <div className="d-flex justify-content-between align-items-center flex-wrap">
+              <div className="flex-grow-1">
+                <h6 className="fw-bold mb-1">{t.title}</h6>
+                <p
+                  className="small text-uppercase mb-1"
+                  style={{ color: palette.label }}
+                >
+                  {t.category}
+                </p>
+                <p className="small mb-2">{t.description}</p>
+                <div className="d-flex flex-wrap gap-3 small">
+                  <span style={{ color: palette.red }}>
+                    Reward: ₦{t.payout?.toLocaleString()}
+                  </span>
+                  <span style={{ color: palette.label }}>
+                    Slots: {t.completedSlots}/{t.slots}
+                  </span>
+                  {t.closed && (
+                    <span className="text-danger small">Closed Review</span>
+                  )}
                 </div>
+              </div>
+              <button
+                className="btn fw-bold rounded-pill text-white"
+                style={{
+                  backgroundColor: palette.red,
+                  minWidth: "130px",
+                  border: "none",
+                }}
+                onClick={() => {
+                  setSelectedTask(t);
+                  setShowModal(true);
+                }}
+              >
+                View Details
+              </button>
             </div>
-
-            {/* awodaily Tabs */}
-            <div className="d-flex gap-2 mb-3">
-                {["find", "my"].map((tab) => (
-                    <button
-                        key={tab}
-                        className="btn btn-sm fw-bold"
-                        style={{
-                            backgroundColor:
-                                activeTab === tab
-                                    ? buttonActiveBg
-                                    : buttonInactiveBg,
-                            color: activeTab === tab ? "#fff" : textColor,
-                            border:
-                                activeTab === tab
-                                    ? `2px solid ${buttonActiveBorder}`
-                                    : "none",
-                            borderRadius: "8px",
-                            padding: "0.5rem 1rem",
-                            transition: "all 0.3s ease",
-                        }}
-                        onClick={() => {
-                            setActiveTab(tab);
-                            setCurrentPage(1); // Reset to page 1
-                        }}
-                    >
-                        {tab === "find" ? "Find Tasks" : "My Tasks"}
-                        {tab === "my" && myTasks.length > 0 && (
-                            <span className="ms-1 badge bg-secondary">
-                                {myTasks.length}
-                            </span>
-                        )}
-                    </button>
-                ))}
-            </div>
-
-            {/* Search + Filter */}
-            <div
-                className="filter-card mb-3 p-3 d-flex flex-wrap gap-2 align-items-center rounded shadow-sm"
-                style={{ backgroundColor: cardBg }}
-            >
-                <input
-                    className="form-control form-control-sm flex-grow-1"
-                    placeholder={`Search ${
-                        activeTab === "find" ? "tasks" : "my tasks"
-                    } on awodaily...`}
-                    value={search}
-                    onChange={(e) => {
-                        setSearch(e.target.value);
-                        setCurrentPage(1); // Reset pagination on search
-                    }}
-                    style={{
-                        backgroundColor: isDark ? "#2c2c2e" : "#fff",
-                        color: textColor,
-                        borderColor: isDark ? "#495057" : "#ced4da",
-                    }}
-                />
-                <select
-                    className="form-select form-select-sm"
-                    value={filter}
-                    onChange={(e) => {
-                        setFilter(e.target.value);
-                        setCurrentPage(1); // Reset pagination on filter
-                    }}
-                    style={{
-                        width: "220px",
-                        backgroundColor: isDark ? "#2c2c2e" : "#fff",
-                        color: textColor,
-                        borderColor: isDark ? "#495057" : "#ced4da",
-                    }}
-                >
-                    {["All", "Highest Paying", "Newest", "Workers Needed"].map(
-                        (option) => (
-                            <option key={option}>{option}</option>
-                        )
-                    )}
-                </select>
-            </div>
-
-            {/* ✅ NEW: Tasks Counter */}
-            <div className="mb-3" style={{ color: labelColor }}>
-                <small>
-                    Showing {currentTasks.length} of {filteredTasks.length}{" "}
-                    tasks
-                    {activeTab === "my" && " • "}
-                    {activeTab === "my" && `${myTasks.length} total applied`}
-                </small>
-            </div>
-
-            {/* Task List */}
-            <div
-                className="tasks-table"
-                style={{ maxHeight: "60vh", overflowY: "auto" }}
-            >
-                {currentTasks.length ? (
-                    currentTasks.map((t) => {
-                        const progress = Math.min(
-                            ((t.completedSlots || 0) / (t.slots || 1)) * 100,
-                            100
-                        );
-
-                        return (
-                            <div
-                                key={t.id}
-                                className="p-3 mb-3 rounded shadow-sm d-flex justify-content-between align-items-center"
-                                style={{
-                                    backgroundColor: cardBg,
-                                    cursor:
-                                        activeTab === "find"
-                                            ? "pointer"
-                                            : "default",
-                                    borderLeft: `5px solid ${t.color}`,
-                                    transition: "transform 0.2s ease",
-                                }}
-                                onClick={() =>
-                                    activeTab === "find" && setSelected(t)
-                                }
-                            >
-                                <div className="flex-grow-1 me-3">
-                                    <h6 className="fw-bold mb-1">{t.title}</h6>
-                                    <small style={{ color: labelColor }}>
-                                        {t.category} • {t.completedSlots}/
-                                        {t.slots} Done
-                                    </small>
-                                    <div
-                                        className="progress mt-1"
-                                        style={{
-                                            height: "6px",
-                                            borderRadius: "4px",
-                                        }}
-                                    >
-                                        <div
-                                            className="progress-bar"
-                                            role="progressbar"
-                                            style={{
-                                                width: `${progress}%`,
-                                                backgroundColor: t.color,
-                                            }}
-                                            aria-valuenow={progress}
-                                            aria-valuemin="0"
-                                            aria-valuemax="100"
-                                        ></div>
-                                    </div>
-                                </div>
-
-                                <div className="text-end">
-                                    <div className="fw-bold text-success mb-2">
-                                        ₦{t.payout.toLocaleString()}
-                                    </div>
-                                    {activeTab === "find" ? (
-                                        <button
-                                            className="btn btn-sm btn-success fw-bold"
-                                            style={{ backgroundColor: primary }}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                setSelected(t);
-                                            }}
-                                        >
-                                            Apply Now
-                                        </button>
-                                    ) : (
-                                        <span
-                                            className={`badge fw-semibold ${
-                                                t.status === "Approved"
-                                                    ? "bg-success"
-                                                    : t.status ===
-                                                      "Pending Approval"
-                                                    ? "bg-warning text-dark"
-                                                    : "bg-danger"
-                                            }`}
-                                        >
-                                            {t.status}
-                                        </span>
-                                    )}
-                                </div>
-                            </div>
-                        );
-                    })
-                ) : (
-                    <div
-                        className="text-center py-5"
-                        style={{ color: labelColor }}
-                    >
-                        {activeTab === "find" ? (
-                            <>
-                                <i className="bi bi-search fs-1 mb-3 opacity-50"></i>
-                                <p className="mb-0">
-                                    No tasks found matching your search.
-                                </p>
-                                <small>
-                                    Try adjusting your filters or search terms.
-                                </small>
-                            </>
-                        ) : (
-                            <>
-                                <i className="bi bi-clipboard-x fs-1 mb-3 opacity-50"></i>
-                                <p className="mb-2">
-                                    You haven't applied to any tasks yet!
-                                </p>
-                                <button
-                                    className="btn btn-success fw-semibold"
-                                    style={{ backgroundColor: primary }}
-                                    onClick={() => setActiveTab("find")}
-                                >
-                                    <i className="bi bi-plus-circle me-2"></i>
-                                    Find Tasks
-                                </button>
-                            </>
-                        )}
-                    </div>
-                )}
-            </div>
-
-            {/* ✅ NEW: Pagination */}
-            {totalPages > 1 && (
-                <div
-                    className="d-flex justify-content-between align-items-center mt-4 pt-3 border-top"
-                    style={{ borderColor: isDark ? "#343a40" : "#dee2e6" }}
-                >
-                    {/* Pages Info */}
-                    <small style={{ color: labelColor }}>
-                        Page {currentPage} of {totalPages}
-                    </small>
-
-                    {/* Pagination Buttons */}
-                    <nav aria-label="Task pagination">
-                        <ul className="pagination pagination-sm mb-0">
-                            <li
-                                className={`page-item ${
-                                    currentPage === 1 ? "disabled" : ""
-                                }`}
-                            >
-                                <button
-                                    className="page-link"
-                                    onClick={() => paginate(currentPage - 1)}
-                                    disabled={currentPage === 1}
-                                    style={{
-                                        color: primary,
-                                        borderColor: primary,
-                                        backgroundColor: "transparent",
-                                    }}
-                                >
-                                    <i className="bi bi-chevron-left"></i>
-                                </button>
-                            </li>
-
-                            {/* Page Numbers */}
-                            {[...Array(totalPages)].map((_, i) => (
-                                <li
-                                    key={i + 1}
-                                    className={`page-item ${
-                                        currentPage === i + 1 ? "active" : ""
-                                    }`}
-                                >
-                                    <button
-                                        className="page-link"
-                                        onClick={() => paginate(i + 1)}
-                                        style={{
-                                            color:
-                                                currentPage === i + 1
-                                                    ? "#fff"
-                                                    : primary,
-                                            backgroundColor:
-                                                currentPage === i + 1
-                                                    ? primary
-                                                    : "transparent",
-                                            borderColor: primary,
-                                        }}
-                                    >
-                                        {i + 1}
-                                    </button>
-                                </li>
-                            ))}
-
-                            <li
-                                className={`page-item ${
-                                    currentPage === totalPages ? "disabled" : ""
-                                }`}
-                            >
-                                <button
-                                    className="page-link"
-                                    onClick={() => paginate(currentPage + 1)}
-                                    disabled={currentPage === totalPages}
-                                    style={{
-                                        color: primary,
-                                        borderColor: primary,
-                                        backgroundColor: "transparent",
-                                    }}
-                                >
-                                    <i className="bi bi-chevron-right"></i>
-                                </button>
-                            </li>
-                        </ul>
-                    </nav>
-                </div>
-            )}
-
-            {/* Task Modal */}
-            {selected && (
-                <ModalTask
-                    task={selected}
-                    show={!!selected}
-                    onClose={() => setSelected(null)}
-                    onApply={handleApply}
-                />
-            )}
+          </div>
+        ))
+      ) : (
+        <div className="text-center py-5" style={{ color: palette.label }}>
+          No tasks available.
         </div>
-    );
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="d-flex justify-content-center mt-4">
+          <Pagination style={{ color: palette.red }}>
+            <Pagination.Prev
+              onClick={() => setPage(page - 1)}
+              disabled={page === 1}
+            />
+            {[...Array(totalPages)].map((_, i) => (
+              <Pagination.Item
+                key={i}
+                active={i + 1 === page}
+                onClick={() => setPage(i + 1)}
+              >
+                {i + 1}
+              </Pagination.Item>
+            ))}
+            <Pagination.Next
+              onClick={() => setPage(page + 1)}
+              disabled={page === totalPages}
+            />
+          </Pagination>
+        </div>
+      )}
+
+      {/* MODAL */}
+      {selectedTask && (
+        <ModalTask
+          task={selectedTask}
+          show={showModal}
+          onClose={() => setShowModal(false)}
+          onApply={activeTab === "available" ? handleApply : undefined}
+          previewOnly={activeTab !== "available"}
+          isReview={selectedTask.closed}
+        />
+      )}
+    </div>
+  );
 }
