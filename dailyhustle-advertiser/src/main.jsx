@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import ThemeProvider from "./context/ThemeContext.jsx";
+import AdvertiserDataProvider from "./context/Advertiser/AdvertiserDataProvider.jsx";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App.jsx";
 import ErrorBoundary from "./components/ErrorBoundary.jsx";
@@ -13,22 +14,22 @@ import "react-toastify/dist/ReactToastify.css";
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ThemeProvider>
-      <BrowserRouter
-        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-      >
-        <ErrorBoundary>
-          <App />
-          <ToastContainer
-            position="top-right"
-            autoClose={3000}
-            hideProgressBar={false}
-            closeOnClick
-            pauseOnHover
-            draggable
-            theme="colored"
-          />
-        </ErrorBoundary>
-      </BrowserRouter>
+      <AdvertiserDataProvider>
+        <BrowserRouter>
+          <ErrorBoundary>
+            <App />
+            <ToastContainer
+              position="top-right"
+              autoClose={3000}
+              hideProgressBar={false}
+              closeOnClick
+              pauseOnHover
+              draggable
+              theme="colored"
+            />
+          </ErrorBoundary>
+        </BrowserRouter>
+      </AdvertiserDataProvider>
     </ThemeProvider>
   </React.StrictMode>
 );

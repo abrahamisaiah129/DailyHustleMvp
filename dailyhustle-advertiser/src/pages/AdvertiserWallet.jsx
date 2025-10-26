@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { useAdvertiserData } from "../context/Advertiser/AdvertiserDataContext";
-import { useTheme } from "../../../dailyhustle/src/hooks/useThemeContext";
+import { useTheme } from "../context/ThemeContext";
+
 
 export default function AdvertiserWallet() {
   const { theme } = useTheme();

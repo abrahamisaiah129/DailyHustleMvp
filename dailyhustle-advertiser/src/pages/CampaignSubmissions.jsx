@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { useTheme } from "../../hooks/useThemeContext";
+import { useTheme } from "../context/ThemeContext";
 import { useAdvertiserData } from "../../context/Advertiser/AdvertiserDataContext";
 
 export default function CampaignSubmissions({ campaignId }) {

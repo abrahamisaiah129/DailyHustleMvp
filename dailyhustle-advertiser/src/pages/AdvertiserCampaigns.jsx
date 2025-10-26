@@ -2,7 +2,8 @@ import { useState, useMemo } from "react";
 import { Pagination } from "react-bootstrap";
 // You'd need to create/use an AdvertiserDataContext similar to AppDataContext
 import { useAdvertiserData } from "../context/Advertiser/AdvertiserDataContext";
-import { useTheme } from "../../../dailyhustle/src/hooks/useThemeContext";
+import { useTheme } from "../context/ThemeContext";
+
 // Modal for campaign details/edit/create
 import ModalCampaign from "../components/ModalCampaign";
 
