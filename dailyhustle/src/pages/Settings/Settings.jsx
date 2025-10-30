@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
-import { useAppData } from "../../context/App/AppDataContext";
+import { useAppData } from "../../hooks/AppDataContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
-  const { userData, updateUserData, addNotification, recordTaskHistory } = useAppData();
+  const { userData, updateUserData, addNotification, recordTaskHistory } =
+    useAppData();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("profile");
@@ -29,6 +30,7 @@ export default function Settings() {
     phone = "+234 800 000 0000",
     kyc = {},
     notificationsEnabled = true,
+    // eslint-disable-next-line no-unused-vars
     autoWithdraw = false,
   } = userData || {};
 
@@ -256,10 +258,7 @@ export default function Settings() {
           }}
           onClick={() => toast.info("Change Password feature coming soon!")}
         >
-          <i
-            className="bi bi-key fs-3 mb-3"
-            style={{ color: primary }}
-          ></i>
+          <i className="bi bi-key fs-3 mb-3" style={{ color: primary }}></i>
           <h6 className="fw-bold mb-2" style={{ color: textColor }}>
             Change Password
           </h6>
@@ -332,7 +331,9 @@ export default function Settings() {
                   checked={notificationsEnabled}
                   onChange={toggleNotifications}
                   style={{
-                    backgroundColor: notificationsEnabled ? primary : labelColor,
+                    backgroundColor: notificationsEnabled
+                      ? primary
+                      : labelColor,
                   }}
                 />
               </div>
@@ -346,7 +347,11 @@ export default function Settings() {
   return (
     <div
       className="p-4"
-      style={{ backgroundColor: containerBg, color: textColor, minHeight: "100vh" }}
+      style={{
+        backgroundColor: containerBg,
+        color: textColor,
+        minHeight: "100vh",
+      }}
     >
       {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -381,7 +386,9 @@ export default function Settings() {
             style={{
               backgroundColor: activeTab === tab.id ? primary : "transparent",
               color: activeTab === tab.id ? "#fff" : textColor,
-              border: `1px solid ${activeTab === tab.id ? primary : borderColor}`,
+              border: `1px solid ${
+                activeTab === tab.id ? primary : borderColor
+              }`,
             }}
             onClick={() => setActiveTab(tab.id)}
           >

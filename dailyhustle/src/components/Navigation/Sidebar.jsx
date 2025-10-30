@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext"; // Theme hook (stay as is)
-import { useAppData } from "../../context/App/AppDataContext"; // ✅ Updated hook
+import { useAppData } from "../../hooks/AppDataContext"; // ✅ Updated hook
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);

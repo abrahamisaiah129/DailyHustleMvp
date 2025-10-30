@@ -2,7 +2,7 @@ import React, { useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import { AdvertiserDataContext } from "./AdvertiserDataContext";
 
-// Demo campaigns
+// Demo Data for initial state
 const DEFAULT_CAMPAIGNS = [
   {
     id: "c1",
@@ -53,12 +53,14 @@ const DEFAULT_SUBMISSIONS = [
   },
 ];
 
+// The Advertiser Data Provider for your dashboard
 export default function AdvertiserDataProvider({ children }) {
+  // State
   const [campaigns, setCampaigns] = useState(DEFAULT_CAMPAIGNS);
   const [wallet, setWallet] = useState(DEFAULT_WALLET);
   const [submissions, setSubmissions] = useState(DEFAULT_SUBMISSIONS);
 
-  // Actions
+  // Toast Notification Utility
   const showNotification = useCallback((msg, type = "info") => {
     toast[type](msg, {
       autoClose: 2000,
@@ -67,6 +69,7 @@ export default function AdvertiserDataProvider({ children }) {
     });
   }, []);
 
+  // Create a new campaign
   const onCreateCampaign = useCallback(
     (campaign) => {
       setCampaigns((prev) => [
@@ -78,6 +81,7 @@ export default function AdvertiserDataProvider({ children }) {
     [showNotification]
   );
 
+  // Edit/update a campaign
   const onEditCampaign = useCallback(
     (updated) => {
       setCampaigns((prev) =>
@@ -88,11 +92,17 @@ export default function AdvertiserDataProvider({ children }) {
     [showNotification]
   );
 
-  const getSubmissionsForCampaign = useCallback(
-    (id) => submissions.filter((s) => s.campaignId === id),
-    [submissions]
+  // Delete a campaign
+  const onDeleteCampaign = useCallback(
+    (id) => {
+      setCampaigns((prev) => prev.filter((c) => c.id !== id));
+      setSubmissions((prev) => prev.filter((s) => s.campaignId !== id));
+      showNotification("Campaign deleted.", "warning");
+    },
+    [showNotification]
   );
 
+  // Approve or reject a worker's submission
   const onApproveSubmission = useCallback(
     (subId) => {
       setSubmissions((prev) =>
@@ -113,6 +123,13 @@ export default function AdvertiserDataProvider({ children }) {
     [showNotification]
   );
 
+  // Fetch submissions for a given campaign
+  const getSubmissionsForCampaign = useCallback(
+    (id) => submissions.filter((s) => s.campaignId === id),
+    [submissions]
+  );
+
+  // Wallet/funds management
   const onAddFunds = useCallback(() => {
     setWallet((w) => ({
       ...w,
@@ -130,7 +147,44 @@ export default function AdvertiserDataProvider({ children }) {
     showNotification("Funds added!", "success");
   }, [showNotification]);
 
-  // Memo context value
+  // Transfer funds when campaign is launched/spent (for demo)
+  const onSpendFromCampaign = useCallback(
+    (amount, campaignId) => {
+      setWallet((w) => ({
+        ...w,
+        balance: w.balance - amount,
+        transactions: [
+          {
+            id: Date.now().toString(),
+            type: "Payment",
+            amount: -amount,
+            date: new Date().toISOString(),
+          },
+          ...w.transactions,
+        ],
+      }));
+      setCampaigns((prev) =>
+        prev.map((c) =>
+          c.id === campaignId ? { ...c, spent: (c.spent || 0) + amount } : c
+        )
+      );
+      showNotification("Campaign funds spent.", "info");
+    },
+    [showNotification]
+  );
+
+  // Get campaigns by status/category for dashboard widgets or analytics
+  const filterCampaigns = useCallback(
+    ({ status, category }) =>
+      campaigns.filter(
+        (c) =>
+          (status ? c.status === status : true) &&
+          (category ? c.category === category : true)
+      ),
+    [campaigns]
+  );
+
+  // Final context value
   const contextValue = useMemo(
     () => ({
       campaigns,
@@ -138,10 +192,16 @@ export default function AdvertiserDataProvider({ children }) {
       submissions,
       onCreateCampaign,
       onEditCampaign,
+      onDeleteCampaign,
       getSubmissionsForCampaign,
       onApproveSubmission,
       onRejectSubmission,
       onAddFunds,
+      onSpendFromCampaign,
+      filterCampaigns,
+      setCampaigns,
+      setWallet,
+      setSubmissions,
     }),
     [
       campaigns,
@@ -149,10 +209,13 @@ export default function AdvertiserDataProvider({ children }) {
       submissions,
       onCreateCampaign,
       onEditCampaign,
+      onDeleteCampaign,
       getSubmissionsForCampaign,
       onApproveSubmission,
       onRejectSubmission,
       onAddFunds,
+      onSpendFromCampaign,
+      filterCampaigns,
     ]
   );
 

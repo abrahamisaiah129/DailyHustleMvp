@@ -1,23 +1,25 @@
 import React, {
-  createContext,
+  // createContext,
   useState,
   useCallback,
   useMemo,
-  useContext,
+  // useContext,
   useEffect,
 } from "react";
 import { toast } from "react-toastify";
-
-export const AppDataContext = createContext(null);
-export const useAppData = () => {
-  const ctx = useContext(AppDataContext);
-  if (!ctx) throw new Error("useAppData must be used within <AppDataProvider>");
-  return ctx;
-};
+import { AppDataContext } from "../../hooks/AppDataContext";
+// // eslint-disable-next-line react-refresh/only-export-components
+// export const AppDataContext = createContext(null);
+// // eslint-disable-next-line react-refresh/only-export-components
+// export const useAppData = () => {
+//   const ctx = useContext(AppDataContext);
+//   if (!ctx) throw new Error("useAppData must be used within <AppDataProvider>");
+//   return ctx;
+// };
 
 export default function AppDataProvider({ children }) {
   // ============================================================
-  // ✅ Default user + verified KYC object (always true)
+  // ✅ Default user + verified KYC object (always true)
   // ============================================================
   const DEFAULT_USER_DATA = {
     username: "tester",
@@ -30,7 +32,7 @@ export default function AppDataProvider({ children }) {
   };
 
   // ============================================================
-  // ✅ Unified open + closed review tasks
+  // ✅ Unified open + closed review tasks
   // ============================================================
   const DEFAULT_TASKS = [
     {
@@ -111,7 +113,7 @@ export default function AppDataProvider({ children }) {
       slots: 25,
       completedSlots: 25,
       closed: true,
-      description: "Submit a Play Store review using the text below.",
+      description: "Submit a Play Store review using the text below.",
       link: "https://play.google.com/store/apps/details?id=com.dailyhustle.app",
       reviewText:
         "Great app! Loved the effortless earning system. Payments are legit and simple to withdraw. ⭐⭐⭐⭐⭐",
@@ -124,7 +126,7 @@ export default function AppDataProvider({ children }) {
       slots: 20,
       completedSlots: 20,
       closed: true,
-      description: "Leave a positive review on App Store using our app link.",
+      description: "Leave a positive review on App Store using our app link.",
       link: "https://apps.apple.com/ng/app/dailyhustle/id1234567",
       reviewText:
         "Fantastic service! I earn daily without hassle. Safe and easy to use! ⭐⭐⭐⭐⭐",
@@ -137,7 +139,7 @@ export default function AppDataProvider({ children }) {
       slots: 35,
       completedSlots: 35,
       closed: true,
-      description: "Leave a review about your experience on TrustPilot.",
+      description: "Leave a review about your experience on TrustPilot.",
       link: "https://trustpilot.com/review/dailyhustle.com",
       reviewText:
         "Very reliable platform, no delays in payout, excellent support. ⭐⭐⭐⭐⭐",
@@ -150,10 +152,10 @@ export default function AppDataProvider({ children }) {
       slots: 50,
       completedSlots: 50,
       closed: true,
-      description: "Tweet about your experience earning with Daily Hustle.",
+      description: "Tweet about your experience earning with Daily Hustle.",
       link: "https://twitter.com/dailyhustleapp",
       reviewText:
-        "Been using Daily Hustle for months — awesome app for side hustle! 💸 #DailyHustleApp ⭐⭐⭐⭐⭐",
+        "Been using Daily Hustle for months — awesome app for side hustle! 💸 #DailyHustleApp ⭐⭐⭐⭐⭐",
     },
     {
       id: "t11",
@@ -163,10 +165,10 @@ export default function AppDataProvider({ children }) {
       slots: 40,
       completedSlots: 40,
       closed: true,
-      description: "Comment on our Nairaland thread about your experience.",
+      description: "Comment on our Nairaland thread about your experience.",
       link: "https://nairaland.com/dailyhustle",
       reviewText:
-        "Daily Hustle pays 100%. No stress, no scam. It’s genuine. ⭐⭐⭐⭐⭐",
+        "Daily Hustle pays 100%. No stress, no scam. It’s genuine. ⭐⭐⭐⭐⭐",
     },
     {
       id: "t12",
@@ -177,15 +179,15 @@ export default function AppDataProvider({ children }) {
       completedSlots: 40,
       closed: true,
       description:
-        "Reply on our Reddit thread with your feedback using the provided format.",
+        "Reply on our Reddit thread with your feedback using the provided format.",
       link: "https://reddit.com/r/dailyhustleapp",
       reviewText:
-        "Started with doubts, but now I earn daily and withdraw weekly! Legit hustle app. ⭐⭐⭐⭐⭐",
+        "Started with doubts, but now I earn daily and withdraw weekly! Legit hustle app. ⭐⭐⭐⭐⭐",
     },
   ];
 
   // ============================================================
-  // 🔒 State & Persistence
+  // 🔒 State & Persistence
   // ============================================================
   const [tasks, setTasks] = useState(
     JSON.parse(localStorage.getItem("dh_tasks")) || DEFAULT_TASKS
@@ -194,7 +196,7 @@ export default function AppDataProvider({ children }) {
     JSON.parse(localStorage.getItem("dh_user")) || DEFAULT_USER_DATA
   );
 
-  // ✅ Ensure verified KYC object persists and updates automatically
+  // ✅ Ensure verified KYC object persists and updates automatically
   useEffect(() => {
     if (!userData.kyc || userData.kyc.status !== "verified") {
       const fixed = {
@@ -215,7 +217,7 @@ export default function AppDataProvider({ children }) {
   }, [userData]);
 
   // ============================================================
-  // ⚙️ Utilities & Actions
+  // ⚙️ Utilities & Actions
   // ============================================================
   const showNotification = useCallback((msg, type = "info") => {
     toast[type](msg, {
@@ -267,7 +269,7 @@ export default function AppDataProvider({ children }) {
   );
 
   // ============================================================
-  // 💾 Expose Context
+  // 💾 Expose Context
   // ============================================================
   const contextValue = useMemo(
     () => ({

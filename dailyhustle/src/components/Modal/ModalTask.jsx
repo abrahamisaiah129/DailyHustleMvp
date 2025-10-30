@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { useTheme } from "../../hooks/useThemeContext";
-import { useAppData } from "../../context/App/AppDataContext";
+import { useAppData } from "../../hooks/AppDataContext";
 
 export default function ModalTask({ task, show, onClose, onApply, isReview }) {
   const { theme } = useTheme();
@@ -21,7 +21,9 @@ export default function ModalTask({ task, show, onClose, onApply, isReview }) {
   const isEditingAllowed = !existingTask || isRejected;
 
   const [proofText, setProofText] = useState(existingTask?.proofText || "");
-  const [proofImage, setProofImage] = useState(existingTask?.proofImage || null);
+  const [proofImage, setProofImage] = useState(
+    existingTask?.proofImage || null
+  );
 
   // Handle image upload
   const handleImageUpload = (e) => {
@@ -91,14 +93,13 @@ export default function ModalTask({ task, show, onClose, onApply, isReview }) {
               Your Task Status:{" "}
               <span
                 style={{
-                  color:
-                    isPending
-                      ? "#ffc107"
-                      : isRejected
-                      ? "#e74c3c"
-                      : isApproved
-                      ? "#2ecc71"
-                      : "#adb5bd",
+                  color: isPending
+                    ? "#ffc107"
+                    : isRejected
+                    ? "#e74c3c"
+                    : isApproved
+                    ? "#2ecc71"
+                    : "#adb5bd",
                 }}
               >
                 {userStatus?.toUpperCase() || "N/A"}

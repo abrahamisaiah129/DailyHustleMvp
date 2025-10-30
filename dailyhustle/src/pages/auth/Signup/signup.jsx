@@ -1,15 +1,25 @@
-import React, { useState } from "react"; // ❌ REMOVED unused useEffect
+import React, { useState, useRef, useEffect } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
 
-const Signup = () => {
+const getPasswordStrength = (pw) => {
+  let score = 0;
+  if (!pw) return 0;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[a-z]/.test(pw)) score++;
+  if (/\d/.test(pw)) score++;
+  if (/[!@#$%^&*(),.?":{}|<>]/.test(pw)) score++;
+  return Math.min(score, 5);
+};
+const strengthLabels = ["Too Short", "Weak", "Fair", "Good", "Strong"];
+const strengthColors = ["#dc3545", "#ffc107", "#1ab7ea", "#198754", "#28a745"];
+
+export default function QuickSignup() {
+  const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [otp, setOtp] = useState("");
-  const [otpSent, setOtpSent] = useState(false);
-  const [otpVerified, setOtpVerified] = useState(false);
-  const [showOtp, setShowOtp] = useState(false);
 
   const [formData, setFormData] = useState({
     first_name: "",
@@ -23,302 +33,300 @@ const Signup = () => {
     country: "Ghana",
   });
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const [showPassword, setShowPassword] = useState(false);
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [otpVerified, setOtpVerified] = useState(false);
 
-  // Send OTP automatically when email field loses focus (onBlur)
-  const handleEmailBlur = async () => {
-    // ✅ REMOVED unused 'e' param
-    if (formData.email && !otpSent) {
-      setLoading(true);
-      try {
-        // First call: Send OTP via register endpoint
-        await axios.post(
-          "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/auths/users/register",
-          {
-            email: formData.email,
-            otp_type: "CREATE_ACCOUNT", // Assuming this triggers OTP
-          }
-        );
-        toast.success("✅ OTP sent to your email!");
-        setOtpSent(true);
-        setShowOtp(true);
-      } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to send OTP");
-      } finally {
-        setLoading(false);
-      }
+  const otpRefs = useRef([...Array(6)].map(() => React.createRef()));
+
+  useEffect(() => {
+    if (step === 1 && otpRefs.current[0].current) {
+      otpRefs.current[0].current.focus();
+    }
+  }, [step]);
+
+  // Step 1: Register and trigger otp
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    if (passwordStrength < 4) {
+      toast.error("Please choose a stronger password.");
+      return;
+    }
+    setLoading(true);
+    try {
+      await axios.post(
+        "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/auths/users/register",
+        formData
+      );
+      toast.success("Registration successful! OTP sent to your email.");
+      setTimeout(() => setStep(1), 600);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Registration failed.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // Verify OTP
+  // Step 2: Verify OTP
+  const handleOtpChange = (value, index) => {
+    if (!/^\d*$/.test(value)) return;
+    const newOtp = [...otp];
+    newOtp[index] = value.slice(-1);
+    setOtp(newOtp);
+    if (value && index < 5) otpRefs.current[index + 1].current?.focus();
+  };
+
+  const handleOtpKeyDown = (e, index) => {
+    if (e.key === "Backspace" && !otp[index] && index > 0)
+      otpRefs.current[index - 1].current?.focus();
+  };
+
   const handleVerifyOtp = async () => {
-    // ✅ REMOVED unused 'e' param
-    if (!otp || otp.length !== 6) return toast.error("Enter valid 6-digit OTP");
+    const otpCode = otp.join("");
+    if (otpCode.length !== 6) {
+      toast.error("Please enter all 6 digits.");
+      return;
+    }
     setLoading(true);
     try {
       const res = await axios.post(
         "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/auths/users/register/validate-token",
         {
-          verification_code: otp,
+          verification_code: otpCode,
           email: formData.email,
         }
       );
-      if (res.status === 200) {
-        toast.success("🎉 OTP verified successfully!");
-        setOtpVerified(true);
-      } else {
-        toast.error(res.data?.message || "Invalid OTP");
-      }
+      toast.success("Account verified! Welcome aboard! 🎉");
+      console.log(res.data);
+      setOtpVerified(true);
+      // Optionally: localStorage.setItem("token", res.data?.data?.token);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Invalid OTP");
+      toast.error(err.response?.data?.message || "Invalid or expired OTP.");
+      setOtp(["", "", "", "", "", ""]);
+      otpRefs.current[0].current?.focus();
     } finally {
       setLoading(false);
     }
   };
 
-  // Register with ALL fields
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    if (!otpVerified) return toast.error("Please verify OTP first");
-
-    // Validation
-    if (
-      !formData.first_name ||
-      !formData.last_name ||
-      !formData.username ||
-      !formData.phone ||
-      !formData.email ||
-      !formData.password
-    ) {
-      return toast.error("Please fill all fields");
-    }
-
-    setLoading(true);
-    try {
-      const payload = {
-        first_name: formData.first_name,
-        last_name: formData.last_name,
-        username: formData.username,
-        phone: formData.phone,
-        email: formData.email,
-        password: formData.password,
-        referral_code: formData.referral_code || "",
-        role: formData.role,
-        country: formData.country,
-      };
-
-      const res = await axios.post(
-        "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/auths/users/register",
-        payload
-      );
-
-      if (res.status === 201 || res.data.success) {
-        toast.success("🎉 Account created successfully!");
-        setTimeout(() => (window.location.href = "/login"), 2000);
-      } else {
-        toast.error(res.data?.message || "Signup failed");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Registration failed");
-    } finally {
-      setLoading(false);
-    }
-  };
+  const passwordStrength = getPasswordStrength(formData.password);
 
   return (
-    <div
-      className="d-flex justify-content-center align-items-center vh-100"
-      style={{
-        background: "linear-gradient(135deg, #ffffff, #ffe5e5)",
-        fontFamily: "Poppins, sans-serif",
-      }}
-    >
-      <div
-        className="card shadow-lg p-4"
-        style={{
-          maxWidth: "500px",
-          borderRadius: "16px",
-          borderTop: "5px solid #dc3545",
-        }}
-      >
-        <h2 className="fw-bold text-center mb-3 text-danger">Create Account</h2>
+    <>
+      <ToastContainer position="top-center" theme="colored" autoClose={3000} />
+      <div className="min-vh-100 d-flex align-items-center justify-content-center bg-gradient py-4 px-3">
+        <div
+          className="bg-white rounded-4 shadow-xl p-4 p-md-5 w-100"
+          style={{ maxWidth: "430px" }}
+        >
+          <div className="mb-4 text-center">
+            <span className="badge rounded-pill bg-danger fs-6 mb-1">
+              {step === 0 ? "Step 1 of 2" : "Step 2 of 2"}
+            </span>
+            <h3 className="fw-bold mt-2 mb-0">
+              {step === 0 ? "Sign Up" : "Verify OTP"}
+            </h3>
+          </div>
 
-        <form onSubmit={handleRegister}>
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-semibold">First Name</label>
+          {step === 0 && (
+            <form onSubmit={handleRegister}>
+              <div className="row g-3">
+                <div className="col-6">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="First Name"
+                    value={formData.first_name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, first_name: e.target.value })
+                    }
+                    required
+                    disabled={loading}
+                  />
+                </div>
+                <div className="col-6">
+                  <input
+                    type="text"
+                    className="form-control"
+                    placeholder="Last Name"
+                    value={formData.last_name}
+                    onChange={(e) =>
+                      setFormData({ ...formData, last_name: e.target.value })
+                    }
+                    required
+                    disabled={loading}
+                  />
+                </div>
+              </div>
               <input
                 type="text"
-                name="first_name"
-                className="form-control rounded-3 py-2"
-                value={formData.first_name}
-                onChange={handleChange}
+                className="form-control mt-3"
+                placeholder="Username"
+                value={formData.username}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    username: e.target.value.replace(/\s/g, "").toLowerCase(),
+                  })
+                }
+                required
+                minLength={3}
+                disabled={loading}
+              />
+              <input
+                type="tel"
+                className="form-control mt-3"
+                placeholder="Phone Number"
+                value={formData.phone}
+                onChange={(e) =>
+                  setFormData({ ...formData, phone: e.target.value })
+                }
                 required
                 disabled={loading}
               />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-semibold">Last Name</label>
               <input
-                type="text"
-                name="last_name"
-                className="form-control rounded-3 py-2"
-                value={formData.last_name}
-                onChange={handleChange}
+                type="email"
+                className="form-control mt-3"
+                placeholder="Email Address"
+                value={formData.email}
+                onChange={(e) =>
+                  setFormData({ ...formData, email: e.target.value })
+                }
                 required
                 disabled={loading}
               />
-            </div>
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Username</label>
-            <input
-              type="text"
-              name="username"
-              className="form-control rounded-3 py-2"
-              value={formData.username}
-              onChange={handleChange}
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Phone</label>
-            <input
-              type="tel"
-              name="phone"
-              className="form-control rounded-3 py-2"
-              value={formData.phone}
-              onChange={handleChange}
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <div className="mb-3 position-relative">
-            <label className="form-label fw-semibold">Email Address *</label>
-            <input
-              type="email"
-              name="email"
-              className={`form-control rounded-3 py-2 ${
-                otpSent ? "border-success" : ""
-              }`}
-              value={formData.email}
-              onChange={handleChange}
-              onBlur={handleEmailBlur}
-              required
-              disabled={loading || otpVerified}
-            />
-            {otpSent && (
-              <small className="text-success position-absolute bottom-0 end-0 me-2">
-                ✓ OTP Sent
-              </small>
-            )}
-          </div>
-
-          {/* OTP Verification - Shows after email blur */}
-          {showOtp && !otpVerified && (
-            <div className="mb-3">
-              <label className="form-label fw-semibold">
-                Enter OTP (sent to {formData.email})
-              </label>
-              <div className="input-group">
+              <div className="position-relative mt-3">
                 <input
-                  type="text"
-                  maxLength="6"
-                  className="form-control rounded-start-3 py-2"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value.replace(/\D/g, ""))}
-                  placeholder="123456"
+                  type={showPassword ? "text" : "password"}
+                  className="form-control pe-5"
+                  placeholder="Create Password"
+                  value={formData.password}
+                  onChange={(e) =>
+                    setFormData({ ...formData, password: e.target.value })
+                  }
                   required
+                  disabled={loading}
                 />
                 <button
                   type="button"
-                  className="btn btn-outline-success rounded-end-3"
-                  onClick={handleVerifyOtp}
-                  disabled={loading || otp.length !== 6}
+                  className="btn btn-link position-absolute end-0 top-50 translate-middle-y pe-3 text-muted"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
                 >
-                  Verify
+                  <i
+                    className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
+                  ></i>
                 </button>
               </div>
-              {otpVerified && (
-                <small className="text-success d-block mt-1">✓ Verified</small>
-              )}
-            </div>
-          )}
-
-          <div className="mb-3">
-            <label className="form-label fw-semibold">Password</label>
-            <input
-              type="password"
-              name="password"
-              className="form-control rounded-3 py-2"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              disabled={loading}
-            />
-          </div>
-
-          <div className="row">
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-semibold">Referral Code</label>
+              <div className="mt-2">
+                <div className="progress" style={{ height: "6px" }}>
+                  <div
+                    className={`progress-bar`}
+                    style={{
+                      background: strengthColors[passwordStrength],
+                      width: `${(passwordStrength / 5) * 100}%`,
+                    }}
+                  ></div>
+                </div>
+                <div
+                  className="small mt-1 mb-0 text-end fw-semibold"
+                  style={{ color: strengthColors[passwordStrength] }}
+                >
+                  {strengthLabels[passwordStrength]}
+                </div>
+              </div>
               <input
                 type="text"
-                name="referral_code"
-                className="form-control rounded-3 py-2"
+                className="form-control mt-3"
+                placeholder="Referral Code (Optional)"
                 value={formData.referral_code}
-                onChange={handleChange}
-                placeholder="REF90876"
+                onChange={(e) =>
+                  setFormData({ ...formData, referral_code: e.target.value })
+                }
                 disabled={loading}
               />
-            </div>
-            <div className="col-md-6 mb-3">
-              <label className="form-label fw-semibold">Country</label>
               <select
-                name="country"
-                className="form-select rounded-3 py-2"
+                className="form-select mt-3"
                 value={formData.country}
-                onChange={handleChange}
+                onChange={(e) =>
+                  setFormData({ ...formData, country: e.target.value })
+                }
                 disabled={loading}
               >
                 <option value="Ghana">Ghana</option>
                 <option value="Nigeria">Nigeria</option>
+                <option value="Kenya">Kenya</option>
                 <option value="USA">USA</option>
               </select>
+              <button
+                type="submit"
+                className={`btn w-100 mt-4 py-2 fw-bold text-white btn-danger`}
+                disabled={loading || passwordStrength < 4}
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Processing...
+                  </>
+                ) : (
+                  "Register"
+                )}
+              </button>
+            </form>
+          )}
+
+          {/* OTP verification step */}
+          {step === 1 && (
+            <div>
+              <p className="text-center text-muted small mb-3">
+                Enter the 6-digit code sent to:{" "}
+                <strong>{formData.email}</strong>
+              </p>
+              <div className="d-flex justify-content-center gap-2 mb-4">
+                {otp.map((digit, idx) => (
+                  <input
+                    key={idx}
+                    ref={otpRefs.current[idx]}
+                    type="text"
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(e.target.value, idx)}
+                    onKeyDown={(e) => handleOtpKeyDown(e, idx)}
+                    className="form-control text-center fs-4 fw-bold"
+                    style={{
+                      width: "48px",
+                      height: "54px",
+                      fontSize: "1.6rem",
+                      borderRadius: "12px",
+                    }}
+                    disabled={loading}
+                  />
+                ))}
+              </div>
+              <button
+                className="btn btn-success w-100 py-2 fw-bold"
+                onClick={handleVerifyOtp}
+                disabled={loading || otp.join("").length !== 6}
+              >
+                {loading ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2"></span>
+                    Verifying...
+                  </>
+                ) : (
+                  "Verify OTP"
+                )}
+              </button>
+              {otpVerified && (
+                <div className="alert alert-success mt-3 text-center">
+                  <i className="bi bi-check-circle"></i> Account created
+                  successfully!
+                </div>
+              )}
             </div>
-          </div>
-
-          <button
-            type="submit"
-            className={`btn w-100 py-2 rounded-3 fw-semibold ${
-              otpVerified ? "btn-danger" : "btn-secondary"
-            }`}
-            disabled={loading || !otpVerified}
-          >
-            {loading
-              ? "Creating Account..."
-              : otpVerified
-              ? "Create Account"
-              : "Complete OTP Verification"}
-          </button>
-
-          <p className="text-center mt-3">
-            Already have an account?{" "}
-            <a
-              href="/login"
-              className="text-danger text-decoration-none fw-semibold"
-            >
-              Login
-            </a>
-          </p>
-        </form>
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
-};
-
-export default Signup;
+}

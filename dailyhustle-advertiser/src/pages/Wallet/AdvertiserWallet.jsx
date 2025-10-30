@@ -1,7 +1,6 @@
 import { useMemo } from "react";
-import { useAdvertiserData } from "../context/Advertiser/AdvertiserDataContext";
-import { useTheme } from "../context/ThemeContext";
-
+import { useAdvertiserData } from "../../context/Advertiser/AdvertiserDataContext";
+import { useTheme } from "../../context/ThemeContext";
 
 export default function AdvertiserWallet() {
   const { theme } = useTheme();
@@ -14,7 +13,7 @@ export default function AdvertiserWallet() {
       cardBg: isDark ? "#1c1c1e" : "#fff",
       text: isDark ? "#f8f9fa" : "#212529",
       label: isDark ? "#adb5bd" : "#6c757d",
-      red: "var(--dh-red)",
+      red: "var(--dh-red, #ed3224)",
     }),
     [isDark]
   );
@@ -54,18 +53,28 @@ export default function AdvertiserWallet() {
         <div className="fw-bold small mb-3" style={{ color: palette.label }}>
           Transactions
         </div>
-        <ul className="list-unstyled mb-0">
-          {wallet.transactions.map((txn) => (
-            <li key={txn.id} className="d-flex justify-content-between mb-2">
-              <span>
-                {txn.type} ({txn.date})
-              </span>
-              <span className={txn.amount > 0 ? "text-success" : "text-danger"}>
-                ₦{txn.amount}
-              </span>
-            </li>
-          ))}
-        </ul>
+        {wallet.transactions.length === 0 ? (
+          <div className="text-muted">No transactions yet.</div>
+        ) : (
+          <ul className="list-unstyled mb-0">
+            {wallet.transactions.map((txn) => (
+              <li key={txn.id} className="d-flex justify-content-between mb-2">
+                <span>
+                  {txn.type} &nbsp;
+                  <span className="text-muted">
+                    ({new Date(txn.date).toLocaleDateString()})
+                  </span>
+                </span>
+                <span
+                  className={txn.amount > 0 ? "text-success" : "text-danger"}
+                >
+                  {txn.amount > 0 ? "+" : ""}₦
+                  {Math.abs(txn.amount).toLocaleString()}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

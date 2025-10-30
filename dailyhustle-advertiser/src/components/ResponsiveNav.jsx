@@ -1,62 +1,171 @@
 import React, { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import ThemeToggleButton from "./ThemeToggleButton";
 
+const tasksMenu = [
+  { to: "/tasks/campaigns", label: "Campaigns", icon: "bi-bullseye" },
+  { to: "/tasks/my-campaigns", label: "My Campaigns", icon: "bi-list-task" },
+  { to: "/tasks/new", label: "New Campaign", icon: "bi-plus-circle" },
+  {
+    to: "/tasks/submissions",
+    label: "Review Submissions",
+    icon: "bi-check2-square",
+  },
+];
+
+const mainMenu = [
+  { to: "/dashboard", label: "Dashboard", icon: "bi-house-door-fill" },
+  {
+    label: "Tasks",
+    icon: "bi-briefcase-fill",
+    dropdown: true,
+    items: tasksMenu,
+  },
+  { to: "/wallet", label: "Wallet", icon: "bi-wallet2" },
+  { to: "/leaderboard", label: "Leaderboard", icon: "bi-trophy" },
+  { to: "/plans", label: "Plans", icon: "bi-gem" },
+  { to: "/training", label: "Training", icon: "bi-journal-text" },
+  { to: "/notifications", label: "Notifications", icon: "bi-bell" },
+  { to: "/settings", label: "Settings", icon: "bi-gear" },
+  { to: "/support", label: "Support", icon: "bi-headset" },
+];
+
 export default function ResponsiveNav() {
   const { theme } = useTheme();
-  const isDark = theme === "dark";
   const [open, setOpen] = useState(false);
+  const [tasksOpen, setTasksOpen] = useState(false);
 
-  // Sidebar links can be reused for mobile/desktop
-  const navLinks = (
-    <>
-      <NavLink className="nav-link" to="/" end>
-        Dashboard
-      </NavLink>
-      <NavLink className="nav-link" to="/campaigns/create">
-        Create Campaign
-      </NavLink>
-      <NavLink className="nav-link" to="/wallet">
-        Wallet
-      </NavLink>
+  // Desktop nav with dropdown for "Tasks"
+  const desktopLinks = (
+    <ul className="nav align-items-center gap-1 flex-nowrap mb-0 px-2">
+      {mainMenu.map((item, idx) =>
+        item.dropdown ? (
+          <li key={item.label} className="nav-item dropdown">
+            <button
+              className="btn btn-ghost nav-link dropdown-toggle d-flex align-items-center"
+              onClick={() => setTasksOpen((o) => !o)}
+              aria-expanded={tasksOpen}
+              aria-haspopup="true"
+            >
+              <i className={`bi ${item.icon} me-1`} />
+              {item.label}
+            </button>
+            {tasksOpen && (
+              <ul className={`dropdown-menu show position-absolute mt-2`}>
+                {item.items.map((sub) => (
+                  <li key={sub.to}>
+                    <NavLink
+                      to={sub.to}
+                      className="dropdown-item d-flex align-items-center"
+                    >
+                      <i className={`bi ${sub.icon} me-2`} />
+                      {sub.label}
+                    </NavLink>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+        ) : (
+          <li key={item.to || item.label} className="nav-item">
+            <NavLink
+              to={item.to}
+              className="btn btn-ghost nav-link d-flex align-items-center"
+            >
+              <i className={`bi ${item.icon} me-1`} />
+              {item.label}
+            </NavLink>
+          </li>
+        )
+      )}
+    </ul>
+  );
 
-      {/* Add more as needed */}
-    </>
+  // Mobile nav: all items as vertical, tasks dropdown appears inline
+  const mobileLinks = (
+    <ul className="navbar-nav flex-column gap-2">
+      {mainMenu.map((item, idx) =>
+        item.dropdown ? (
+          <li key={item.label}>
+            <button
+              className="btn btn-ghost d-flex align-items-center w-100"
+              onClick={() => setTasksOpen((o) => !o)}
+              aria-expanded={tasksOpen}
+              type="button"
+              tabIndex={0}
+            >
+              <i className={`bi ${item.icon} me-1`} />
+              {item.label}
+              <i
+                className={`bi ms-auto ${
+                  tasksOpen ? "bi-chevron-up" : "bi-chevron-down"
+                }`}
+              ></i>
+            </button>
+            {tasksOpen && (
+              <div className="ps-3">
+                {item.items.map((sub) => (
+                  <NavLink
+                    key={sub.to}
+                    to={sub.to}
+                    className="nav-link d-flex align-items-center"
+                  >
+                    <i className={`bi ${sub.icon} me-2`} />
+                    {sub.label}
+                  </NavLink>
+                ))}
+              </div>
+            )}
+          </li>
+        ) : (
+          <li key={item.to || item.label}>
+            <NavLink
+              to={item.to}
+              className="nav-link d-flex align-items-center"
+            >
+              <i className={`bi ${item.icon} me-1`} />
+              {item.label}
+            </NavLink>
+          </li>
+        )
+      )}
+    </ul>
   );
 
   return (
     <>
-      {/* Desktop Sidebar */}
-      <div
-        className={`d-none d-lg-flex flex-column vh-100 sidebar shadow`}
+      {/* Desktop */}
+      <nav
+        className={`header-appbar d-none d-lg-flex align-items-center px-3 shadow-sm`}
         style={{
-          width: 220,
-          background: isDark ? "#191c1f" : "#fff",
-          borderRight: isDark ? "1px solid #222" : "1px solid #eee",
+          background: `linear-gradient(90deg, var(--dh-red), #2d2d44 100%)`,
+          color: "#fff",
           position: "fixed",
           top: 0,
           left: 0,
-          zIndex: 1030,
+          right: 0,
+          zIndex: 1060,
+          minHeight: 56,
         }}
       >
-        <div
-          className="p-3 fw-bold text-center"
-          style={{ color: "var(--dh-red)", fontSize: 22 }}
+        <Link
+          to="/"
+          className="d-flex align-items-center gap-2 logo text-decoration-none"
         >
-          DailyHustle
-        </div>
-        <nav className="nav flex-column px-2 gap-2">{navLinks}</nav>
-        <div className="mt-auto mb-3 px-2">
-          <ThemeToggleButton />
-        </div>
-      </div>
-
-      {/* Mobile Navbar */}
+          <img src="/logo-placeholder.png" alt="logo" height={32} />
+          <strong style={{ color: "var(--dh-red, #e63946)" }}>
+            DailyHustle
+          </strong>
+        </Link>
+        <div className="flex-grow-1">{desktopLinks}</div>
+        <ThemeToggleButton />
+      </nav>
+      {/* Mobile */}
       <nav
-        className={`navbar navbar-expand-lg d-lg-none shadow-sm ${
-          isDark ? "navbar-dark bg-dark" : "navbar-light bg-light"
-        }`}
+        className={`navbar navbar-expand-lg d-lg-none px-2 shadow-sm ${
+          theme === "dark" ? "navbar-dark bg-dark" : "navbar-light bg-light"
+        } header-appbar`}
       >
         <div className="container-fluid">
           <span
@@ -73,15 +182,13 @@ export default function ResponsiveNav() {
             <span className="navbar-toggler-icon"></span>
           </button>
           <div className={`collapse navbar-collapse${open ? " show" : ""}`}>
-            <nav className="navbar-nav">{navLinks}</nav>
+            {mobileLinks}
             <div className="mt-3 mb-2">
               <ThemeToggleButton />
             </div>
           </div>
         </div>
       </nav>
-      {/* content shift for sidebar */}
-      <div className="d-lg-block" style={{ marginLeft: 220 }}></div>
     </>
   );
 }

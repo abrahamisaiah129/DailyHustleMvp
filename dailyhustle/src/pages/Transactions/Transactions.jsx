@@ -1,7 +1,8 @@
 // src/pages/Transactions/Transactions.jsx
 import React, { useState } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
-import { useAppData } from "../../context/App/AppDataContext";
+import { useAppData } from "../../hooks/AppDataContext";
+// eslint-disable-next-line no-unused-vars
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 

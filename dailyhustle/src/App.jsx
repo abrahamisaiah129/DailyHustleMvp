@@ -15,7 +15,6 @@ import { ToastContainer } from "react-toastify";
 import Login from "./pages/auth/Login/login";
 import Signup from "./pages/auth/Signup/signup";
 import KYCForm from "./pages/auth/Kyc/kyc";
-import OTPVerification from "./pages/auth/Otp/otp";
 import ForgotPassword from "./pages/auth/ForgotPassword/forgotPassword";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -41,7 +40,6 @@ export default function App() {
         <Route path="/signup" element={<Signup />} />
         <Route path="/login" element={<Login />} />
         <Route path="/kyc" element={<KYCForm />} />
-        <Route path="/verify-otp" element={<OTPVerification />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
       </Routes>
 
