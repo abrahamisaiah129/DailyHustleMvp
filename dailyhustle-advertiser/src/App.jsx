@@ -23,12 +23,12 @@ import AdvertiserNotifications from "./pages/Notifications/AdvertiserNotificatio
 function Logout() {
   useEffect(() => {
     // Clear all localStorage
-    localStorage.clear();
+    // localStorage.clear();
 
     // Or if you want to be specific:
-    // localStorage.removeItem("userToken");
-    // localStorage.removeItem("user");
-    // localStorage.removeItem("userData");
+    localStorage.removeItem("userToken");
+    localStorage.removeItem("user");
+    localStorage.removeItem("userData");
 
     // Redirect to login
     window.location.href = "/login";
