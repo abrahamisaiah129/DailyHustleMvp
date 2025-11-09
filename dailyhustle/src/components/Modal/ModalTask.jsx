@@ -1,65 +1,240 @@
-import React, { useState } from "react";
-import { Modal, Button, Form } from "react-bootstrap";
+// src/components/ModalTask.jsx
+import React, { useState, useEffect, useRef } from "react";
+import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
+import { uploadFile } from "../../services/services";
 
-export default function ModalTask({ task, show, onClose, onApply, isReview }) {
+export default function ModalTask({ task, show, onClose }) {
   const { theme } = useTheme();
-  const { recordCopiedReviewText, userData } = useAppData();
+  const {
+    userData,
+    showNotification,
+    submitTaskProof,
+    onApplyFunc,
+    setUserData,
+  } = useAppData();
 
   const isDark = theme === "dark";
-  const primary = "var(--dh-red)";
   const bg = isDark ? "#1c1c1e" : "#fff";
   const text = isDark ? "#f8f9fa" : "#212529";
+  const primary = "var(--dh-red)";
 
-  // Find if user already applied & what status it has
-  const existingTask = userData.tasks.find((t) => t.id === task.id);
-  const userStatus = existingTask?.status || null;
+  // Local proof record for start
+  const [localProofRecord, setLocalProofRecord] = useState(null);
+  // Always prefer local, fallback to backend/userData
+  const proofRecord =
+    localProofRecord ||
+    userData?.tasks?.find((t) => (t.task?._id || t.task_id) === task._id) ||
+    null;
+
+  const userStatus = (
+    proofRecord?.status ||
+    proofRecord?.submission_progress ||
+    ""
+  ).toLowerCase();
+
   const isRejected = userStatus === "rejected";
   const isPending = userStatus === "pending";
   const isApproved = userStatus === "approved";
-  const isEditingAllowed = !existingTask || isRejected;
+  const hasStarted = !!proofRecord;
 
-  const [proofText, setProofText] = useState(existingTask?.proofText || "");
-  const [proofImage, setProofImage] = useState(
-    existingTask?.proofImage || null
-  );
+  /* UI State */
+  const [showProofForm, setShowProofForm] = useState(false);
+  const [proofText, setProofText] = useState("");
+  const [proofFile, setProofFile] = useState(null);
+  const [previewURL, setPreviewURL] = useState(null);
+  const [isStarting, setIsStarting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+  const fileInputRef = useRef();
 
-  // Handle image upload
-  const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => setProofImage(reader.result);
-    reader.readAsDataURL(file);
+  /* Copy review text (closed reviews) */
+  const handleCopy = () => {
+    if (task.review_text) {
+      navigator.clipboard.writeText(task.review_text);
+      showNotification?.("Review text copied!", "success");
+    }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!isEditingAllowed) return;
-    if (!proofText && !proofImage) {
-      alert("Provide at least one proof (text or image)");
+  /* Reset/Prefill modal state */
+  useEffect(() => {
+    if (!show) {
+      setProofText("");
+      setProofFile(null);
+      setPreviewURL(null);
+      setError("");
+      setShowProofForm(false);
+      setLocalProofRecord(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-    onApply({
-      ...task,
-      proofText,
-      proofImage,
-      status: "pending",
-    });
+
+    if (proofRecord) {
+      setProofText(proofRecord.title || "");
+      setPreviewURL(proofRecord.src || null);
+      setProofFile(null);
+
+      if (isPending || isApproved) {
+        setShowProofForm(false);
+      } else {
+        setShowProofForm(true);
+      }
+    } else {
+      setProofText("");
+      setPreviewURL(null);
+      setProofFile(null);
+      setShowProofForm(false);
+      setError("");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  }, [show, proofRecord, isPending, isApproved, isRejected]);
+
+  /* Proof file preview (only for new upload) */
+  useEffect(() => {
+    if (proofFile) {
+      const url = URL.createObjectURL(proofFile);
+      setPreviewURL(url);
+      return () => URL.revokeObjectURL(url);
+    }
+  }, [proofFile]);
+
+  /* Start task: create local/new proof */
+  const handleStartTask = async () => {
+    if (isStarting || hasStarted) return;
+    setIsStarting(true);
+    setError("");
+    try {
+      const proofData = await onApplyFunc(task);
+      if (!proofData?._id) throw new Error("Invalid proof response");
+
+      const newProof = {
+        ...proofData,
+        task_id: proofData.task_id || task._id,
+        task,
+      };
+
+      setLocalProofRecord(newProof);
+      setUserData((prev) => ({
+        ...prev,
+        tasks: [...(Array.isArray(prev.tasks) ? prev.tasks : []), newProof],
+      }));
+
+      setShowProofForm(true);
+      showNotification?.(`Started: "${task.title}"`, "success");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message || err.message || "Failed to start task";
+      setError(msg);
+      showNotification?.(msg, "error");
+    } finally {
+      setIsStarting(false);
+    }
   };
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(task.reviewText);
-    recordCopiedReviewText(task.id);
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      setProofFile(null);
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setError("Only image files allowed.");
+      setProofFile(null);
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be under 5MB.");
+      setProofFile(null);
+      return;
+    }
+    setError("");
+    setProofFile(file);
+  };
+
+  /* Submit proof */
+  const handleSubmitProof = async (e) => {
+    e.preventDefault();
+    if (!proofText.trim()) {
+      setError("Text proof required");
+      return;
+    }
+
+    // FIX 1: Check previewURL as well as proofFile
+    // This allows resubmitting a rejected task without re-uploading the image
+    if (!proofFile && !previewURL) {
+      setError("Image proof required");
+      return;
+    }
+
+    if (!proofRecord?._id) {
+      setError("System error. Please refresh.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError("");
+    try {
+      // Default to the existing image URL (from previewURL)
+      let src = previewURL;
+
+      // If a *new* file was selected, upload it and get the new URL
+      if (proofFile) {
+        const res = await uploadFile(proofFile);
+        if (!res.data?.data?.[0]?.src) throw new Error("Upload failed");
+        src = res.data.data[0].src;
+      }
+
+      const submittedTitle = proofText.trim();
+
+      // Submit to backend
+      await submitTaskProof(proofRecord._id, { title: submittedTitle, src });
+
+      // FIX 2: Manually update the client-side userData context.
+      // This ensures the local state has the new data *before* the modal closes.
+      setUserData((prev) => {
+        const newTasks = (prev.tasks || []).map((t) => {
+          const taskId = t.task?._id || t.task_id;
+          if (taskId === task._id) {
+            // Update this task's proof record
+            return {
+              ...t,
+              title: submittedTitle,
+              src: src,
+              status: "pending", // Force status to pending
+              submission_progress: "pending", // Force status to pending
+            };
+          }
+          return t;
+        });
+        return { ...prev, tasks: newTasks };
+      });
+
+      // Now when the modal closes and re-opens, the proofRecord
+      // from userData.tasks will have the correct title and src.
+
+      setShowProofForm(false);
+      showNotification?.("Proof submitted!", "success");
+      onClose?.();
+    } catch (err) {
+      const msg =
+        err.code === "ECONNABORTED"
+          ? "Request timed out."
+          : err.response?.data?.message || err.message || "Failed";
+      setError(msg);
+      showNotification?.("Failed: " + msg, "error");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <Modal
       show={show}
-      onHide={onClose}
+      onHide={showProofForm ? undefined : onClose}
       centered
-      contentClassName="border-0 rounded-3 shadow-lg"
+      backdrop={showProofForm ? "static" : true}
+      keyboard={!showProofForm}
     >
       {/* HEADER */}
       <div
@@ -68,166 +243,227 @@ export default function ModalTask({ task, show, onClose, onApply, isReview }) {
       >
         <h5 className="fw-bold m-0">
           {task.title}
-          {isReview && " (Closed Review)"}
+          {String(task.review_type).toUpperCase() === "CLOSED"
+            ? " (Closed Review)"
+            : ""}
         </h5>
         <button
           className="btn-close btn-close-white"
-          onClick={onClose}
-        ></button>
+          onClick={showProofForm ? undefined : onClose}
+          style={{ visibility: showProofForm ? "hidden" : "visible" }}
+        />
       </div>
 
       {/* BODY */}
       <div className="p-4" style={{ backgroundColor: bg, color: text }}>
-        <p>{task.description}</p>
-
-        <div className="small mb-3">
-          <p className="mb-1 fw-semibold" style={{ color: primary }}>
-            Category: {task.category}
-          </p>
-          <p className="mb-1">Reward: ₦{task.payout.toLocaleString()}</p>
-          <p className="mb-1">
-            Slots: {task.completedSlots}/{task.slots}
-          </p>
-          {existingTask && (
-            <p className="mb-1">
-              Your Task Status:{" "}
-              <span
-                style={{
-                  color: isPending
-                    ? "#ffc107"
-                    : isRejected
-                    ? "#e74c3c"
-                    : isApproved
-                    ? "#2ecc71"
-                    : "#adb5bd",
-                }}
-              >
-                {userStatus?.toUpperCase() || "N/A"}
-              </span>
-            </p>
+        {/* Task info */}
+        <div className="mb-2">
+          <b>{task.category}</b>
+          {task.sub_category && (
+            <>
+              <br />
+              <small className="text-muted">{task.sub_category}</small>
+            </>
           )}
         </div>
-
-        {task.link && (
-          <a
-            href={task.link}
-            target="_blank"
-            rel="noreferrer"
-            className="btn btn-sm rounded-pill text-white mb-3"
-            style={{ backgroundColor: primary, border: "none" }}
-          >
-            Go to Task Site
-          </a>
+        <div className="mb-2">{task.description}</div>
+        {task.instructions && (
+          <p className="mb-2">
+            <b>Instructions:</b> {task.instructions}
+          </p>
+        )}
+        <div className="mb-2">
+          <span>
+            <b>Reward:</b> {task.reward?.currency}{" "}
+            {(
+              task.reward?.amount_per_worker ??
+              task.reward?.amount ??
+              0
+            ).toLocaleString()}
+          </span>
+          <span className="ms-3">
+            <b>Slots:</b> {task.slots?.used ?? 0}/{task.slots?.max ?? 0}
+          </span>
+        </div>
+        {task.task_site && (
+          <div className="mb-2">
+            <a
+              href={task.task_site}
+              target="_blank"
+              rel="noreferrer"
+              className="btn btn-sm rounded-pill text-white"
+              style={{ backgroundColor: primary, border: "none" }}
+            >
+              Go to Task Site
+            </a>
+          </div>
         )}
 
-        {/* Copy section for reviews */}
-        {isReview && task.reviewText && (
-          <div
-            className="p-3 mb-3 rounded"
-            style={{
-              background: isDark ? "#2a2a2d" : "#f8f9fa",
-              border: "1px solid #ddd",
-            }}
-          >
-            <h6 className="fw-bold mb-2" style={{ color: primary }}>
-              Copy Review Text
-            </h6>
-            <textarea
-              className="form-control mb-2"
-              readOnly
-              rows={3}
-              value={task.reviewText}
-              style={{ backgroundColor: bg, color: text }}
-            ></textarea>
-            <Button
-              className="rounded-pill text-white fw-semibold"
-              style={{ backgroundColor: primary, border: "none" }}
-              onClick={handleCopy}
+        {/* Closed-review block */}
+        {String(task.review_type).toUpperCase() === "CLOSED" &&
+          task.review_text?.trim() && (
+            <div
+              className="p-3 mb-3 rounded"
+              style={{
+                background: isDark ? "#2a2a2d" : "#f8f9fa",
+                border: "1px solid #ddd",
+              }}
             >
-              Copy Text
+              <h6 className="fw-bold mb-2" style={{ color: primary }}>
+                Copy Review Text Below
+              </h6>
+              <textarea
+                className="form-control mb-2"
+                readOnly
+                rows={3}
+                value={task.review_text}
+                style={{ backgroundColor: bg, color: text }}
+              />
+              <Button
+                className="rounded-pill text-white fw-semibold"
+                style={{ backgroundColor: primary, border: "none" }}
+                onClick={handleCopy}
+              >
+                Copy Review Text
+              </Button>
+            </div>
+          )}
+
+        {/* Error */}
+        {error && <div className="alert alert-danger small py-2">{error}</div>}
+
+        {/* START BUTTON */}
+        {!hasStarted && !showProofForm && (
+          <div className="text-center">
+            <Button
+              size="sm"
+              className="rounded-pill px-4"
+              style={{ backgroundColor: primary, border: "none" }}
+              onClick={handleStartTask}
+              disabled={isStarting}
+            >
+              {isStarting ? (
+                <>
+                  <Spinner size="sm" /> Starting...
+                </>
+              ) : (
+                "Start Task"
+              )}
             </Button>
           </div>
         )}
 
-        {/* Proof Submission Section */}
-        <Form onSubmit={handleSubmit}>
-          <h6 className="fw-bold mb-2" style={{ color: primary }}>
-            {isEditingAllowed
-              ? "Upload Your Proof"
-              : "Your Submitted Proof (View Only)"}
-          </h6>
+        {/* PROOF FORM */}
+        {(showProofForm || (hasStarted && !isPending && !isApproved)) && (
+          <Form onSubmit={handleSubmitProof} className="mt-4">
+            <h6 className="fw-bold mb-3" style={{ color: primary }}>
+              Submit Proof (Text + Image Required)
+            </h6>
 
-          <Form.Group className="mb-3">
-            <Form.Label>Text Proof</Form.Label>
-            <Form.Control
-              as="textarea"
-              rows={2}
-              value={proofText}
-              onChange={(e) => setProofText(e.target.value)}
-              disabled={!isEditingAllowed}
-            />
-          </Form.Group>
-
-          <Form.Group>
-            <Form.Label>Image Proof</Form.Label>
-            <Form.Control
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              disabled={!isEditingAllowed}
-            />
-          </Form.Group>
-
-          {proofImage && (
-            <div className="text-center mt-3">
-              <img
-                src={proofImage}
-                alt="proof"
-                className="img-fluid rounded shadow-sm"
-                style={{
-                  maxHeight: 250,
-                  border: "1px solid #ccc",
-                  borderRadius: 8,
-                }}
+            <Form.Group className="mb-3">
+              <Form.Label>Text Proof</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={proofText}
+                onChange={(e) => setProofText(e.target.value)}
+                placeholder="Describe your completion..."
+                disabled={isSubmitting}
+                required
               />
-            </div>
-          )}
+            </Form.Group>
 
-          {isEditingAllowed && (
-            <div className="d-flex justify-content-end mt-4 gap-2">
-              <Button
-                variant="secondary"
-                className="rounded-pill"
-                onClick={onClose}
-              >
-                Cancel
-              </Button>
+            <Form.Group className="mb-3">
+              <Form.Label>Image Proof</Form.Label>
+              <Form.Control
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                disabled={isSubmitting}
+                // 'required' is only true if there isn't already a previewURL
+                required={!previewURL}
+              />
+              {previewURL && (
+                <div className="mt-2 text-center">
+                  <img
+                    src={previewURL}
+                    alt="Preview"
+                    className="img-fluid rounded"
+                    style={{ maxHeight: 180 }}
+                  />
+                </div>
+              )}
+            </Form.Group>
+
+            <div className="d-flex justify-content-end gap-2">
               <Button
                 type="submit"
-                className="rounded-pill text-white fw-semibold"
+                size="sm"
+                className="text-white"
                 style={{ backgroundColor: primary, border: "none" }}
+                disabled={isSubmitting}
               >
-                Submit Proof
+                {isSubmitting ? (
+                  <>
+                    <Spinner size="sm" /> Submitting...
+                  </>
+                ) : (
+                  "Submit Proof"
+                )}
               </Button>
             </div>
-          )}
+          </Form>
+        )}
 
-          {!isEditingAllowed && (
+        {/* PENDING / APPROVED: SHOW SUBMITTED PROOF */}
+        {!showProofForm && hasStarted && (isPending || isApproved) && (
+          <div className="mt-4">
             <div
-              className="py-3 mt-3 rounded text-center fw-semibold"
+              className="py-3 text-center rounded"
               style={{
                 border: `1px solid ${primary}40`,
-                color: isRejected ? "#e74c3c" : "#adb5bd",
+                color: isPending ? "#ffc107" : "#2ecc71",
               }}
             >
-              {isPending &&
-                "Your proof has been submitted and is awaiting approval."}
-              {isApproved && "This task has been successfully approved!"}
-              {isRejected &&
-                "Your proof was rejected. You can resubmit corrections now."}
+              {isPending && "Awaiting review..."}
+              {isApproved && "Approved! Reward incoming."}
             </div>
-          )}
-        </Form>
+
+            <div className="mt-4">
+              {/* TEXT PROOF */}
+              <Form.Group className="mb-3">
+                <Form.Label>Text Proof</Form.Label>
+                <Form.Control
+                  as="textarea"
+                  rows={3}
+                  value={proofText}
+                  readOnly
+                  disabled
+                  style={{
+                    backgroundColor: isDark ? "#2a2a2c" : "#e9ecef",
+                    opacity: 1,
+                  }}
+                />
+              </Form.Group>
+
+              {/* IMAGE PROOF */}
+              {proofRecord?.src && (
+                <Form.Group className="mb-3">
+                  <Form.Label>Image Proof</Form.Label>
+                  <div className="mt-2 text-center">
+                    <img
+                      src={proofRecord.src}
+                      alt="Submitted Proof"
+                      className="img-fluid rounded"
+                      style={{ maxHeight: 180 }}
+                    />
+                  </div>
+                </Form.Group>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </Modal>
   );

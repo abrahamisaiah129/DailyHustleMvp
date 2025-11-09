@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
 import Logo from "../../../public/dailyjhustleimage.png";
 export default function Sidebar() {
-  const [tasksOpen, setTasksOpen] = useState(false);
+  const [jobsOpen, setjobsOpen] = useState(false);
 
   return (
     <aside className="sidebar">
@@ -18,50 +18,50 @@ export default function Sidebar() {
               Dashboard
             </NavLink>
           </li>
-          {/* Tasks Dropdown */}
+          {/* jobs Dropdown */}
           <li className="nav-item">
             <button
               className="nav-link d-flex align-items-center w-100"
-              onClick={() => setTasksOpen((open) => !open)}
-              aria-expanded={tasksOpen}
+              onClick={() => setjobsOpen((open) => !open)}
+              aria-expanded={jobsOpen}
               type="button"
               tabIndex={0}
               style={{ background: "none", border: "none", outline: "none" }}
             >
               <i className="bi bi-briefcase-fill me-2" />
-              Tasks
+              Jobs
               <i
                 className={`bi ms-auto ${
-                  tasksOpen ? "bi-chevron-up" : "bi-chevron-down"
+                  jobsOpen ? "bi-chevron-up" : "bi-chevron-down"
                 }`}
               />
             </button>
-            {tasksOpen && (
+            {jobsOpen && (
               <ul className="nav flex-column ms-3">
                 <li>
-                  <NavLink to="/tasks/campaigns" className="nav-link">
+                  <NavLink to="/jobs/allcampaigns" className="nav-link">
                     <i className="bi bi-bullseye me-2" />
-                    Campaigns
+                    All Campaigns
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/tasks/my-campaigns" className="nav-link">
-                    <i className="bi bi-list-task me-2" />
+                  <NavLink to="/jobs/my-campaigns" className="nav-link">
+                    <i className="bi bi-list-jobs me-2" />
                     My Campaigns
                   </NavLink>
                 </li>
                 <li>
-                  <NavLink to="/tasks/new" className="nav-link">
+                  <NavLink to="/jobs/new" className="nav-link">
                     <i className="bi bi-plus-circle me-2" />
-                    New Campaign
+                    New jobs
                   </NavLink>
                 </li>
-                <li>
-                  <NavLink to="/tasks/submissions" className="nav-link">
+                {/* <li>
+                  <NavLink to="/jobs/submissions" className="nav-link">
                     <i className="bi bi-check2-square me-2" />
                     Review Submissions
                   </NavLink>
-                </li>
+                </li> */}
               </ul>
             )}
           </li>

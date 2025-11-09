@@ -1,8 +1,16 @@
-import React, { useState, useCallback, useMemo } from "react";
+// src/context/Advertiser/AppDataProvider.jsx
+import React, {
+  // createContext,
+  // useContext,
+  useEffect,
+  useState,
+  useCallback,
+  useMemo,
+} from "react";
 import { toast } from "react-toastify";
-import { AdvertiserDataContext } from "./AdvertiserDataContext";
-
-// Demo Data for initial state
+import axios from "axios";
+import { AdvertiserDataContext } from "../../pages/hooks/useAppDataContext";
+/* --------------------------  DEFAULT DATA  -------------------------- */
 const DEFAULT_CAMPAIGNS = [
   {
     id: "c1",
@@ -11,8 +19,8 @@ const DEFAULT_CAMPAIGNS = [
     budget: 10000,
     status: "active",
     description: "Grow our Instagram follower count.",
-    completedTasks: 18,
-    totalTasks: 25,
+    completedjobs: 18,
+    totaljobs: 25,
     spent: 7200,
   },
   {
@@ -22,8 +30,8 @@ const DEFAULT_CAMPAIGNS = [
     budget: 30000,
     status: "completed",
     description: "Get positive reviews on Google Play and App Store.",
-    completedTasks: 50,
-    totalTasks: 50,
+    completedjobs: 50,
+    totaljobs: 50,
     spent: 30000,
   },
 ];
@@ -53,14 +61,40 @@ const DEFAULT_SUBMISSIONS = [
   },
 ];
 
-// The Advertiser Data Provider for your dashboard
+const DEFAULT_USER = {
+  username: "tester",
+  balance: 10000,
+  currency: "NGN",
+  isAuthenticated: false,
+  kyc: { status: "verified", date: new Date().toISOString() },
+  tasks: [],
+  notifications: [],
+  transactions: [],
+};
+
+/* --------------------------  CONTEXT  -------------------------- */
+//   const AdvertiserDataContext = useContext(undefined);
+
+// export const useAdvertiserData = () => {
+//   const ctx = useContext(AdvertiserDataContext);
+//   if (!ctx) {
+//     throw new Error(
+//       "useAdvertiserData must be used within AdvertiserDataProvider"
+//     );
+//   }
+//   return ctx;
+// };
+
+/* --------------------------  PROVIDER  -------------------------- */
 export default function AdvertiserDataProvider({ children }) {
-  // State
+  // ---------- state ----------
   const [campaigns, setCampaigns] = useState(DEFAULT_CAMPAIGNS);
   const [wallet, setWallet] = useState(DEFAULT_WALLET);
   const [submissions, setSubmissions] = useState(DEFAULT_SUBMISSIONS);
+  const [userAppData, setUserAppData] = useState(DEFAULT_USER);
+  const [isUserLoggedIn, setUserLoggedIn] = useState(false);
 
-  // Toast Notification Utility
+  // ---------- toast helper ----------
   const showNotification = useCallback((msg, type = "info") => {
     toast[type](msg, {
       autoClose: 2000,
@@ -69,7 +103,34 @@ export default function AdvertiserDataProvider({ children }) {
     });
   }, []);
 
-  // Create a new campaign
+  // ---------- fetch advertiser profile ----------
+  const fetchAdvertiser = useCallback(async () => {
+    const token = localStorage.getItem("userToken");
+    if (!token) return;
+
+    try {
+      const { data } = await axios.get(
+        "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/advertiser/profile",
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const fetched = data?.data ?? data;
+      setUserAppData((prev) => ({
+        ...prev,
+        ...fetched,
+        isAuthenticated: true,
+      }));
+    } catch (err) {
+      console.error("Failed to load advertiser:", err);
+    }
+  }, []);
+
+  // run when login flag flips
+  useEffect(() => {
+    if (isUserLoggedIn) fetchAdvertiser();
+  }, [isUserLoggedIn, fetchAdvertiser]);
+
+  // ---------- campaign actions ----------
   const onCreateCampaign = useCallback(
     (campaign) => {
       setCampaigns((prev) => [
@@ -81,18 +142,16 @@ export default function AdvertiserDataProvider({ children }) {
     [showNotification]
   );
 
-  // Edit/update a campaign
   const onEditCampaign = useCallback(
     (updated) => {
       setCampaigns((prev) =>
-        prev.map((c) => (c.id === updated.id ? { ...c, ...updated } : c))
+        prev.map((c) => (c.id === updated.id ? updated : c))
       );
       showNotification("Campaign updated!", "success");
     },
     [showNotification]
   );
 
-  // Delete a campaign
   const onDeleteCampaign = useCallback(
     (id) => {
       setCampaigns((prev) => prev.filter((c) => c.id !== id));
@@ -102,7 +161,7 @@ export default function AdvertiserDataProvider({ children }) {
     [showNotification]
   );
 
-  // Approve or reject a worker's submission
+  // ---------- submission actions ----------
   const onApproveSubmission = useCallback(
     (subId) => {
       setSubmissions((prev) =>
@@ -123,22 +182,22 @@ export default function AdvertiserDataProvider({ children }) {
     [showNotification]
   );
 
-  // Fetch submissions for a given campaign
   const getSubmissionsForCampaign = useCallback(
     (id) => submissions.filter((s) => s.campaignId === id),
     [submissions]
   );
 
-  // Wallet/funds management
+  // ---------- wallet actions ----------
   const onAddFunds = useCallback(() => {
+    const amount = 10000;
     setWallet((w) => ({
       ...w,
-      balance: w.balance + 10000,
+      balance: w.balance + amount,
       transactions: [
         {
           id: Date.now().toString(),
           type: "Deposit",
-          amount: 10000,
+          amount,
           date: new Date().toISOString(),
         },
         ...w.transactions,
@@ -147,7 +206,6 @@ export default function AdvertiserDataProvider({ children }) {
     showNotification("Funds added!", "success");
   }, [showNotification]);
 
-  // Transfer funds when campaign is launched/spent (for demo)
   const onSpendFromCampaign = useCallback(
     (amount, campaignId) => {
       setWallet((w) => ({
@@ -173,7 +231,20 @@ export default function AdvertiserDataProvider({ children }) {
     [showNotification]
   );
 
-  // Get campaigns by status/category for dashboard widgets or analytics
+  const onApproveAmount = useCallback(
+    (id, amount) => {
+      if (!id || !amount) {
+        showNotification("Payment couldn't be processed.", "warning");
+        return;
+      }
+      // simulate the payments
+      // change the ui
+      onApproveSubmission(id);
+    },
+    [onApproveSubmission, showNotification]
+  );
+
+  // ---------- filter helper ----------
   const filterCampaigns = useCallback(
     ({ status, category }) =>
       campaigns.filter(
@@ -184,9 +255,18 @@ export default function AdvertiserDataProvider({ children }) {
     [campaigns]
   );
 
-  // Final context value
+  const stat = useCallback(() => {
+    // fetch and push to context
+    // replace later
+    return 100;
+  }, []);
+
+  // ---------- context value ----------
   const contextValue = useMemo(
     () => ({
+      userAppData,
+      stat,
+      setUserLoggedIn,
       campaigns,
       wallet,
       submissions,
@@ -198,12 +278,15 @@ export default function AdvertiserDataProvider({ children }) {
       onRejectSubmission,
       onAddFunds,
       onSpendFromCampaign,
+      onApproveAmount,
       filterCampaigns,
       setCampaigns,
       setWallet,
       setSubmissions,
     }),
     [
+      userAppData,
+      stat,
       campaigns,
       wallet,
       submissions,
@@ -215,6 +298,7 @@ export default function AdvertiserDataProvider({ children }) {
       onRejectSubmission,
       onAddFunds,
       onSpendFromCampaign,
+      onApproveAmount,
       filterCampaigns,
     ]
   );

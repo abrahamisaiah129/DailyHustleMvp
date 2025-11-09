@@ -25,7 +25,7 @@ export default function Header() {
 
   const isDark = theme === "dark";
   const avatar =
-    userData.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+    userData.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
   const balance = userData.balance ?? 0;
 
   // Prevent scroll bleed when menu is open

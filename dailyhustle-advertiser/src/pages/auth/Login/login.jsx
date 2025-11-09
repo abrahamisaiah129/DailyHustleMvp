@@ -1,51 +1,55 @@
+// import { useAdvertiserData } from "../../hooks/useAppDataContext";
 import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
-import { useAppData } from "../../../hooks/AppDataContext";
+import { advertiserLogin } from "../../services/services";
+// import { useAdvertiserData } from "../../hooks/useAppDataContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    identifier: "", // email or username
+    identifier: "",
     password: "",
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
-  const idRef = useRef();
-  const { setUserLoggedIn } = useAppData();
+  const idRef = useRef(null);
+  // const { setUserLoggedIn } = useAdvertiserData();
 
   useEffect(() => {
-    if (idRef.current) idRef.current.focus();
+    idRef.current?.focus();
   }, []);
 
-  const handleChange = (e) =>
+  const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setLoginError("");
+
     try {
-      const res = await axios.post(
-        "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/auths/users/login",
-        formData
-      );
+      // Pass { identifier, password } as expected by backend
+      const res = await advertiserLogin(formData);
       if (res.status === 200 && res.data.data?.token) {
         toast.success("Login successful!");
-        localStorage.setItem("userToken", res.data.data.token);
-        setUserLoggedIn(true); // Update app context
-        localStorage.setItem("isAuth", "true"); // Save boolean as string
-        setTimeout(() => (window.location.href = "/dashboard"), 1200);
+        // Store token for logged in user
+        localStorage.setItem("token", res.data.data.token);
+        localStorage.setItem("isAuth", "true");
+        // setUserLoggedIn(true); // If using context
+        setTimeout(() => (window.location.href = "/"), 1200);
       } else {
-        setLoginError(res.data.message || "Invalid credentials");
-        toast.error(res.data.message || "Invalid credentials");
+        const msg = res.data.message || "Invalid credentials";
+        setLoginError(msg);
+        toast.error(msg);
       }
     } catch (err) {
-      setLoginError(err.response?.data?.message || "Server error");
-      toast.error(err.response?.data?.message || "Server error");
+      const msg = err.response?.data?.message || "Server error";
+      setLoginError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -83,6 +87,7 @@ const Login = () => {
               autoComplete="username"
             />
           </div>
+
           <div className="mb-2 position-relative">
             <label className="form-label fw-semibold">Password</label>
             <input
@@ -106,11 +111,13 @@ const Login = () => {
               ></i>
             </button>
           </div>
+
           {loginError && (
             <div className="alert alert-danger small py-2 mb-2 mt-2 text-center">
               {loginError}
             </div>
           )}
+
           <button
             type="submit"
             className="btn btn-danger w-100 py-2 rounded-3 fw-semibold"
@@ -125,6 +132,7 @@ const Login = () => {
               "Login"
             )}
           </button>
+
           <p className="text-center mt-3 mb-0">
             Don’t have an account?{" "}
             <a

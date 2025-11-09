@@ -4,14 +4,10 @@ import { Navbar, NavDropdown, Container, Badge } from "react-bootstrap";
 import Logo from "../../../public/dailyjhustleimage.png";
 const menu = [
   { to: "/", icon: "bi-house-door-fill", label: "Dashboard" },
-  { to: "/tasks/campaigns", icon: "bi-bullseye", label: "Campaigns" },
-  { to: "/tasks/my-campaigns", icon: "bi-list-task", label: "My Campaigns" },
-  { to: "/tasks/new", icon: "bi-plus-circle", label: "New Campaign" },
-  {
-    to: "/tasks/submissions",
-    icon: "bi-check2-square",
-    label: "Review Submissions",
-  },
+  { to: "/jobs/allcampaigns", icon: "bi-bullseye", label: "Campaigns" },
+  { to: "/jobs/my-campaigns", icon: "bi-list-jobs", label: "My Campaigns" },
+  { to: "/jobs/new", icon: "bi-plus-circle", label: "New Campaign" },
+   
   { to: "/wallet", icon: "bi-wallet2", label: "Wallet" },
   { to: "/leaderboard", icon: "bi-trophy", label: "Leaderboard" },
   { to: "/plans", icon: "bi-gem", label: "Plans" },

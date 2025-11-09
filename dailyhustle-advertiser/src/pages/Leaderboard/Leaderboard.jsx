@@ -1,17 +1,17 @@
-import React from "react";
-import { useAdvertiserData } from "../../context/Advertiser/AdvertiserDataContext";
+// import React from "react";
+// import { useAdvertiserData } from "../hooks/useAppDataContext";
 
 export default function Leaderboard() {
-  const { campaigns } = useAdvertiserData();
+  // const { campaigns } = useAdvertiserData();
 
-  // Example sort: top campaigns by completedTasks, descending
-  const topCampaigns = [...campaigns]
-    .sort((a, b) => (b.completedTasks || 0) - (a.completedTasks || 0))
-    .slice(0, 5);
+  // // Example sort: top campaigns by completedjobs, descending
+  // const topCampaigns = [...campaigns]
+  //   .sort((a, b) => (b.completedjobs || 0) - (a.completedjobs || 0))
+    // .slice(0, 5);
 
   return (
     <div className="container py-4">
-      <h2 className="fw-bold mb-4">
+      {/* <h2 className="fw-bold mb-4">
         <i className="bi bi-trophy text-warning me-2" />
         Leaderboard
       </h2>
@@ -23,7 +23,7 @@ export default function Leaderboard() {
                 <th>#</th>
                 <th>Campaign</th>
                 <th className="d-none d-md-table-cell">Category</th>
-                <th>Completed Tasks</th>
+                <th>Completed jobs</th>
                 <th>Status</th>
                 <th className="d-none d-md-table-cell">Total Spent</th>
               </tr>
@@ -42,8 +42,8 @@ export default function Leaderboard() {
                     </td>
                     <td className="d-none d-md-table-cell">{c.category}</td>
                     <td>
-                      <span className="fw-bold">{c.completedTasks}</span>
-                      <span className="text-muted ms-2">/ {c.totalTasks}</span>
+                      <span className="fw-bold">{c.completedjobs}</span>
+                      <span className="text-muted ms-2">/ {c.totaljobs}</span>
                     </td>
                     <td>
                       <span
@@ -75,10 +75,10 @@ export default function Leaderboard() {
           </table>
         </div>
         <div className="alert alert-info mt-4">
-          Ranked by campaign performance (tasks completed). Success badges and
+          Ranked by campaign performance (jobs completed). Success badges and
           worker/engagement data can be added here.
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

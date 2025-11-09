@@ -35,7 +35,7 @@ export default function AdvertiserSupport() {
                 </Accordion.Header>
                 <Accordion.Body>
                   Go to the <strong>“New Campaign”</strong> page, fill out all
-                  campaign details, and click “Post Job.”
+                  campaign details, and click “Post jobs.”
                 </Accordion.Body>
               </Accordion.Item>
               <Accordion.Item eventKey="1">
@@ -51,7 +51,7 @@ export default function AdvertiserSupport() {
                   How do I review worker submissions?
                 </Accordion.Header>
                 <Accordion.Body>
-                  On your <strong>Review Submissions</strong> page under Tasks,
+                  On your <strong>Review Submissions</strong> page under jobs,
                   you can approve or reject proofs submitted by workers.
                 </Accordion.Body>
               </Accordion.Item>

@@ -1,0 +1,143 @@
+// src/api/advertiserServices.js
+import api from "./api";
+
+/* -------------------------------------------------------------------------- */
+/*                               ADVERTISER AUTH                             */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Register a new advertiser
+ * POST /auths/advertisers/register
+ * @param {Object} data - { ...registrationFields }
+ * Body:
+ * {
+ *   // registration fields (e.g., name, email, password, etc.)
+ * }
+ */
+export const advertiserRegister = (data) =>
+  api.post("/auths/advertisers/register", data);
+
+/**
+ * Validate advertiser registration token
+ * POST /auths/advertisers/register/validate-token
+ * @param {Object} data - { token: string }
+ * Body:
+ * {
+ *   "token": "string"
+ * }
+ */
+export const advertiserValidateRegistrationToken = (data) =>
+  api.post("/auths/advertisers/register/validate-token", data);
+
+/**
+ * Advertiser login
+ * POST /auths/advertisers/login
+ * @param {Object} data - { email: string, password: string }
+ * Body:
+ * {
+ *   "email": "string",
+ *   "password": "string"
+ * }
+ */
+export const advertiserLogin = (data) =>
+  api.post("/auths/advertisers/login", data);
+
+/* -------------------------------------------------------------------------- */
+/*                                   TASKS                                    */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Get all tasks for advertisers
+ * GET /tasks/advertisers
+ * No params or body
+ */
+export const advertiserListTasks = () => api.get("/tasks/advertisers");
+
+/**
+ * Create a new task
+ * POST /tasks
+ * @param {Object} data - { ...taskFields }
+ * Body:
+ * {
+ *   // task fields (e.g., title, description, reward, etc.)
+ * }
+ */
+export const advertiserCreateTask = (data) => api.post("/tasks", data);
+
+/**
+ * View a single task
+ * GET /tasks/{taskId}/advertisers
+ * @param {string} taskId
+ * No body
+ */
+export const advertiserViewTask = (taskId) =>
+  api.get(`/tasks/${taskId}/advertisers`);
+
+/* -------------------------------------------------------------------------- */
+/*                               TASK PROOF                                   */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Approve or reject a task proof
+ * PATCH /task-proof/{taskProofId}
+ * @param {string} taskProofId
+ * @param {Object} data - { status: "approved" | "rejected", ... }
+ * Body:
+ * {
+ *   "status": "approved" | "rejected",
+ *   // other fields if needed
+ * }
+ */
+export const advertiserUpdateTaskProofStatus = (taskProofId, data) =>
+  api.patch(`/task-proof/${taskProofId}`, data);
+/**
+ * Update a task
+ * PATCH /tasks/{taskId}/advertisers
+ * @param {string} taskId
+ * @param {Object} data - { ...fieldsToUpdate }
+ * Body:
+ * {
+ *   // fields to update (e.g., title, description, reward, etc.)
+ * }
+ */
+export const advertiserUpdateTask = (taskId, data) =>
+  api.patch(`/tasks/${taskId}/advertisers`, data);
+/**
+ * List submissions for a task
+ * GET /task-proof?task_id={taskId}
+ * @param {string} taskId
+ * No body. Query param: task_id
+ */
+export const advertiserListSubmissions = (taskId) =>
+  api.get("/task-proof", { params: { task_id: taskId } });
+
+/**
+ * Get submission stats for a task
+ * GET /task-proof/submission-stats?task_id={taskId}
+ * @param {string} taskId
+ * No body. Query param: task_id
+ */
+export const advertiserSubmissionStats = (taskId) =>
+  api.get("/task-proof/submission-stats", { params: { task_id: taskId } });
+
+/* -------------------------------------------------------------------------- */
+/*                                 DASHBOARD / STATS                          */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * Get advertiser task stats (completed and active campaigns)
+ * GET /tasks/stats/advertisers
+ * No params or body
+ */
+export const advertiserTaskStats = () => api.get("/tasks/stats/advertisers");
+
+// for file upload
+export const uploadFile = (file) => {
+  const formData = new FormData();
+  formData.append("files", file); // keep the key that the backend expects
+  return api.post("/files", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+};
+
+export const uploadImage = uploadFile; // identical

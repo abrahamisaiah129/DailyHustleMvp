@@ -3,12 +3,12 @@ import { NavLink, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext";
 import ThemeToggleButton from "./ThemeToggleButton";
 
-const tasksMenu = [
-  { to: "/tasks/campaigns", label: "Campaigns", icon: "bi-bullseye" },
-  { to: "/tasks/my-campaigns", label: "My Campaigns", icon: "bi-list-task" },
-  { to: "/tasks/new", label: "New Campaign", icon: "bi-plus-circle" },
+const jobssMenu = [
+  { to: "/jobss/allcampaigns", label: "Campaigns", icon: "bi-bullseye" },
+  { to: "/jobss/my-campaigns", label: "My Campaigns", icon: "bi-list-jobs" },
+  { to: "/jobss/new", label: "New Campaign", icon: "bi-plus-circle" },
   {
-    to: "/tasks/submissions",
+    to: "/jobss/submissions",
     label: "Review Submissions",
     icon: "bi-check2-square",
   },
@@ -17,10 +17,10 @@ const tasksMenu = [
 const mainMenu = [
   { to: "/dashboard", label: "Dashboard", icon: "bi-house-door-fill" },
   {
-    label: "Tasks",
+    label: "jobss",
     icon: "bi-briefcase-fill",
     dropdown: true,
-    items: tasksMenu,
+    items: jobssMenu,
   },
   { to: "/wallet", label: "Wallet", icon: "bi-wallet2" },
   { to: "/leaderboard", label: "Leaderboard", icon: "bi-trophy" },
@@ -34,9 +34,9 @@ const mainMenu = [
 export default function ResponsiveNav() {
   const { theme } = useTheme();
   const [open, setOpen] = useState(false);
-  const [tasksOpen, setTasksOpen] = useState(false);
+  const [jobssOpen, setjobssOpen] = useState(false);
 
-  // Desktop nav with dropdown for "Tasks"
+  // Desktop nav with dropdown for "jobss"
   const desktopLinks = (
     <ul className="nav align-items-center gap-1 flex-nowrap mb-0 px-2">
       {mainMenu.map((item, idx) =>
@@ -44,14 +44,14 @@ export default function ResponsiveNav() {
           <li key={item.label} className="nav-item dropdown">
             <button
               className="btn btn-ghost nav-link dropdown-toggle d-flex align-items-center"
-              onClick={() => setTasksOpen((o) => !o)}
-              aria-expanded={tasksOpen}
+              onClick={() => setjobssOpen((o) => !o)}
+              aria-expanded={jobssOpen}
               aria-haspopup="true"
             >
               <i className={`bi ${item.icon} me-1`} />
               {item.label}
             </button>
-            {tasksOpen && (
+            {jobssOpen && (
               <ul className={`dropdown-menu show position-absolute mt-2`}>
                 {item.items.map((sub) => (
                   <li key={sub.to}>
@@ -82,7 +82,7 @@ export default function ResponsiveNav() {
     </ul>
   );
 
-  // Mobile nav: all items as vertical, tasks dropdown appears inline
+  // Mobile nav: all items as vertical, jobss dropdown appears inline
   const mobileLinks = (
     <ul className="navbar-nav flex-column gap-2">
       {mainMenu.map((item, idx) =>
@@ -90,8 +90,8 @@ export default function ResponsiveNav() {
           <li key={item.label}>
             <button
               className="btn btn-ghost d-flex align-items-center w-100"
-              onClick={() => setTasksOpen((o) => !o)}
-              aria-expanded={tasksOpen}
+              onClick={() => setjobssOpen((o) => !o)}
+              aria-expanded={jobssOpen}
               type="button"
               tabIndex={0}
             >
@@ -99,11 +99,11 @@ export default function ResponsiveNav() {
               {item.label}
               <i
                 className={`bi ms-auto ${
-                  tasksOpen ? "bi-chevron-up" : "bi-chevron-down"
+                  jobssOpen ? "bi-chevron-up" : "bi-chevron-down"
                 }`}
               ></i>
             </button>
-            {tasksOpen && (
+            {jobssOpen && (
               <div className="ps-3">
                 {item.items.map((sub) => (
                   <NavLink

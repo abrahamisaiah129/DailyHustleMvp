@@ -1,5 +1,5 @@
 import React from "react";
-
+// import { useAdvertiserData } from "../hooks/useAppDataContext";
 const TRAININGS = [
   {
     title: "How to Launch Your First Campaign",
@@ -7,7 +7,7 @@ const TRAININGS = [
     url: "https://www.youtube.com/embed/example1",
     duration: "5:32",
     description:
-      "Step-by-step guide to posting and optimizing your first micro-task campaign.",
+      "Step-by-step guide to posting and optimizing your first micro-jobs campaign.",
   },
   {
     title: "Best Practices: Worker Proof Review",

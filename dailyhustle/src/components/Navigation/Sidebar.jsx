@@ -1,34 +1,27 @@
-import React, { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useMemo } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { useTheme } from "../../hooks/useThemeContext"; // Theme hook (stay as is)
-import { useAppData } from "../../hooks/AppDataContext"; // ✅ Updated hook
+import { useTheme } from "../../hooks/useThemeContext";
+import { useAppData } from "../../hooks/AppDataContext";
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [showBalance, setShowBalance] = useState(false);
   const navigate = useNavigate();
 
-  // ✅ Updated hook for theme and app data
   const { theme, toggleTheme } = useTheme();
   const { userData } = useAppData();
-  const user = userData || {}; // fallback in case context is empty
+  const user = userData || {};
   const isDark = theme === "dark";
 
-  // ✅ Memoized handlers prevent re-renders
   const handleWalletClick = useCallback(() => navigate("/wallet"), [navigate]);
-  const handleAvatarChange = useCallback(() => {
-    document.getElementById("avatarInput")?.click();
-  }, []);
   const handleLogout = useCallback(() => {
     navigate("/login");
     window.location.reload();
   }, [navigate]);
 
-  // ✅ Default avatar safely handled
   const avatar =
-    user.avatar || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
+    user.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
 
-  // ✅ Navigation links (memoized for stability)
   const navLinks = useMemo(
     () => [
       { name: "Dashboard", path: "/dashboard", icon: "bi-house-door-fill" },
@@ -43,15 +36,15 @@ export default function Sidebar() {
     []
   );
 
-  // ✅ Balance formatter
   const formattedBalance =
     user.balance != null ? `₦${user.balance.toLocaleString()}` : "₦0";
 
   return (
     <div
-      className={`sidebar d-flex flex-column p-3 ${collapsed ? "collapsed" : ""}`}
+      className={`sidebar d-flex flex-column p-3 ${
+        collapsed ? "collapsed" : ""
+      }`}
       style={{
-        // width: collapsed ? "80px" : "260px",
         width: collapsed ? "80px" : "100%",
         backgroundColor: isDark ? "#1c1c1e" : "#ffffff",
         color: isDark ? "#f8f9fa" : "#212529",
@@ -85,15 +78,6 @@ export default function Sidebar() {
             margin: "0 auto",
           }}
         />
-        {!collapsed && (
-          <button
-            className="btn btn-sm btn-outline-danger"
-            onClick={handleAvatarChange}
-          >
-            Change Avatar
-          </button>
-        )}
-        <input type="file" id="avatarInput" style={{ display: "none" }} />
       </div>
 
       {/* Wallet / Balance */}
@@ -141,10 +125,7 @@ export default function Sidebar() {
         ))}
 
         {/* Logout */}
-        <button
-          className="btn btn-outline-danger mt-3"
-          onClick={handleLogout}
-        >
+        <button className="btn btn-outline-danger mt-3" onClick={handleLogout}>
           <i className="bi bi-box-arrow-left" />
           {!collapsed && <span className="ms-2">Logout</span>}
         </button>

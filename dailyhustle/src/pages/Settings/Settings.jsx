@@ -1,37 +1,47 @@
-import React, { useState } from "react";
+// src/pages/Settings.jsx
+import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import {
+  uploadImage,
+  updateUser,
+  fileUrlUpdate,
+} from "../../services/services";
 
 export default function Settings() {
   const { theme, toggleTheme } = useTheme();
-  const { userData, updateUserData, addNotification, recordTaskHistory } =
-    useAppData();
+  const {
+    userData,
+    updateUserData,
+    refetchUserData,
+    updateUserImageUrl, // Should be spelled updateUserImageUrl if backend uses that
+    addNotification,
+    recordTaskHistory,
+  } = useAppData();
   const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("profile");
   const [loading, setLoading] = useState(false);
-
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(userData?.photo || "");
+  const fileInputRef = useRef(null);
+  const previousBlobUrl = useRef(null);
   const isDark = theme === "dark";
-  const cardBg = isDark ? "#1c1c1e" : "#fff";
-  const containerBg = isDark ? "#121212" : "#f8f9fa";
-  const textColor = isDark ? "#f8f9fa" : "#212529";
-  const labelColor = isDark ? "#adb5bd" : "#6c757d";
-  const borderColor = isDark ? "#333" : "#dee2e6";
   const primary = "var(--dh-red)";
   const gradientBg = isDark
     ? "linear-gradient(135deg, #660000, #240000)"
     : "linear-gradient(135deg, var(--dh-red), #ff4c4c)";
 
+  // Correct key names from userData
   const {
-    username = "User",
-    email = "user@email.com",
-    phone = "+234 800 000 0000",
+    username = "",
+    email = "",
+    phone = "",
     kyc = {},
     notificationsEnabled = true,
-    // eslint-disable-next-line no-unused-vars
-    autoWithdraw = false,
+    photo = "",
   } = userData || {};
 
   const kycVerified = kyc.status === "verified";
@@ -44,194 +54,344 @@ export default function Settings() {
     { id: "privacy", icon: "eye-slash", title: "Privacy" },
   ];
 
-  // -----------------------
-  // PROFILE SAVE
-  // -----------------------
-  const handleSaveProfile = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setTimeout(() => {
-      updateUserData({ username, email, phone });
-      toast.success("✅ Profile updated successfully!");
+  useEffect(() => {
+    return () => {
+      if (previousBlobUrl.current) {
+        URL.revokeObjectURL(previousBlobUrl.current);
+        previousBlobUrl.current = null;
+      }
+    };
+  }, []);
 
+  const handleAvatarClick = () => fileInputRef.current?.click();
+
+  const handleAvatarChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      toast.error("No image selected");
+      return;
+    }
+
+    setUploadingAvatar(true);
+
+    if (previousBlobUrl.current) {
+      URL.revokeObjectURL(previousBlobUrl.current);
+    }
+
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+    previousBlobUrl.current = previewUrl;
+
+    try {
+      const { data } = await uploadImage(file);
+      console.log("Upload response:", data);
+
+      // Try to extract the image URL from several possible fields
+      const imageUrl =
+        // data?.data &&
+        data?.data[0]?.src;
+      console.log(data?.data[0]?.src);
+      // add the url to database
+      fileUrlUpdate("photo", imageUrl, userData);
+      // data?.imageUrl ||
+      // data?.url ||
+      // data?.src ||
+      // data?.photo ||
+      // data?.data?.imageUrl ||
+      // data?.data?.src ||
+      // data?.data?.url ||
+      // (Array.isArray(data) && data[0]?.url) ||
+      // (Array.isArray(data?.data) && data?.data[0]?.url);
+
+      if (!imageUrl) {
+        toast.error("No image URL returned from server.");
+        console.error("Upload server response (NO URL):", data);
+        throw new Error("No image URL returned from server.");
+      }
+
+      setAvatarPreview(imageUrl);
+      await updateUserImageUrl({ type: "photo", fileUrl: imageUrl });
+      // refetch data
+      refetchUserData();
+      // above refetches
+      // toast.success("Avatar updated!");
       addNotification({
-        title: "Profile Updated",
-        message: "Your profile settings have been successfully saved.",
+        title: "Avatar Updated",
+        message: "Your profile picture has been changed.",
         type: "success",
         category: "profile",
       });
+      if (typeof recordTaskHistory === "function") {
+        recordTaskHistory("avatar", "updated", "User changed profile picture");
+      }
 
-      recordTaskHistory(
-        "profile_update",
-        "updated",
-        `Profile details updated (${username}, ${email})`
+      if (previousBlobUrl.current) {
+        URL.revokeObjectURL(previousBlobUrl.current);
+        previousBlobUrl.current = null;
+      }
+    } catch (error) {
+      console.error("Avatar upload failed:", error);
+      toast.error(
+        error?.response?.data?.message || error.message || "Upload failed"
       );
-      setLoading(false);
-    }, 800);
+      setAvatarPreview(photo);
+    } finally {
+      setUploadingAvatar(false);
+    }
   };
 
-  // -----------------------
-  // NOTIFICATIONS TOGGLE
-  // -----------------------
+  const handleSaveProfile = async (e) => {
+    e.preventDefault();
+
+    // Accept +234XXXXXXXXXX, 234XXXXXXXXXX, or 0XXXXXXXXXX
+    const normPhone = editPhone.startsWith("+234")
+      ? editPhone.replace("+", "")
+      : editPhone;
+    const phoneRegex = /^(234\d{10}|0\d{10})$/;
+    if (!phoneRegex.test(normPhone)) {
+      toast.error("Phone must be 234XXXXXXXXXX or 0XXXXXXXXXX");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await updateUser({
+        username: editUsername,
+        email: editEmail,
+        phone: normPhone,
+      }).then((e) => refetchUserData(), console.log(e));
+      toast.success("Profile saved!");
+      addNotification({
+        title: "Profile Saved",
+        message: "Your details have been updated.",
+        type: "success",
+        category: "profile",
+      });
+      if (typeof recordTaskHistory === "function") {
+        recordTaskHistory(
+          "profile",
+          "updated",
+          `Saved: ${editUsername}, ${editEmail}`
+        );
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Save failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleNotifications = () => {
     const newValue = !notificationsEnabled;
     updateUserData({ notificationsEnabled: newValue });
-
+    toast.success(
+      newValue ? "Notifications enabled" : "Notifications disabled"
+    );
     addNotification({
-      title: newValue ? "Notifications Enabled" : "Notifications Disabled",
-      message: newValue
-        ? "You will now receive in-app alerts."
-        : "All notifications have been muted.",
+      title: newValue ? "Alerts On" : "Alerts Off",
+      message: newValue ? "You’ll get updates" : "All alerts muted",
       type: newValue ? "info" : "warning",
       category: "notifications",
     });
-    recordTaskHistory(
-      "notifications",
-      newValue ? "enabled" : "disabled",
-      `User toggled notification system`
-    );
-
-    toast.success(
-      newValue ? "🔔 Notifications enabled" : "🔕 Notifications disabled"
-    );
+    if (typeof recordTaskHistory === "function") {
+      recordTaskHistory(
+        "notifications",
+        newValue ? "enabled" : "disabled",
+        "User toggled notifications"
+      );
+    }
   };
 
-  // -----------------------
-  // KYC VERIFY
-  // -----------------------
   const verifyKYC = () => {
     navigate("/kyc");
-    addNotification({
-      title: "KYC Started!",
-      message: "Finish verification to unlock withdrawals.",
-      type: "success",
-      category: "kyc",
-    });
-    recordTaskHistory("kyc", "started", "User began KYC verification");
+    addNotification({ title: "KYC Started", type: "success", category: "kyc" });
+    if (typeof recordTaskHistory === "function") {
+      recordTaskHistory("kyc", "started", "User initiated KYC");
+    }
   };
 
-  // -----------------------
-  // LOGOUT
-  // -----------------------
   const logout = () => {
     if (window.confirm("Logout from Daily Hustle?")) {
-      recordTaskHistory("session", "logout", "User logged out");
-      toast.info("👋 Logged out successfully!");
+      if (typeof recordTaskHistory === "function") {
+        recordTaskHistory("session", "logout", "User logged out");
+      }
+      toast.info("Logged out");
+      localStorage.removeItem("userToken");
+      localStorage.removeItem("userLoggedIn");
       navigate("/");
     }
   };
 
-  // -----------------------
-  // PROFILE TAB
-  // -----------------------
+  //  text input
+  const [editUsername, setEditUsername] = useState(username);
+  const [editEmail, setEditEmail] = useState(email);
+  const [editPhone, setEditPhone] = useState(phone);
+
+  useEffect(() => {
+    setEditUsername(username);
+    setEditEmail(email);
+    setEditPhone(phone);
+  }, [username, email, phone]);
+
   const renderProfileTab = () => (
     <form onSubmit={handleSaveProfile}>
       <div
-        className="mb-4 p-3 rounded-3"
-        style={{ backgroundColor: isDark ? "#2a2a2d" : "#f8f9fa" }}
+        className="text-center mb-4 p-4 rounded-3"
+        style={{ background: isDark ? "#23242d" : "#f7f7fd" }}
       >
-        <label className="form-label fw-bold mb-2" style={{ color: textColor }}>
-          <i className="bi bi-person-circle me-2"></i>Full Name
+        <img
+          src={
+            avatarPreview ||
+            photo ||
+            "https://cdn-icons-png.flaticon.com/512/847/847969.png"
+          }
+          alt="Avatar"
+          className="rounded-circle mb-3"
+          style={{
+            width: 90,
+            height: 90,
+            objectFit: "cover",
+            border: `3px solid ${primary}`,
+          }}
+        />
+        <br />
+        <button
+          type="button"
+          onClick={handleAvatarClick}
+          disabled={uploadingAvatar}
+          className="btn btn-outline-danger btn-sm"
+        >
+          {uploadingAvatar ? (
+            <>
+              <span className="spinner-border spinner-border-sm me-2"></span>
+              Uploading...
+            </>
+          ) : (
+            <>
+              <i className="bi bi-camera me-1"></i> Change Avatar
+            </>
+          )}
+        </button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          onChange={handleAvatarChange}
+          style={{ display: "none" }}
+        />
+      </div>
+
+      <div
+        className="mb-4 p-3 rounded-3"
+        style={{ background: isDark ? "#2a2a2d" : "#f8f9fa" }}
+      >
+        <label
+          className="form-label fw-bold d-flex align-items-center"
+          style={{ color: isDark ? "#f8f9fa" : "#212529" }}
+        >
+          <i className="bi bi-person me-2"></i> Username
         </label>
         <input
           type="text"
-          className="form-control rounded-3 py-3"
-          value={username}
-          onChange={(e) => updateUserData({ username: e.target.value })}
+          className="form-control rounded-3"
+          value={editUsername}
+          placeholder="Your username"
+          onChange={(e) => setEditUsername(e.target.value)}
           style={{
-            backgroundColor: cardBg,
-            color: textColor,
-            borderColor: borderColor,
+            background: isDark ? "#1c1c1e" : "#fff",
+            color: isDark ? "#f8f9fa" : "#212529",
+            borderColor: isDark ? "#333" : "#dee2e6",
           }}
         />
       </div>
       <div
         className="mb-4 p-3 rounded-3"
-        style={{ backgroundColor: isDark ? "#2a2a2d" : "#f8f9fa" }}
+        style={{ background: isDark ? "#2a2a2d" : "#f8f9fa" }}
       >
-        <label className="form-label fw-bold mb-2" style={{ color: textColor }}>
-          <i className="bi bi-envelope me-2"></i>Email
+        <label
+          className="form-label fw-bold d-flex align-items-center"
+          style={{ color: isDark ? "#f8f9fa" : "#212529" }}
+        >
+          <i className="bi bi-envelope me-2"></i> Email
         </label>
         <input
           type="email"
-          className="form-control rounded-3 py-3"
-          value={email}
-          onChange={(e) => updateUserData({ email: e.target.value })}
+          className="form-control rounded-3"
+          value={editEmail}
+          placeholder="Email"
+          onChange={(e) => setEditEmail(e.target.value)}
           style={{
-            backgroundColor: cardBg,
-            color: textColor,
-            borderColor: borderColor,
+            background: isDark ? "#1c1c1e" : "#fff",
+            color: isDark ? "#f8f9fa" : "#212529",
+            borderColor: isDark ? "#333" : "#dee2e6",
           }}
         />
       </div>
       <div
         className="mb-4 p-3 rounded-3"
-        style={{ backgroundColor: isDark ? "#2a2a2d" : "#f8f9fa" }}
+        style={{ background: isDark ? "#2a2a2d" : "#f8f9fa" }}
       >
-        <label className="form-label fw-bold mb-2" style={{ color: textColor }}>
-          <i className="bi bi-telephone me-2"></i>Phone Number
+        <label
+          className="form-label fw-bold d-flex align-items-center"
+          style={{ color: isDark ? "#f8f9fa" : "#212529" }}
+        >
+          <i className="bi bi-telephone me-2"></i> Phone Number
         </label>
         <input
           type="tel"
-          className="form-control rounded-3 py-3"
-          value={phone}
-          onChange={(e) => updateUserData({ phone: e.target.value })}
+          className="form-control rounded-3"
+          value={editPhone}
+          placeholder="234XXXXXXXXXX or 0XXXXXXXXXX"
+          onChange={(e) => setEditPhone(e.target.value)}
           style={{
-            backgroundColor: cardBg,
-            color: textColor,
-            borderColor: borderColor,
+            background: isDark ? "#1c1c1e" : "#fff",
+            color: isDark ? "#f8f9fa" : "#212529",
+            borderColor: isDark ? "#333" : "#dee2e6",
           }}
         />
       </div>
 
       <button
         type="submit"
-        className="btn w-100 fw-bold py-3 rounded-pill"
-        style={{
-          background: gradientBg,
-          color: "#fff",
-          border: "none",
-        }}
         disabled={loading}
+        className="btn w-100 fw-bold py-3 rounded-pill text-white"
+        style={{ background: gradientBg, border: "none" }}
       >
         {loading ? (
           <>
-            <span className="spinner-border spinner-border-sm me-2"></span>
+            <span className="spinner-border spinner-border-sm me-2"></span>{" "}
             Saving...
           </>
         ) : (
           <>
-            <i className="bi bi-check-circle me-2"></i>Save Profile
+            <i className="bi bi-check-circle me-2"></i> Save Profile
           </>
         )}
       </button>
     </form>
   );
 
-  // -----------------------
-  // SECURITY TAB
-  // -----------------------
   const renderSecurityTab = () => (
     <div className="row g-4">
       <div className="col-12">
         <div
           className="p-4 rounded-4"
           style={{
-            backgroundColor: cardBg,
+            backgroundColor: isDark ? "#1c1c1e" : "#fff",
             border: `2px solid ${kycVerified ? primary : "#dc3545"}`,
           }}
         >
           <div className="d-flex justify-content-between align-items-center">
             <div>
-              <h6 className="fw-bold mb-1" style={{ color: textColor }}>
+              <h6
+                className="fw-bold mb-1"
+                style={{ color: isDark ? "#f8f9fa" : "#212529" }}
+              >
                 KYC Verification
               </h6>
-              <small
-                style={{
-                  color: kycVerified ? primary : "#dc3545",
-                }}
-              >
-                {kycVerified ? "Verified ✅" : "Not Verified"}
+              <small style={{ color: kycVerified ? primary : "#dc3545" }}>
+                {kycVerified ? "Verified" : "Not Verified"}
               </small>
             </div>
             <button
@@ -251,18 +411,21 @@ export default function Settings() {
 
       <div className="col-md-6">
         <div
-          className="p-4 rounded-4"
+          className="p-4 rounded-4 cursor-pointer"
           style={{
-            backgroundColor: cardBg,
-            border: `1px solid ${borderColor}`,
+            backgroundColor: isDark ? "#1c1c1e" : "#fff",
+            border: `1px solid ${isDark ? "#333" : "#dee2e6"}`,
           }}
           onClick={() => toast.info("Change Password feature coming soon!")}
         >
           <i className="bi bi-key fs-3 mb-3" style={{ color: primary }}></i>
-          <h6 className="fw-bold mb-2" style={{ color: textColor }}>
+          <h6
+            className="fw-bold mb-2"
+            style={{ color: isDark ? "#f8f9fa" : "#212529" }}
+          >
             Change Password
           </h6>
-          <small style={{ color: labelColor }}>
+          <small style={{ color: isDark ? "#adb5bd" : "#6c757d" }}>
             Update account password securely
           </small>
         </div>
@@ -272,8 +435,8 @@ export default function Settings() {
         <div
           className="p-4 rounded-4 cursor-pointer"
           style={{
-            backgroundColor: cardBg,
-            border: `1px solid ${borderColor}`,
+            backgroundColor: isDark ? "#1c1c1e" : "#fff",
+            border: `1px solid ${isDark ? "#333" : "#dee2e6"}`,
           }}
           onClick={logout}
         >
@@ -281,66 +444,42 @@ export default function Settings() {
             className="bi bi-box-arrow-right fs-3 mb-3"
             style={{ color: "#dc3545" }}
           ></i>
-          <h6 className="fw-bold mb-2" style={{ color: textColor }}>
+          <h6
+            className="fw-bold mb-2"
+            style={{ color: isDark ? "#f8f9fa" : "#212529" }}
+          >
             Logout
           </h6>
-          <small style={{ color: labelColor }}>Sign out from account</small>
+          <small style={{ color: isDark ? "#adb5bd" : "#6c757d" }}>
+            Sign out from account
+          </small>
         </div>
       </div>
     </div>
   );
 
-  // -----------------------
-  // NOTIFICATIONS TAB
-  // -----------------------
   const renderNotificationsTab = () => (
-    <div className="row g-4">
-      {[
-        {
-          title: "Task Reminders",
-          desc: "Daily task notifications",
-        },
-        {
-          title: "Payment Updates",
-          desc: "Withdrawal status alerts",
-        },
-        {
-          title: "Referral Bonus",
-          desc: "New friend joined your link",
-        },
-      ].map((item, i) => (
-        <div className="col-md-6" key={i}>
-          <div
-            className="p-4 rounded-4"
-            style={{
-              backgroundColor: cardBg,
-              border: `1px solid ${borderColor}`,
-            }}
-          >
-            <div className="d-flex justify-content-between align-items-center">
-              <div>
-                <h6 className="fw-bold mb-1" style={{ color: textColor }}>
-                  {item.title}
-                </h6>
-                <small style={{ color: labelColor }}>{item.desc}</small>
-              </div>
-              <div className="form-check form-switch">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  checked={notificationsEnabled}
-                  onChange={toggleNotifications}
-                  style={{
-                    backgroundColor: notificationsEnabled
-                      ? primary
-                      : labelColor,
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      ))}
+    <div className="p-3">
+      <div className="form-check form-switch">
+        <input
+          className="form-check-input"
+          type="checkbox"
+          checked={notificationsEnabled}
+          onChange={toggleNotifications}
+        />
+        <label className="form-check-label">Push Notifications</label>
+      </div>
+    </div>
+  );
+
+  const renderPaymentsTab = () => (
+    <div className="p-3">
+      <p>Payment methods coming soon...</p>
+    </div>
+  );
+  const renderPrivacyTab = () => (
+    <div className="p-3">
+      <p>Privacy settings...</p>
     </div>
   );
 
@@ -348,26 +487,25 @@ export default function Settings() {
     <div
       className="p-4"
       style={{
-        backgroundColor: containerBg,
-        color: textColor,
+        backgroundColor: isDark ? "#121212" : "#f8f9fa",
+        color: isDark ? "#f8f9fa" : "#212529",
         minHeight: "100vh",
       }}
     >
-      {/* Header */}
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
           <h1 className="fw-bold mb-1" style={{ color: primary }}>
-            ⚙️ Settings
+            Settings
           </h1>
-          <small style={{ color: labelColor }}>
+          <small style={{ color: isDark ? "#adb5bd" : "#6c757d" }}>
             Manage your Daily Hustle account
           </small>
         </div>
         <button
-          className="btn rounded-pill px-3"
           onClick={toggleTheme}
+          className="btn rounded-pill"
           style={{
-            backgroundColor: isDark ? "#fff" : "#000",
+            background: isDark ? "#fff" : "#000",
             color: isDark ? "#000" : "#fff",
           }}
         >
@@ -375,24 +513,24 @@ export default function Settings() {
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="mb-4 text-center">
+      <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`btn rounded-pill mx-1 px-4 py-2 fw-bold ${
-              activeTab === tab.id ? "text-white shadow" : ""
+            onClick={() => setActiveTab(tab.id)}
+            className={`btn rounded-pill px-4 py-2 fw-bold ${
+              activeTab === tab.id ? "shadow" : ""
             }`}
             style={{
-              backgroundColor: activeTab === tab.id ? primary : "transparent",
-              color: activeTab === tab.id ? "#fff" : textColor,
+              background: activeTab === tab.id ? primary : "transparent",
+              color:
+                activeTab === tab.id ? "#fff" : isDark ? "#f8f9fa" : "#212529",
               border: `1px solid ${
-                activeTab === tab.id ? primary : borderColor
+                activeTab === tab.id ? primary : isDark ? "#333" : "#dee2e6"
               }`,
             }}
-            onClick={() => setActiveTab(tab.id)}
           >
-            <i className={`bi bi-${tab.icon} me-2`}></i>
+            <i className={`bi bi-${tab.icon} me-1`}></i>
             {tab.title}
           </button>
         ))}
@@ -400,11 +538,19 @@ export default function Settings() {
 
       <div
         className="rounded-4 p-4 shadow-sm"
-        style={{ backgroundColor: cardBg }}
+        style={{ background: isDark ? "#1c1c1e" : "#fff" }}
       >
         {activeTab === "profile" && renderProfileTab()}
         {activeTab === "security" && renderSecurityTab()}
         {activeTab === "notifications" && renderNotificationsTab()}
+        {activeTab === "payments" && renderPaymentsTab()}
+        {activeTab === "privacy" && renderPrivacyTab()}
+      </div>
+
+      <div className="text-center mt-4">
+        <button onClick={logout} className="btn btn-link text-danger">
+          <i className="bi bi-box-arrow-right me-2"></i> Logout
+        </button>
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from "react";
 import { useParams, Link } from "react-router-dom";
-import { useAdvertiserData } from "../../context/Advertiser/AdvertiserDataContext";
+import { useAdvertiserData } from "../src/pages/hooks/useAppDataContext";
 
 export default function CampaignDetails() {
   const { id } = useParams();
@@ -48,8 +48,8 @@ export default function CampaignDetails() {
             <div className="d-flex align-items-center gap-3 flex-wrap">
               <span className={`badge ${statusBadge}`}>{campaign.status}</span>
               <span>
-                <i className="bi bi-people-fill me-1" /> Tasks:{" "}
-                {campaign.completedTasks} / {campaign.totalTasks}
+                <i className="bi bi-people-fill me-1" /> jobs:{" "}
+                {campaign.completedjobs} / {campaign.totaljobs}
               </span>
               <span>
                 <i className="bi bi-wallet2 me-1" /> Budget: ₦
@@ -62,7 +62,7 @@ export default function CampaignDetails() {
             </div>
             <div className="mt-4">
               <Link
-                to={`/tasks/my-campaigns`}
+                to={`/jobs/my-campaigns`}
                 className="btn btn-outline-primary me-2"
               >
                 Edit Campaign
@@ -74,7 +74,7 @@ export default function CampaignDetails() {
                 Add Funds
               </button>
               <Link
-                to={`/tasks/submissions?campaign=${campaign.id}`}
+                to={`/jobs/submissions?campaign=${campaign.id}`}
                 className="btn btn-outline-secondary"
               >
                 View Submissions
@@ -113,7 +113,7 @@ export default function CampaignDetails() {
         </div>
       </div>
       <div className="alert alert-secondary rounded-4 shadow-sm">
-        See campaign analytics, edit details, fund your job, or review worker
+        See campaign analytics, edit details, fund your jobs, or review worker
         submissions.
       </div>
     </div>

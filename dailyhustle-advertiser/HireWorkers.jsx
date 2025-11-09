@@ -24,23 +24,25 @@ const countryOptions = [
 
 export default function CampaignCreate() {
   const [form, setForm] = useState({
-    jobTitle: "",
-    jobDetails: "",
+    jobsTitle: "",
+    jobsDetails: "",
     country: "Nigeria",
-    jobCategory: "",
+    jobsCategory: "",
     subCategory: "",
     workersNeeded: "",
     amountPerWorker: "",
     approvalDays: "3",
     screenshotProof: false,
-    jobLink: "",
+    jobsLink: "",
     approvalMode: "",
     file: null,
   });
   const [fileName, setFileName] = useState("");
   const [showPreview, setShowPreview] = useState(false);
 
-  const subCategoryList = form.jobCategory ? categories[form.jobCategory] : [];
+  const subCategoryList = form.jobsCategory
+    ? categories[form.jobsCategory]
+    : [];
 
   const totalBudget =
     (parseInt(form.workersNeeded, 10) || 0) *
@@ -66,18 +68,18 @@ export default function CampaignCreate() {
   function handleSubmit(e) {
     e.preventDefault();
     // You'd submit the form here, e.g. via fetch/axios/mutate
-    alert("Job submitted successfully!");
+    alert("jobs submitted successfully!");
     setForm({
-      jobTitle: "",
-      jobDetails: "",
+      jobsTitle: "",
+      jobsDetails: "",
       country: "Nigeria",
-      jobCategory: "",
+      jobsCategory: "",
       subCategory: "",
       workersNeeded: "",
       amountPerWorker: "",
       approvalDays: "3",
       screenshotProof: false,
-      jobLink: "",
+      jobsLink: "",
       approvalMode: "",
       file: null,
     });
@@ -90,21 +92,21 @@ export default function CampaignCreate() {
       <Row className="mb-3">
         <Col md>
           <Form.Group>
-            <Form.Label>Job Title</Form.Label>
+            <Form.Label>jobs Title</Form.Label>
             <InputGroup>
               <InputGroup.Text>
                 <i className="bi bi-pencil-fill" />
               </InputGroup.Text>
               <Form.Control
-                name="jobTitle"
-                value={form.jobTitle}
+                name="jobsTitle"
+                value={form.jobsTitle}
                 onChange={handleChange}
                 placeholder="e.g. Share flyer on WhatsApp groups"
                 required
               />
             </InputGroup>
             <Form.Text muted>
-              Keep it clear and short, appears in the job feed.
+              Keep it clear and short, appears in the jobs feed.
             </Form.Text>
           </Form.Group>
         </Col>
@@ -126,14 +128,14 @@ export default function CampaignCreate() {
         </Col>
       </Row>
       <Form.Group className="mb-3">
-        <Form.Label>Job Category</Form.Label>
+        <Form.Label>jobs Category</Form.Label>
         <Form.Select
-          name="jobCategory"
-          value={form.jobCategory}
+          name="jobsCategory"
+          value={form.jobsCategory}
           onChange={handleChange}
           required
         >
-          <option value="">Select job category</option>
+          <option value="">Select jobs category</option>
           {categoryOptions.map((cat) => (
             <option key={cat} value={cat}>
               {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -148,10 +150,12 @@ export default function CampaignCreate() {
           value={form.subCategory}
           onChange={handleChange}
           required
-          disabled={!form.jobCategory}
+          disabled={!form.jobsCategory}
         >
           <option value="">
-            {form.jobCategory ? "Select sub category" : "Pick a category first"}
+            {form.jobsCategory
+              ? "Select sub category"
+              : "Pick a category first"}
           </option>
           {subCategoryList.map((sub) => (
             <option key={sub} value={sub}>
@@ -161,14 +165,14 @@ export default function CampaignCreate() {
         </Form.Select>
       </Form.Group>
       <Form.Group className="mb-3">
-        <Form.Label>Job Description & Instructions</Form.Label>
+        <Form.Label>jobs Description & Instructions</Form.Label>
         <Form.Control
           as="textarea"
-          name="jobDetails"
-          value={form.jobDetails}
+          name="jobsDetails"
+          value={form.jobsDetails}
           onChange={handleChange}
           rows={3}
-          placeholder="Explain task steps and required proof..."
+          placeholder="Explain jobs steps and required proof..."
           required
         />
         <Form.Text muted>
@@ -242,10 +246,10 @@ export default function CampaignCreate() {
         </Col>
         <Col md>
           <Form.Group>
-            <Form.Label>Job Link (optional)</Form.Label>
+            <Form.Label>jobs Link (optional)</Form.Label>
             <Form.Control
-              name="jobLink"
-              value={form.jobLink}
+              name="jobsLink"
+              value={form.jobsLink}
               onChange={handleChange}
               placeholder="https://example.com"
               type="url"
@@ -286,7 +290,7 @@ export default function CampaignCreate() {
           Preview
         </Button>
         <Button variant="primary" type="submit">
-          Post Job
+          Post jobs
         </Button>
       </div>
 
@@ -296,13 +300,13 @@ export default function CampaignCreate() {
           <Modal.Title>Campaign Preview</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <h5>{form.jobTitle || "Job title preview"}</h5>
+          <h5>{form.jobsTitle || "jobs title preview"}</h5>
           <div className="small text-muted mb-2">
-            {form.jobCategory} / {form.subCategory} / {form.country} <br />
+            {form.jobsCategory} / {form.subCategory} / {form.country} <br />
             {totalBudget} total
           </div>
           <div className="mb-2">
-            {form.jobDetails || "Job description preview..."}
+            {form.jobsDetails || "jobs description preview..."}
           </div>
           <div className="d-flex gap-3 flex-wrap mb-2">
             <span>

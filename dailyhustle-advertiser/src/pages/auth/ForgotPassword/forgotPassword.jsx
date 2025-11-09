@@ -24,7 +24,7 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       await axios.post(
-        "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1/auths/users/send-otp",
+        "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1/auths/advertisers/send-otp",
         {
           identifier: formFields.email,
           otp_type: "RESET_PASSWORD",

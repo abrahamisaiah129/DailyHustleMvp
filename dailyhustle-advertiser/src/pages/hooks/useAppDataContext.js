@@ -1,7 +1,5 @@
-import React, { createContext, useContext } from "react";
-
-export const AdvertiserDataContext = createContext(null);
-
+import { createContext, useContext } from "react";
+export const AdvertiserDataContext = createContext(undefined);
 export const useAdvertiserData = () => {
   const ctx = useContext(AdvertiserDataContext);
   if (!ctx)

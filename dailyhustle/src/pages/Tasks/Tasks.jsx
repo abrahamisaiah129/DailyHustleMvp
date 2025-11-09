@@ -1,12 +1,12 @@
-import React, { useState, useMemo, useEffect, useCallback } from "react";
-import { Pagination } from "react-bootstrap";
+import React, { useState, useMemo, useEffect } from "react";
+import { Pagination, Badge } from "react-bootstrap";
 import { useAppData } from "../../hooks/AppDataContext";
 import { useTheme } from "../../hooks/useThemeContext";
 import ModalTask from "../../components/Modal/ModalTask";
 
 export default function Tasks() {
   const { theme } = useTheme();
-  const { userData, tasks, onApplyFunc } = useAppData();
+  const { userData, tasks } = useAppData();
 
   const [activeTab, setActiveTab] = useState("available");
   const [filteredTasks, setFilteredTasks] = useState([]);
@@ -16,6 +16,7 @@ export default function Tasks() {
   const perPage = 6;
 
   const isDark = theme === "dark";
+
   const palette = useMemo(
     () => ({
       bg: isDark ? "#121212" : "#f8f9fa",
@@ -23,26 +24,26 @@ export default function Tasks() {
       text: isDark ? "#f8f9fa" : "#212529",
       label: isDark ? "#adb5bd" : "#6c757d",
       red: "var(--dh-red)",
-      redHover: "#c92b2b",
     }),
     [isDark]
   );
 
-  // Filter tasks based on active tab
+  // FILTER TASKS — show only never attempted for "Available"
   useEffect(() => {
     if (activeTab === "available") {
-      // Filter out tasks you have applied for and are neither rejected nor not_attempted
-      setFilteredTasks(
-        tasks.filter(
-          (task) =>
-            !userData.tasks?.some(
-              (myTask) =>
-                myTask.id === task.id &&
-                myTask.status !== "rejected" &&
-                myTask.status !== "not_attempted"
-            )
+      // Collect all attempted tasks by ID (tried at least once)
+      const attemptedTaskIds = new Set(
+        (userData.tasks || []).map(
+          (my) => my.task_id || (my.task && my.task._id)
         )
       );
+      const available = tasks.filter((task) => {
+        const used = task.slots?.used ?? 0;
+        const max = task.slots?.max ?? 0;
+        const isFull = used >= max;
+        return !isFull && !attemptedTaskIds.has(task._id);
+      });
+      setFilteredTasks(available);
     } else {
       setFilteredTasks(userData.tasks || []);
     }
@@ -50,15 +51,9 @@ export default function Tasks() {
   }, [activeTab, tasks, userData.tasks]);
 
   const totalPages = Math.ceil(filteredTasks.length / perPage);
-  const visible = filteredTasks.slice((page - 1) * perPage, page * perPage);
-
-  const handleApply = useCallback(
-    (task) => {
-      onApplyFunc(task);
-      setShowModal(false);
-    },
-    [onApplyFunc]
-  );
+  const visible = useMemo(() => {
+    return filteredTasks.slice((page - 1) * perPage, page * perPage);
+  }, [filteredTasks, page, perPage]);
 
   const paginationStyle = `
     .pagination .page-item .page-link {
@@ -88,7 +83,6 @@ export default function Tasks() {
       <h2 className="text-center fw-bold mb-4" style={{ color: palette.red }}>
         Tasks
       </h2>
-
       {/* Tabs */}
       <div className="d-flex justify-content-center mb-4">
         {["available", "myTasks"].map((tab) => (
@@ -109,67 +103,117 @@ export default function Tasks() {
           </button>
         ))}
       </div>
+      {/* Task List */}
+      {visible.length > 0 ? (
+        visible.map((t, index) => {
+          // available: t is task; myTasks: t.task is actual task
+          const task = activeTab === "available" ? t : t.task || t;
+          // for 'myTasks', get submission_progress for status
+          const userStatus =
+            activeTab === "myTasks"
+              ? String(t.submission_progress || t.status || "").toUpperCase()
+              : null;
+          if (!task) return null;
 
-      {/* List */}
-      {visible.length ? (
-        visible.map((t) => (
-          <div
-            key={t.id}
-            className="p-3 mb-3 rounded shadow-sm"
-            style={{
-              backgroundColor: palette.cardBg,
-              border: "1px solid rgba(0,0,0,0.05)",
-            }}
-          >
-            <div className="d-flex justify-content-between align-items-center flex-wrap">
-              <div className="flex-grow-1">
-                <h6 className="fw-bold mb-1">{t.title}</h6>
-                <p
-                  className="small text-uppercase mb-1"
-                  style={{ color: palette.label }}
-                >
-                  {t.category}
-                </p>
-                <p className="small mb-2">{t.description}</p>
-                <div className="d-flex flex-wrap gap-3 small">
-                  <span style={{ color: palette.red }}>
-                    Reward: ₦{t.payout?.toLocaleString()}
-                  </span>
-                  <span style={{ color: palette.label }}>
-                    Slots: {t.completedSlots}/{t.slots}
-                  </span>
-                  {t.closed && (
-                    <span className="text-danger small">Closed Review</span>
-                  )}
+          const isFull = (task.slots?.used ?? 0) >= (task.slots?.max ?? 0);
+          const isDisabled = activeTab === "available" && isFull;
+
+          const statusColor =
+            userStatus === "PENDING"
+              ? "#ffc107"
+              : userStatus === "REJECTED"
+              ? "#e74c3c"
+              : userStatus === "APPROVED"
+              ? "#2ecc71"
+              : palette.label;
+
+          return (
+            <div
+              key={index}
+              className="p-3 mb-3 rounded shadow-sm"
+              style={{
+                backgroundColor: palette.cardBg,
+                border: "1px solid rgba(0,0,0,0.05)",
+                opacity: isDisabled ? 0.6 : 1,
+              }}
+            >
+              <div className="d-flex justify-content-between align-items-center flex-wrap">
+                <div className="flex-grow-1">
+                  <h6 className="fw-bold mb-1">{task.title}</h6>
+                  <p
+                    className="small text-uppercase mb-1"
+                    style={{ color: palette.label }}
+                  >
+                    {task.category}
+                  </p>
+                  <p className="small mb-2">{task.description}</p>
+                  <div className="d-flex flex-wrap align-items-center gap-3 small">
+                    <span>
+                      <b>Reward:</b> {task.reward?.currency}{" "}
+                      {typeof task.reward?.amount_per_worker !== "undefined"
+                        ? task.reward.amount_per_worker.toLocaleString()
+                        : (task.reward?.amount || 0).toLocaleString()}
+                    </span>
+                    <span style={{ color: palette.label }}>
+                      Slots: {task.slots?.used ?? 0}/{task.slots?.max ?? 0}
+                    </span>
+                    {isFull && <Badge bg="danger">Full</Badge>}
+                    {task.review_type?.toUpperCase() === "OPEN" && (
+                      <Badge bg="info">Open Review</Badge>
+                    )}{" "}
+                    {task.review_type?.toUpperCase() === "CLOSED" && (
+                      <Badge bg="info">Closed Review</Badge>
+                    )}
+                    {userStatus && (
+                      <span
+                        className="fw-semibold"
+                        style={{
+                          color: statusColor,
+                          textTransform: "uppercase",
+                        }}
+                      >
+                        {userStatus}
+                      </span>
+                    )}
+                  </div>
                 </div>
+                <button
+                  className="btn fw-bold rounded-pill text-white"
+                  style={{
+                    backgroundColor: isDisabled ? "#6c757d" : palette.red,
+                    minWidth: "130px",
+                    border: "none",
+                    cursor: isDisabled ? "not-allowed" : "pointer",
+                  }}
+                  onClick={() => {
+                    if (!isDisabled) {
+                      setSelectedTask(task);
+                      setShowModal(true);
+                    }
+                  }}
+                  disabled={isDisabled}
+                >
+                  {activeTab === "available"
+                    ? isFull
+                      ? "Full"
+                      : "View Details"
+                    : "View Proof"}
+                </button>
               </div>
-              <button
-                className="btn fw-bold rounded-pill text-white"
-                style={{
-                  backgroundColor: palette.red,
-                  minWidth: "130px",
-                  border: "none",
-                }}
-                onClick={() => {
-                  setSelectedTask(t);
-                  setShowModal(true);
-                }}
-              >
-                View Details
-              </button>
             </div>
-          </div>
-        ))
+          );
+        })
       ) : (
         <div className="text-center py-5" style={{ color: palette.label }}>
-          No tasks available.
+          {activeTab === "available"
+            ? "No available tasks right now. Check back soon!"
+            : "You haven't started any tasks yet."}
         </div>
       )}
-
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="d-flex justify-content-center mt-4">
-          <Pagination style={{ color: palette.red }}>
+          <Pagination>
             <Pagination.Prev
               onClick={() => setPage(page - 1)}
               disabled={page === 1}
@@ -190,16 +234,13 @@ export default function Tasks() {
           </Pagination>
         </div>
       )}
-
-      {/* MODAL */}
+      {/* Modal */}
       {selectedTask && (
         <ModalTask
           task={selectedTask}
           show={showModal}
           onClose={() => setShowModal(false)}
-          onApply={activeTab === "available" ? handleApply : undefined}
-          previewOnly={activeTab !== "available"}
-          isReview={selectedTask.closed}
+          isReview={selectedTask.review_type?.toUpperCase() === "OPEN"}
         />
       )}
     </div>

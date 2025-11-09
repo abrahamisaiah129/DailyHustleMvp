@@ -1,12 +1,12 @@
-// src/data/jobCategories.js
-export const jobCategories = [
+// src/data/jobsCategories.js
+export const jobsCategories = [
   {
     name: "Affiliate Marketing",
     key: "affiliate",
     subcategories: [
       {
         name: "Sign Up Offers",
-        taskTypes: [
+        jobsTypes: [
           "Simple Sign Up",
           "Sign Up + Verify Email",
           "Sign Up + Purchase",
@@ -14,11 +14,7 @@ export const jobCategories = [
       },
       {
         name: "Referral Rewards",
-        taskTypes: [
-          "Refer 1 Friend",
-          "Refer 5 Friends",
-          "Refer 10 Friends",
-        ],
+        jobsTypes: ["Refer 1 Friend", "Refer 5 Friends", "Refer 10 Friends"],
       },
     ],
   },
@@ -28,7 +24,7 @@ export const jobCategories = [
     subcategories: [
       {
         name: "App Installs",
-        taskTypes: [
+        jobsTypes: [
           "Install Only",
           "Install + Register",
           "Install + Use for 3 Days",
@@ -36,11 +32,7 @@ export const jobCategories = [
       },
       {
         name: "Game Plays",
-        taskTypes: [
-          "Play Once",
-          "Reach Level 5",
-          "Invite Friend to Game",
-        ],
+        jobsTypes: ["Play Once", "Reach Level 5", "Invite Friend to Game"],
       },
     ],
   },
@@ -50,15 +42,11 @@ export const jobCategories = [
     subcategories: [
       {
         name: "Music Streams",
-        taskTypes: [
-          "Stream Song",
-          "Share Song Link",
-          "Add to Playlist",
-        ],
+        jobsTypes: ["Stream Song", "Share Song Link", "Add to Playlist"],
       },
       {
         name: "Follow Artist",
-        taskTypes: [
+        jobsTypes: [
           "Follow on Spotify",
           "Follow on Audiomack",
           "Follow on Boomplay",
@@ -72,19 +60,11 @@ export const jobCategories = [
     subcategories: [
       {
         name: "Page Engagement",
-        taskTypes: [
-          "Like Page",
-          "Share Page",
-          "Comment on Post",
-        ],
+        jobsTypes: ["Like Page", "Share Page", "Comment on Post"],
       },
       {
         name: "Group Promotion",
-        taskTypes: [
-          "Join Group",
-          "Post Screenshot",
-          "Invite Members",
-        ],
+        jobsTypes: ["Join Group", "Post Screenshot", "Invite Members"],
       },
     ],
   },
@@ -93,8 +73,8 @@ export const jobCategories = [
     key: "instagram",
     subcategories: [
       {
-        name: "Engagement Tasks",
-        taskTypes: [
+        name: "Engagement jobss",
+        jobsTypes: [
           "Follow Account",
           "Like Post",
           "Comment on Post",
@@ -103,11 +83,7 @@ export const jobCategories = [
       },
       {
         name: "Reel Interaction",
-        taskTypes: [
-          "Like Reel",
-          "Comment on Reel",
-          "Save Reel",
-        ],
+        jobsTypes: ["Like Reel", "Comment on Reel", "Save Reel"],
       },
     ],
   },
@@ -116,21 +92,12 @@ export const jobCategories = [
     key: "tiktok",
     subcategories: [
       {
-        name: "Engagement Tasks",
-        taskTypes: [
-          "Follow Account",
-          "Like Video",
-          "Comment",
-          "Duet Video",
-        ],
+        name: "Engagement jobss",
+        jobsTypes: ["Follow Account", "Like Video", "Comment", "Duet Video"],
       },
       {
         name: "Hashtag Challenges",
-        taskTypes: [
-          "Create Video",
-          "Use Hashtag",
-          "Mention Brand",
-        ],
+        jobsTypes: ["Create Video", "Use Hashtag", "Mention Brand"],
       },
     ],
   },
@@ -140,19 +107,11 @@ export const jobCategories = [
     subcategories: [
       {
         name: "Channel Engagement",
-        taskTypes: [
-          "Subscribe",
-          "Turn on Notification",
-          "Like Video",
-        ],
+        jobsTypes: ["Subscribe", "Turn on Notification", "Like Video"],
       },
       {
-        name: "Watch Time Tasks",
-        taskTypes: [
-          "Watch 1 Min",
-          "Watch 5 Mins",
-          "Watch 10 Mins + Comment",
-        ],
+        name: "Watch Time jobss",
+        jobsTypes: ["Watch 1 Min", "Watch 5 Mins", "Watch 10 Mins + Comment"],
       },
     ],
   },
@@ -162,19 +121,11 @@ export const jobCategories = [
     subcategories: [
       {
         name: "Channel Growth",
-        taskTypes: [
-          "Join Channel",
-          "Post Screenshot",
-          "Invite 3 Friends",
-        ],
+        jobsTypes: ["Join Channel", "Post Screenshot", "Invite 3 Friends"],
       },
       {
-        name: "Community Tasks",
-        taskTypes: [
-          "Comment",
-          "React to Message",
-          "Forward Post",
-        ],
+        name: "Community jobss",
+        jobsTypes: ["Comment", "React to Message", "Forward Post"],
       },
     ],
   },
@@ -184,19 +135,11 @@ export const jobCategories = [
     subcategories: [
       {
         name: "Broadcast Campaign",
-        taskTypes: [
-          "Share Flyer",
-          "Post Status",
-          "Forward Message",
-        ],
+        jobsTypes: ["Share Flyer", "Post Status", "Forward Message"],
       },
       {
         name: "Group Campaign",
-        taskTypes: [
-          "Join Group",
-          "Share Link",
-          "Invite Members",
-        ],
+        jobsTypes: ["Join Group", "Share Link", "Invite Members"],
       },
     ],
   },

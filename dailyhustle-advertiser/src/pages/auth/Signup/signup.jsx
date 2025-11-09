@@ -1,8 +1,12 @@
 import React, { useState, useRef, useEffect } from "react";
-import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import {
+  advertiserRegister,
+  advertiserValidateRegistrationToken,
+  advertiserLogin,
+} from "../../services/services";
 
 const getPasswordStrength = (pw) => {
   let score = 0;
@@ -28,7 +32,7 @@ export default function QuickSignup() {
     email: "",
     password: "",
     referral_code: "",
-    role: "User",
+    role: "Advertiser",
     country: "Ghana",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -53,10 +57,7 @@ export default function QuickSignup() {
     }
     setLoading(true);
     try {
-      await axios.post(
-        "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1/auths/users/register",
-        formData
-      );
+      await advertiserRegister(formData);
       toast.success("Registration successful! OTP sent to your email.");
       setTimeout(() => setStep(1), 600);
     } catch (err) {
@@ -79,7 +80,7 @@ export default function QuickSignup() {
       otpRefs.current[index - 1].current?.focus();
   };
 
-  // OTP Verification & Auto Login
+  // OTP Verification & Auto Login (Advertiser)
   const handleVerifyOtp = async () => {
     const otpCode = otp.join("");
     if (otpCode.length !== 6) {
@@ -88,28 +89,19 @@ export default function QuickSignup() {
     }
     setLoading(true);
     try {
-      await axios.post(
-        "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1/auths/users/register/validate-token",
-        {
-          verification_code: otpCode,
-          email: formData.email,
-        }
-      );
+      await advertiserValidateRegistrationToken({ token: otpCode });
       toast.success("Account verified! Welcome aboard! 🎉");
       setOtpVerified(true);
 
       // -- Automatic login starts here --
       try {
-        const loginRes = await axios.post(
-          "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/auths/users/login",
-          {
-            identifier: formData.username || formData.email, // Use username if provided otherwise email
-            password: formData.password,
-          }
-        );
+        const loginRes = await advertiserLogin({
+          identifier: formData.username || formData.email,
+          password: formData.password,
+        });
         if (loginRes.status === 200 && loginRes.data.data?.token) {
           toast.success("Login successful!");
-          localStorage.setItem("userToken", loginRes.data.data.token);
+          localStorage.setItem("token", loginRes.data.data.token);
           localStorage.setItem("isAuth", "true");
           setTimeout(() => (window.location.href = "/dashboard"), 1200);
         }

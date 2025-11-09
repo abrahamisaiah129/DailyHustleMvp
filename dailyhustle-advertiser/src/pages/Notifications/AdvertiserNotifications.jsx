@@ -1,13 +1,13 @@
-import React from "react";
-import { useAdvertiserData } from "../../context/Advertiser/AdvertiserDataContext";
+// import React from "react";
+// import { useAdvertiserData } from "../hooks/useAppDataContext";
 
 export default function AdvertiserNotifications() {
   // If you add notifications to context (suggested), pull them like this:
-  const { notifications = [] } = useAdvertiserData();
+  // const { notifications = [] } = useAdvertiserData();
 
   return (
     <div className="container py-4">
-      <h2 className="fw-bold mb-4">
+      {/* <h2 className="fw-bold mb-4">
         <i className="bi bi-bell text-warning me-2" />
         Notifications
       </h2>
@@ -49,7 +49,7 @@ export default function AdvertiserNotifications() {
             ))}
           </ul>
         )}
-      </div>
+      </div> */}
     </div>
   );
 }
