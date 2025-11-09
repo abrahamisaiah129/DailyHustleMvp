@@ -35,7 +35,7 @@ export default function MyCampaigns() {
       text: isDark ? "#f7f7fa" : "#212529",
       label: isDark ? "#adb5bd" : "#6c757d",
       border: isDark ? "#313843" : "#dee2e6",
-      red: "#d80067",
+      red: "#ff4500",
       success: "#28a745",
       warning: "#ffc107",
       secondary: "#6c757d",

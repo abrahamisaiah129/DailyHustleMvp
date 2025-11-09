@@ -368,7 +368,7 @@ body {
   border: none;
 }
 .btn-custom:hover {
-  background: #d80067;
+  background: #ff4500;
 }
 .btn-outline-primary {
   border-color: var(--bs-danger);

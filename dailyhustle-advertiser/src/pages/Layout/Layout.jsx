@@ -4,7 +4,7 @@ import { useAdvertiserData } from "../hooks/useAppDataContext";
 import { useTheme } from "../../context/ThemeContext";
 import Logo from "/dailyjhustleimage.png";
 
-const BRAND_RED = "#d80067";
+const BRAND_RED = "#ff4500";
 
 export default function Layout() {
   const { theme, setTheme } = useTheme();
@@ -41,6 +41,9 @@ export default function Layout() {
     { to: "/jobs/my-campaigns", icon: "bi-list-jobs", label: "My Campaigns" },
     { to: "/jobs/new", icon: "bi-plus-circle", label: "New Campaign" },
     { to: "/wallet", icon: "bi-wallet2", label: "Wallet" },
+    { to: "/login", icon: "bi-box-arrow-in-right", label: "Login" },
+    { to: "/signup", icon: "bi-person-plus", label: "QuickSignup" },
+    { to: "/logout", icon: "bi-box-arrow-in-left", label: "Logout" },
   ];
 
   const renderNavLink = (item) => (

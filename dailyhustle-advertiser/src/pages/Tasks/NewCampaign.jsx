@@ -225,7 +225,7 @@ export default function NewCampaign() {
       text: isDark ? "#f7f7fa" : "#212529",
       label: isDark ? "#adb5bd" : "#6c757d",
       border: isDark ? "#313843" : "#dee2e6",
-      red: "#d80067",
+      red: "#ff4500",
       input: isDark ? "#1c1c1e" : "#fff",
       hoverBg: isDark ? "#242b3d" : "#f2f6fd",
     }),
