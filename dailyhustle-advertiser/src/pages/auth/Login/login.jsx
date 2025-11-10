@@ -119,7 +119,7 @@ const Login = () => {
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2"></span>
-                Logging in...
+                Logging in... 
               </>
             ) : (
               "Login"
