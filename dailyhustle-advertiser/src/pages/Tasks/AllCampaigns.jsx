@@ -123,8 +123,14 @@ const CAMPAIGN_CATEGORIES = {
   },
   Review: {
     icon: "bi-star-fill",
-    items: ["Facebook Page"],
+    items: [
+      "Facebook Page",
+      "Google Review",
+      "Facebook Review",
+      "Trust Pilot Review",
+    ],
   },
+
   "Sign Up": {
     icon: "bi-person-plus",
     items: [
