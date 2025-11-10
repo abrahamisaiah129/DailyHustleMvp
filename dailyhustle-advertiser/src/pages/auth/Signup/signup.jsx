@@ -8,6 +8,7 @@ import {
   advertiserLogin,
 } from "../../services/services";
 
+// Password strength utils
 const getPasswordStrength = (pw) => {
   let score = 0;
   if (!pw) return 0;
@@ -32,7 +33,7 @@ export default function QuickSignup() {
     email: "",
     password: "",
     referral_code: "",
-    role: "Advertiser",
+    // role: "Advertiser",
     country: "Ghana",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -61,13 +62,13 @@ export default function QuickSignup() {
       toast.success("Registration successful! OTP sent to your email.");
       setTimeout(() => setStep(1), 600);
     } catch (err) {
-      toast.error(err.response?.data?.message || "Registration failed.");
+      toast.error(err?.response?.data?.message || "Registration failed.");
     } finally {
       setLoading(false);
     }
   };
 
-  // OTP input handlers
+  // OTP Input handlers
   const handleOtpChange = (value, index) => {
     if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
@@ -80,7 +81,7 @@ export default function QuickSignup() {
       otpRefs.current[index - 1].current?.focus();
   };
 
-  // OTP Verification & Auto Login (Advertiser)
+  // OTP Verification & Auto Login
   const handleVerifyOtp = async () => {
     const otpCode = otp.join("");
     if (otpCode.length !== 6) {
@@ -89,11 +90,11 @@ export default function QuickSignup() {
     }
     setLoading(true);
     try {
-      await advertiserValidateRegistrationToken({ token: otpCode });
+      await advertiserValidateRegistrationToken({ email: formData.email, token: otpCode });
       toast.success("Account verified! Welcome aboard! 🎉");
       setOtpVerified(true);
 
-      // -- Automatic login starts here --
+      // Automatic login
       try {
         const loginRes = await advertiserLogin({
           identifier: formData.username || formData.email,
@@ -107,7 +108,7 @@ export default function QuickSignup() {
         }
       } catch (loginErr) {
         toast.error(
-          loginErr.response?.data?.message ||
+          loginErr?.response?.data?.message ||
             "Autologin failed. Please try to log in manually."
         );
       }
@@ -222,6 +223,7 @@ export default function QuickSignup() {
                   onClick={() => setShowPassword((v) => !v)}
                   tabIndex={-1}
                   aria-label={showPassword ? "Hide Password" : "Show Password"}
+                  style={{ boxShadow: "none" }}
                 >
                   <i
                     className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
