@@ -121,7 +121,9 @@ const categoriesData = {
     "Vote Via SMS (Bounty)",
     "Complex Vote (Multiple Survey, Email, Phone Verification)",
   ],
-  Review: ["Facebook Page"],
+  Review: ["Facebook Page" ,"Google Review",
+      "Facebook Review",
+      "Trust Pilot Review",],
   "Sign Up": [
     "Forum Sign Up (Bounty)",
     "Quick Email Sign Up (Bounty)",

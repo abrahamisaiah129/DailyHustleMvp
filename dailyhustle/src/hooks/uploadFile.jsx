@@ -1,6 +1,6 @@
 import { uploadResponse } from "../services/services";
 import { fileUpload } from "../services/services";
-export const uploadFile = async (file) => {
+export const uploadfileu = async (file) => {
   try {
     // Step 1: Upload file to /files endpoint (goes to Cloudinary)
     const formData = new FormData();

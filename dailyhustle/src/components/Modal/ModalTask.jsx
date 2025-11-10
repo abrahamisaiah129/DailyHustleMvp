@@ -1,4 +1,3 @@
-// src/components/ModalTask.jsx
 import React, { useState, useEffect, useRef } from "react";
 import { Modal, Button, Form, Spinner } from "react-bootstrap";
 import { useTheme } from "../../hooks/useThemeContext";
@@ -20,9 +19,7 @@ export default function ModalTask({ task, show, onClose }) {
   const text = isDark ? "#f8f9fa" : "#212529";
   const primary = "var(--dh-red)";
 
-  // Local proof record for start
   const [localProofRecord, setLocalProofRecord] = useState(null);
-  // Always prefer local, fallback to backend/userData
   const proofRecord =
     localProofRecord ||
     userData?.tasks?.find((t) => (t.task?._id || t.task_id) === task._id) ||
@@ -39,7 +36,6 @@ export default function ModalTask({ task, show, onClose }) {
   const isApproved = userStatus === "approved";
   const hasStarted = !!proofRecord;
 
-  /* UI State */
   const [showProofForm, setShowProofForm] = useState(false);
   const [proofText, setProofText] = useState("");
   const [proofFile, setProofFile] = useState(null);
@@ -49,7 +45,6 @@ export default function ModalTask({ task, show, onClose }) {
   const [error, setError] = useState("");
   const fileInputRef = useRef();
 
-  /* Copy review text (closed reviews) */
   const handleCopy = () => {
     if (task.review_text) {
       navigator.clipboard.writeText(task.review_text);
@@ -57,7 +52,6 @@ export default function ModalTask({ task, show, onClose }) {
     }
   };
 
-  /* Reset/Prefill modal state */
   useEffect(() => {
     if (!show) {
       setProofText("");
@@ -69,12 +63,10 @@ export default function ModalTask({ task, show, onClose }) {
       if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-
     if (proofRecord) {
       setProofText(proofRecord.title || "");
       setPreviewURL(proofRecord.src || null);
       setProofFile(null);
-
       if (isPending || isApproved) {
         setShowProofForm(false);
       } else {
@@ -90,7 +82,6 @@ export default function ModalTask({ task, show, onClose }) {
     }
   }, [show, proofRecord, isPending, isApproved, isRejected]);
 
-  /* Proof file preview (only for new upload) */
   useEffect(() => {
     if (proofFile) {
       const url = URL.createObjectURL(proofFile);
@@ -99,7 +90,6 @@ export default function ModalTask({ task, show, onClose }) {
     }
   }, [proofFile]);
 
-  /* Start task: create local/new proof */
   const handleStartTask = async () => {
     if (isStarting || hasStarted) return;
     setIsStarting(true);
@@ -107,19 +97,16 @@ export default function ModalTask({ task, show, onClose }) {
     try {
       const proofData = await onApplyFunc(task);
       if (!proofData?._id) throw new Error("Invalid proof response");
-
       const newProof = {
         ...proofData,
         task_id: proofData.task_id || task._id,
         task,
       };
-
       setLocalProofRecord(newProof);
       setUserData((prev) => ({
         ...prev,
         tasks: [...(Array.isArray(prev.tasks) ? prev.tasks : []), newProof],
       }));
-
       setShowProofForm(true);
       showNotification?.(`Started: "${task.title}"`, "success");
     } catch (err) {
@@ -152,67 +139,47 @@ export default function ModalTask({ task, show, onClose }) {
     setProofFile(file);
   };
 
-  /* Submit proof */
   const handleSubmitProof = async (e) => {
     e.preventDefault();
     if (!proofText.trim()) {
       setError("Text proof required");
       return;
     }
-
-    // FIX 1: Check previewURL as well as proofFile
-    // This allows resubmitting a rejected task without re-uploading the image
     if (!proofFile && !previewURL) {
       setError("Image proof required");
       return;
     }
-
     if (!proofRecord?._id) {
       setError("System error. Please refresh.");
       return;
     }
-
     setIsSubmitting(true);
     setError("");
     try {
-      // Default to the existing image URL (from previewURL)
       let src = previewURL;
-
-      // If a *new* file was selected, upload it and get the new URL
       if (proofFile) {
         const res = await uploadFile(proofFile);
         if (!res.data?.data?.[0]?.src) throw new Error("Upload failed");
         src = res.data.data[0].src;
       }
-
       const submittedTitle = proofText.trim();
-
-      // Submit to backend
       await submitTaskProof(proofRecord._id, { title: submittedTitle, src });
-
-      // FIX 2: Manually update the client-side userData context.
-      // This ensures the local state has the new data *before* the modal closes.
       setUserData((prev) => {
         const newTasks = (prev.tasks || []).map((t) => {
           const taskId = t.task?._id || t.task_id;
           if (taskId === task._id) {
-            // Update this task's proof record
             return {
               ...t,
               title: submittedTitle,
               src: src,
-              status: "pending", // Force status to pending
-              submission_progress: "pending", // Force status to pending
+              status: "pending",
+              submission_progress: "pending",
             };
           }
           return t;
         });
         return { ...prev, tasks: newTasks };
       });
-
-      // Now when the modal closes and re-opens, the proofRecord
-      // from userData.tasks will have the correct title and src.
-
       setShowProofForm(false);
       showNotification?.("Proof submitted!", "success");
       onClose?.();
@@ -359,7 +326,6 @@ export default function ModalTask({ task, show, onClose }) {
             <h6 className="fw-bold mb-3" style={{ color: primary }}>
               Submit Proof (Text + Image Required)
             </h6>
-
             <Form.Group className="mb-3">
               <Form.Label>Text Proof</Form.Label>
               <Form.Control
@@ -372,7 +338,6 @@ export default function ModalTask({ task, show, onClose }) {
                 required
               />
             </Form.Group>
-
             <Form.Group className="mb-3">
               <Form.Label>Image Proof</Form.Label>
               <Form.Control
@@ -381,7 +346,6 @@ export default function ModalTask({ task, show, onClose }) {
                 accept="image/*"
                 onChange={handleFileChange}
                 disabled={isSubmitting}
-                // 'required' is only true if there isn't already a previewURL
                 required={!previewURL}
               />
               {previewURL && (
@@ -395,7 +359,6 @@ export default function ModalTask({ task, show, onClose }) {
                 </div>
               )}
             </Form.Group>
-
             <div className="d-flex justify-content-end gap-2">
               <Button
                 type="submit"
@@ -429,9 +392,7 @@ export default function ModalTask({ task, show, onClose }) {
               {isPending && "Awaiting review..."}
               {isApproved && "Approved! Reward incoming."}
             </div>
-
             <div className="mt-4">
-              {/* TEXT PROOF */}
               <Form.Group className="mb-3">
                 <Form.Label>Text Proof</Form.Label>
                 <Form.Control
@@ -446,8 +407,6 @@ export default function ModalTask({ task, show, onClose }) {
                   }}
                 />
               </Form.Group>
-
-              {/* IMAGE PROOF */}
               {proofRecord?.src && (
                 <Form.Group className="mb-3">
                   <Form.Label>Image Proof</Form.Label>
