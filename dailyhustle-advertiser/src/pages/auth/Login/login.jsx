@@ -1,11 +1,9 @@
-// import { useAdvertiserData } from "../../hooks/useAppDataContext";
 import React, { useState, useRef, useEffect } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 import { advertiserLogin } from "../../services/services";
-// import { useAdvertiserData } from "../../hooks/useAppDataContext";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -16,7 +14,6 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [loginError, setLoginError] = useState("");
   const idRef = useRef(null);
-  // const { setUserLoggedIn } = useAdvertiserData();
 
   useEffect(() => {
     idRef.current?.focus();
@@ -30,19 +27,15 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     setLoginError("");
-
     try {
-      // Pass { identifier, password } as expected by backend
       const res = await advertiserLogin(formData);
       if (res.status === 200 && res.data.data?.token) {
         toast.success("Login successful!");
-        // Store token for logged in user
         localStorage.setItem("token", res.data.data.token);
         localStorage.setItem("isAuth", "true");
-        // setUserLoggedIn(true); // If using context
         setTimeout(() => (window.location.href = "/"), 1200);
       } else {
-        const msg = res.data.message || "Invalid credentials";
+        const msg = res.data?.message || "Invalid credentials";
         setLoginError(msg);
         toast.error(msg);
       }
@@ -85,9 +78,9 @@ const Login = () => {
               onChange={handleChange}
               required
               autoComplete="username"
+              disabled={loading}
             />
           </div>
-
           <div className="mb-2 position-relative">
             <label className="form-label fw-semibold">Password</label>
             <input
@@ -98,6 +91,7 @@ const Login = () => {
               onChange={handleChange}
               required
               autoComplete="current-password"
+              disabled={loading}
             />
             <button
               type="button"
@@ -105,19 +99,18 @@ const Login = () => {
               className="btn btn-link p-0 position-absolute top-50 end-0 pe-3 translate-middle-y text-muted"
               onClick={() => setShowPassword((v) => !v)}
               style={{ fontSize: "1.3rem" }}
+              aria-label={showPassword ? "Hide password" : "Show password"}
             >
               <i
                 className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
               ></i>
             </button>
           </div>
-
           {loginError && (
             <div className="alert alert-danger small py-2 mb-2 mt-2 text-center">
               {loginError}
             </div>
           )}
-
           <button
             type="submit"
             className="btn btn-danger w-100 py-2 rounded-3 fw-semibold"
@@ -132,7 +125,6 @@ const Login = () => {
               "Login"
             )}
           </button>
-
           <p className="text-center mt-3 mb-0">
             Don’t have an account?{" "}
             <a
@@ -142,6 +134,14 @@ const Login = () => {
               Sign up
             </a>
           </p>
+          <div className="text-center mt-2">
+            <a
+              href="/forgotpassword"
+              className="small text-decoration-none text-danger fw-semibold"
+            >
+              Forgot Password?
+            </a>
+          </div>
         </form>
       </div>
     </div>
