@@ -9,7 +9,7 @@ import MyCampaigns from "./pages/Tasks/MyCampaigns";
 import QuickSignup from "./pages/auth/Signup/signup";
 import Login from "./pages/auth/Login/login";
 import KYCForm from "./pages/auth/Kyc/kyc";
-// import ForgotPassword from "./pages/auth/ForgotPassword/forgotPassword";
+import ForgotPassword from "./pages/auth/ForgotPassword/forgotPassword";
 import NewCampaign from "./pages/Tasks/NewCampaign";
 import Trainings from "./pages/Training/Trainings";
 import AdvertiserWallet from "./pages/Wallet/AdvertiserWallet";
@@ -43,7 +43,7 @@ export default function App() {
       {/* ✅ AUTH ROUTES - NO LAYOUT */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<QuickSignup />} />
-      {/* <Route path="/forgotpassword" element={<ForgotPassword />} /> */}
+      <Route path="/forgotpassword" element={<ForgotPassword />} />
       <Route path="/kyc" element={<KYCForm />} />
 
       {/* ✅ LOGOUT ROUTE - CLEARS STORAGE & REDIRECTS */}

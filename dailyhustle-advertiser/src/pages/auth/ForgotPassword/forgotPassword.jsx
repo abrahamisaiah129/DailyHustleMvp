@@ -47,7 +47,7 @@ export default function ForgotPassword() {
     setLoading(true);
     try {
       await axios.post(
-        "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1/auths/users/reset-password",
+        "https://daily-hustle-backend-fb9c10f98583.herokuapp.com/api/v1/auths/advertisers/reset-password",
         {
           email: formFields.email,
           otp: formFields.otp,
@@ -100,6 +100,7 @@ export default function ForgotPassword() {
                 required
                 autoFocus
                 disabled={loading}
+                autoComplete="username"
               />
               <button
                 type="submit"
@@ -133,6 +134,7 @@ export default function ForgotPassword() {
                 onChange={handleChange}
                 required
                 disabled={loading}
+                autoComplete="one-time-code"
               />
               <label className="form-label">New Password</label>
               <div className="position-relative mb-3">
@@ -145,6 +147,7 @@ export default function ForgotPassword() {
                   onChange={handleChange}
                   required
                   disabled={loading}
+                  autoComplete="new-password"
                 />
                 <button
                   type="button"
@@ -152,6 +155,7 @@ export default function ForgotPassword() {
                   onClick={() => setShowPassword((v) => !v)}
                   tabIndex={-1}
                   aria-label={showPassword ? "Hide password" : "Show password"}
+                  style={{ boxShadow: "none" }}
                 >
                   <i
                     className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}
