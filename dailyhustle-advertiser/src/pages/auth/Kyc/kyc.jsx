@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "react-toastify/dist/ReactToastify.css";
 
 const KYCForm = () => {
   const [formData, setFormData] = useState({
@@ -9,14 +10,11 @@ const KYCForm = () => {
     dob: "",
     address: "",
     idCard: null,
-    utilityBill: null, // Added utility bill
+    utilityBill: null,
   });
   const [loading, setLoading] = useState(false);
 
-  // State for the pre-form agreement
   const [agreedToTerms, setAgreedToTerms] = useState(false);
-
-  // State for image previews
   const [idCardPreview, setIdCardPreview] = useState(null);
   const [utilityBillPreview, setUtilityBillPreview] = useState(null);
 
@@ -26,20 +24,16 @@ const KYCForm = () => {
     if (name === "idCard") {
       const file = files?.[0] || null;
       setFormData({ ...formData, idCard: file });
-      // Create a preview URL
       if (file && file.type.startsWith("image/")) {
-        const previewUrl = URL.createObjectURL(file);
-        setIdCardPreview(previewUrl);
+        setIdCardPreview(URL.createObjectURL(file));
       } else {
         setIdCardPreview(null);
       }
     } else if (name === "utilityBill") {
       const file = files?.[0] || null;
       setFormData({ ...formData, utilityBill: file });
-      // Create a preview URL
       if (file && file.type.startsWith("image/")) {
-        const previewUrl = URL.createObjectURL(file);
-        setUtilityBillPreview(previewUrl);
+        setUtilityBillPreview(URL.createObjectURL(file));
       } else {
         setUtilityBillPreview(null);
       }
@@ -48,7 +42,7 @@ const KYCForm = () => {
     }
   };
 
-  // Clean up preview URLs on unmount
+  // Cleanup preview URLs on unmount
   useEffect(() => {
     return () => {
       if (idCardPreview) URL.revokeObjectURL(idCardPreview);
@@ -65,7 +59,6 @@ const KYCForm = () => {
 
     setLoading(true);
     const data = new FormData();
-    // Append all form data
     data.append("fullName", formData.fullName);
     data.append("dob", formData.dob);
     data.append("address", formData.address);
@@ -73,7 +66,6 @@ const KYCForm = () => {
     data.append("utilityBill", formData.utilityBill);
 
     try {
-      // mock endpoint for now
       const res = await axios.post(
         "http://localhost:5000/api/kyc/submit",
         data
@@ -95,6 +87,7 @@ const KYCForm = () => {
       className="container py-5"
       style={{ fontFamily: "Poppins, sans-serif" }}
     >
+      <ToastContainer position="top-center" theme="colored" autoClose={2400} />
       {!agreedToTerms ? (
         // 1. DATA PRIVACY NOTICE
         <div
@@ -166,7 +159,6 @@ const KYCForm = () => {
                 required
               />
             </div>
-
             <div className="mb-3">
               <label className="form-label fw-semibold">Date of Birth</label>
               <input
@@ -178,7 +170,6 @@ const KYCForm = () => {
                 required
               />
             </div>
-
             <div className="mb-3">
               <label className="form-label fw-semibold">
                 Residential Address
@@ -193,10 +184,7 @@ const KYCForm = () => {
               ></textarea>
             </div>
 
-            {/* --- NIN/BVN REMOVED --- */}
-
             {/* --- UPDATED FILE UPLOADS --- */}
-
             <div className="mb-3">
               <label className="form-label fw-semibold">
                 Upload Means of Identification
@@ -223,7 +211,6 @@ const KYCForm = () => {
                 </div>
               )}
             </div>
-
             <div className="mb-3">
               <label className="form-label fw-semibold">
                 Upload Utility Document
@@ -250,7 +237,6 @@ const KYCForm = () => {
                 </div>
               )}
             </div>
-
             <button
               type="submit"
               className="btn btn-danger w-100 py-2 fw-semibold rounded-3 mt-3"
