@@ -84,7 +84,7 @@ export default function AdvertiserWallet() {
                   letterSpacing: "0.5px",
                 }}
               >
-                Current Balance
+                Current Balance 
               </div>
               <h2
                 className="fw-bold mb-4"
@@ -377,3 +377,6 @@ export default function AdvertiserWallet() {
     </div>
   );
 }
+
+
+// just want to push thanks
