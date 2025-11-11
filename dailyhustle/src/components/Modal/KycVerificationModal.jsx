@@ -45,7 +45,7 @@ export default function KycVerificationModal({ show, onHide }) {
     if (!urlPattern.test(documentUrl)) {
       toast.error("Please provide a valid URL for the document.", {
         position: "top-center",
-        className: "bg-light text-dark border border-danger rounded-3",
+        className: "bg-light text-dark border border-light rounded-3",
       });
       return;
     }
@@ -66,7 +66,7 @@ export default function KycVerificationModal({ show, onHide }) {
     } catch (error) {
       toast.error("Failed to submit KYC. Please try again.", {
         position: "top-center",
-        className: "bg-light text-dark border border-danger rounded-3",
+        className: "bg-light text-dark border border-light rounded-3",
       });
       setLoading(false);
       console.log(error);

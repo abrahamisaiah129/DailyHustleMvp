@@ -99,9 +99,9 @@ const KYCForm = () => {
         // 1. DATA PRIVACY NOTICE
         <div
           className="card shadow-lg mx-auto p-4 p-md-5"
-          style={{ maxWidth: "600px", borderTop: "5px solid #dc3545" }}
+          style={{ maxWidth: "600px", borderTop: "5px solid #ff4500" }}
         >
-          <h3 className="fw-bold text-center text-danger mb-3">
+          <h3 className="fw-bold text-center text-light mb-3">
             Data Privacy Notice
           </h3>
           <p className="text-muted" style={{ lineHeight: "1.6" }}>
@@ -134,7 +134,7 @@ const KYCForm = () => {
               id="termsCheck"
               checked={agreedToTerms}
               onChange={(e) => setAgreedToTerms(e.target.checked)}
-              style={{ borderColor: "#dc3545" }}
+              style={{ borderColor: "#ff4500" }}
             />
             <label
               className="form-check-label fw-semibold"
@@ -149,9 +149,9 @@ const KYCForm = () => {
         // 2. KYC FORM (shows after agreement)
         <div
           className="card shadow-lg mx-auto p-4 p-md-5"
-          style={{ maxWidth: "600px", borderTop: "5px solid #dc3545" }}
+          style={{ maxWidth: "600px", borderTop: "5px solid #ff4500" }}
         >
-          <h3 className="fw-bold text-center text-danger mb-3">
+          <h3 className="fw-bold text-center text-light mb-3">
             KYC Verification
           </h3>
           <form onSubmit={handleSubmit}>
@@ -253,7 +253,7 @@ const KYCForm = () => {
 
             <button
               type="submit"
-              className="btn btn-danger w-100 py-2 fw-semibold rounded-3 mt-3"
+              className="btn btn-light w-100 py-2 fw-semibold rounded-3 mt-3"
               disabled={loading}
             >
               {loading ? "Submitting..." : "Submit KYC"}

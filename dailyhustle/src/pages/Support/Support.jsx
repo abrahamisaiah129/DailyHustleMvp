@@ -300,7 +300,7 @@ export default function Support() {
           icon: "telephone",
           title: "Call Center",
           desc: "Available Weekdays 9AM–6PM",
-          color: "#dc3545",
+          color: "#ff4500",
         },
       ].map((item, i) => (
         <div className="col-md-4" key={i}>
@@ -315,9 +315,7 @@ export default function Support() {
             onMouseEnter={(e) =>
               (e.currentTarget.style.transform = "scale(1.03)")
             }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.transform = "scale(1)")
-            }
+            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             <i
               className={`bi bi-${item.icon} fs-2 mb-2`}

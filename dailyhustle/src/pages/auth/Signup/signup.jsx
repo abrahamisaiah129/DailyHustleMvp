@@ -15,7 +15,7 @@ const getPasswordStrength = (pw) => {
   return Math.min(score, 5);
 };
 const strengthLabels = ["Too Short", "Weak", "Fair", "Good", "Strong"];
-const strengthColors = ["#dc3545", "#ffc107", "#1ab7ea", "#198754", "#28a745"];
+const strengthColors = ["#ff4500", "#ffc107", "#1ab7ea", "#198754", "#28a745"];
 
 export default function QuickSignup() {
   const [step, setStep] = useState(0);
@@ -137,7 +137,7 @@ export default function QuickSignup() {
           style={{ maxWidth: "430px" }}
         >
           <div className="mb-4 text-center">
-            <span className="badge rounded-pill bg-danger fs-6 mb-1">
+            <span className="badge rounded-pill bg-light fs-6 mb-1">
               {step === 0 ? "Step 1 of 2" : "Step 2 of 2"}
             </span>
             <h3 className="fw-bold mt-2 mb-0">
@@ -278,7 +278,7 @@ export default function QuickSignup() {
               </select>
               <button
                 type="submit"
-                className="btn w-100 mt-4 py-2 fw-bold text-white btn-danger"
+                className="btn w-100 mt-4 py-2 fw-bold text-white btn-light"
                 disabled={loading || passwordStrength < 4}
               >
                 {loading ? (

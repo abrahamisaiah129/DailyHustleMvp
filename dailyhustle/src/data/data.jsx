@@ -1,6 +1,6 @@
 import { useUserData } from "../hooks/useUserDataContext";
 
-export const  DEFAULT_TASKS = [
+export const DEFAULT_TASKS = [
   {
     id: "t1",
     title: "Follow Instagram",
@@ -54,7 +54,7 @@ export const  DEFAULT_TASKS = [
     payout: 300,
     slots: 100,
     completedSlots: 45,
-    color: "#dc3545",
+    color: "#ff4500",
     status: "Open",
     closed: false,
     description:
@@ -191,7 +191,7 @@ export const  DEFAULT_TASKS = [
     payout: 400,
     slots: 20,
     completedSlots: 3,
-    color: "#dc3545",
+    color: "#ff4500",
     status: "Open",
     closed: true,
     description:

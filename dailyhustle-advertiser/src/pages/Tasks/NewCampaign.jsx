@@ -211,7 +211,7 @@ const countryOptions = [
   "United Kingdom",
 ];
 const CURRENCIES = ["NGN", "USD", "GBP", "EUR"];
-const PLATFORM_FEE_PERCENT = 0.1;
+const PLATFORM_FEE_PERCENT = 0.15;
 const TINYMCE_API_KEY = "vd6rmi2kajnxr70fb4qd3c9urje5qczvcoohhywwl6sbawpf";
 const MIN_CLOSED_OPTIONS = 10;
 

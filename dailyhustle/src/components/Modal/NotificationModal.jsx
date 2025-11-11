@@ -128,7 +128,7 @@ export default function Notifications() {
   const getTypeConfig = (type) => {
     const configs = {
       success: { color: "#198754", icon: "bi-check-circle-fill" },
-      error: { color: "#dc3545", icon: "bi-x-circle-fill" },
+      error: { color: "#ff4500", icon: "bi-x-circle-fill" },
       info: { color: "#0d6efd", icon: "bi-info-circle-fill" },
       warning: { color: "#ffc107", icon: "bi-exclamation-triangle-fill" },
       login: { color: "#198754", icon: "bi-box-arrow-in-right" },
@@ -155,13 +155,14 @@ export default function Notifications() {
           </h1>
           <small style={{ color: labelColor }}>
             {unreadCount > 0 && (
-              <span className="badge bg-danger me-2">
-                {unreadCount} New
-              </span>
+              <span className="badge bg-light me-2">{unreadCount} New</span>
             )}
             {notifications.length} total
             {userData.balance > 0 && (
-              <span className="ms-2"> | Balance: ₦{userData.balance.toLocaleString()}</span>
+              <span className="ms-2">
+                {" "}
+                | Balance: ₦{userData.balance.toLocaleString()}
+              </span>
             )}
           </small>
         </div>
@@ -170,7 +171,9 @@ export default function Notifications() {
           style={{ borderColor: primary, color: primary }}
           onClick={() => {
             if (markNotificationAsRead) {
-              notifications.forEach((n) => !n.isRead && markNotificationAsRead(n.id));
+              notifications.forEach(
+                (n) => !n.isRead && markNotificationAsRead(n.id)
+              );
             }
           }}
         >
@@ -226,10 +229,7 @@ export default function Notifications() {
                 <div className="flex-grow-1">
                   <div className="d-flex justify-content-between align-items-start">
                     <div>
-                      <div
-                        className="fw-bold"
-                        style={{ color: textColor }}
-                      >
+                      <div className="fw-bold" style={{ color: textColor }}>
                         {notif.title}
                       </div>
                       <div
@@ -245,10 +245,7 @@ export default function Notifications() {
                     )}
                   </div>
 
-                  <div
-                    style={{ color: labelColor }}
-                    className="small mb-2"
-                  >
+                  <div style={{ color: labelColor }} className="small mb-2">
                     {notif.message.length > 80
                       ? `${notif.message.substring(0, 80)}...`
                       : notif.message}
@@ -267,7 +264,7 @@ export default function Notifications() {
 
                 {/* Delete Button */}
                 <button
-                  className="btn btn-outline-danger btn-sm ms-2 rounded-circle"
+                  className="btn btn-outline-light btn-sm ms-2 rounded-circle"
                   onClick={(e) => {
                     e.stopPropagation();
                     handleDeleteNotification(notif.id);

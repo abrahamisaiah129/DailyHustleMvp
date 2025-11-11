@@ -36,7 +36,6 @@ import {
 const PLATFORM_FEE_PERCENT = 0.1;
 const TINYMCE_API_KEY = "vd6rmi2kajnxr70fb4qd3c9urje5qczvcoohhywwl6sbawpf";
 const CURRENCIES = ["NGN", "USD", "GBP", "EUR"];
-
 const approvalModeOptions = ["Self Approval", "Platform Approval"];
 const reviewTypeOptions = ["Closed", "Open"];
 const PLACEHOLDER_IMAGE =
@@ -54,7 +53,7 @@ function mapApprovalModeFromApi(val) {
 }
 
 export default function ViewCampaignPage() {
-  const taskId = useParams().param;
+  const { param: taskId } = useParams();
   const [editMode, setEditMode] = useState(false);
 
   const [form, setForm] = useState({
@@ -80,7 +79,6 @@ export default function ViewCampaignPage() {
   const [imgBroken, setImgBroken] = useState(false);
   const [showGoTo, setShowGoTo] = useState(false);
 
-  // Submissions state
   const [submissions, setSubmissions] = useState([]);
   const [subsLoading, setSubsLoading] = useState(true);
   const [subsError, setSubsError] = useState("");
@@ -92,7 +90,6 @@ export default function ViewCampaignPage() {
   const [selectedWorker, setSelectedWorker] = useState(null);
   const [filter, setFilter] = useState("all");
 
-  // Load campaign details
   useEffect(() => {
     async function loadTask() {
       try {
@@ -126,7 +123,6 @@ export default function ViewCampaignPage() {
     // eslint-disable-next-line
   }, [taskId]);
 
-  // Load submissions
   useEffect(() => {
     async function loadSubs() {
       setSubsLoading(true);
@@ -168,7 +164,6 @@ export default function ViewCampaignPage() {
     }
   }, [form.review_type]);
 
-  // Filtering of submissions
   const filteredSubs = submissions.filter((s) => {
     if (filter === "all") return true;
     if (filter === "approved" || filter === "pending" || filter === "rejected")
@@ -178,7 +173,6 @@ export default function ViewCampaignPage() {
     return true;
   });
 
-  // PATCH: update task on save
   const handleSave = async () => {
     const selectedCurrency = CURRENCIES.includes(form.rewardCurrency)
       ? form.rewardCurrency
@@ -241,7 +235,6 @@ export default function ViewCampaignPage() {
     setSubsPage(1);
   };
 
-  // === IMAGE UPLOAD LOGIC ===
   const handleImageUploadChange = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -262,7 +255,6 @@ export default function ViewCampaignPage() {
     }
   };
 
-  // Patch proof immediately in UI after approve/reject/blacklist
   const handleProofStatusChange = async (proofId, status) => {
     try {
       await advertiserUpdateTaskProofStatus(proofId, {
@@ -565,7 +557,6 @@ export default function ViewCampaignPage() {
                     ))}
                   </Form.Select>
                 </Form.Group>
-                {/* Closed review option input is NOT rendered */}
               </Col>
             </Row>
             {editMode && (

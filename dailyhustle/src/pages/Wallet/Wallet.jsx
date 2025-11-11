@@ -54,7 +54,10 @@ export default function Wallet() {
   };
 
   return (
-    <div className="min-vh-100 py-4 px-3" style={{ background: bg, color: text }}>
+    <div
+      className="min-vh-100 py-4 px-3"
+      style={{ background: bg, color: text }}
+    >
       <h2 className="fw-bold mb-3" style={{ color: primary }}>
         Wallet & Earnings
       </h2>
@@ -87,7 +90,7 @@ export default function Wallet() {
             <i className="bi bi-arrow-down-circle me-1"></i>Withdraw
           </button>
           <button
-            className="btn btn-outline-danger rounded-pill fw-bold px-4"
+            className="btn btn-outline-light rounded-pill fw-bold px-4"
             onClick={() => navigate("/transactions")}
           >
             <i className="bi bi-list-ul me-1"></i>Transactions

@@ -16,7 +16,7 @@ export default function Settings() {
     userData,
     updateUserData,
     refetchUserData,
-    updateUserImageUrl, // Should be spelled updateUserImageUrl if backend uses that
+    updateUserImageUrl,
     addNotification,
     recordTaskHistory,
   } = useAppData();
@@ -34,10 +34,8 @@ export default function Settings() {
     ? "linear-gradient(135deg, #660000, #240000)"
     : "linear-gradient(135deg, var(--dh-red), #ff4c4c)";
 
-  // Correct key names from userData
   const {
     username = "",
-    email = "",
     phone = "",
     kyc = {},
     notificationsEnabled = true,
@@ -84,37 +82,17 @@ export default function Settings() {
 
     try {
       const { data } = await uploadImage(file);
-      console.log("Upload response:", data);
-
-      // Try to extract the image URL from several possible fields
-      const imageUrl =
-        // data?.data &&
-        data?.data[0]?.src;
-      console.log(data?.data[0]?.src);
-      // add the url to database
+      const imageUrl = data?.data[0]?.src;
       fileUrlUpdate("photo", imageUrl, userData);
-      // data?.imageUrl ||
-      // data?.url ||
-      // data?.src ||
-      // data?.photo ||
-      // data?.data?.imageUrl ||
-      // data?.data?.src ||
-      // data?.data?.url ||
-      // (Array.isArray(data) && data[0]?.url) ||
-      // (Array.isArray(data?.data) && data?.data[0]?.url);
 
       if (!imageUrl) {
         toast.error("No image URL returned from server.");
-        console.error("Upload server response (NO URL):", data);
         throw new Error("No image URL returned from server.");
       }
 
       setAvatarPreview(imageUrl);
       await updateUserImageUrl({ type: "photo", fileUrl: imageUrl });
-      // refetch data
       refetchUserData();
-      // above refetches
-      // toast.success("Avatar updated!");
       addNotification({
         title: "Avatar Updated",
         message: "Your profile picture has been changed.",
@@ -124,13 +102,11 @@ export default function Settings() {
       if (typeof recordTaskHistory === "function") {
         recordTaskHistory("avatar", "updated", "User changed profile picture");
       }
-
       if (previousBlobUrl.current) {
         URL.revokeObjectURL(previousBlobUrl.current);
         previousBlobUrl.current = null;
       }
     } catch (error) {
-      console.error("Avatar upload failed:", error);
       toast.error(
         error?.response?.data?.message || error.message || "Upload failed"
       );
@@ -143,7 +119,6 @@ export default function Settings() {
   const handleSaveProfile = async (e) => {
     e.preventDefault();
 
-    // Accept +234XXXXXXXXXX, 234XXXXXXXXXX, or 0XXXXXXXXXX
     const normPhone = editPhone.startsWith("+234")
       ? editPhone.replace("+", "")
       : editPhone;
@@ -157,9 +132,8 @@ export default function Settings() {
     try {
       await updateUser({
         username: editUsername,
-        email: editEmail,
         phone: normPhone,
-      }).then((e) => refetchUserData(), console.log(e));
+      }).then(() => refetchUserData());
       toast.success("Profile saved!");
       addNotification({
         title: "Profile Saved",
@@ -171,11 +145,10 @@ export default function Settings() {
         recordTaskHistory(
           "profile",
           "updated",
-          `Saved: ${editUsername}, ${editEmail}`
+          `Saved: ${editUsername}, ${normPhone}`
         );
       }
     } catch (error) {
-      console.error(error);
       toast.error("Save failed");
     } finally {
       setLoading(false);
@@ -223,16 +196,13 @@ export default function Settings() {
     }
   };
 
-  //  text input
   const [editUsername, setEditUsername] = useState(username);
-  const [editEmail, setEditEmail] = useState(email);
   const [editPhone, setEditPhone] = useState(phone);
 
   useEffect(() => {
     setEditUsername(username);
-    setEditEmail(email);
     setEditPhone(phone);
-  }, [username, email, phone]);
+  }, [username, phone]);
 
   const renderProfileTab = () => (
     <form onSubmit={handleSaveProfile}>
@@ -260,7 +230,7 @@ export default function Settings() {
           type="button"
           onClick={handleAvatarClick}
           disabled={uploadingAvatar}
-          className="btn btn-outline-danger btn-sm"
+          className="btn btn-outline-light btn-sm"
         >
           {uploadingAvatar ? (
             <>
@@ -313,29 +283,6 @@ export default function Settings() {
           className="form-label fw-bold d-flex align-items-center"
           style={{ color: isDark ? "#f8f9fa" : "#212529" }}
         >
-          <i className="bi bi-envelope me-2"></i> Email
-        </label>
-        <input
-          type="email"
-          className="form-control rounded-3"
-          value={editEmail}
-          placeholder="Email"
-          onChange={(e) => setEditEmail(e.target.value)}
-          style={{
-            background: isDark ? "#1c1c1e" : "#fff",
-            color: isDark ? "#f8f9fa" : "#212529",
-            borderColor: isDark ? "#333" : "#dee2e6",
-          }}
-        />
-      </div>
-      <div
-        className="mb-4 p-3 rounded-3"
-        style={{ background: isDark ? "#2a2a2d" : "#f8f9fa" }}
-      >
-        <label
-          className="form-label fw-bold d-flex align-items-center"
-          style={{ color: isDark ? "#f8f9fa" : "#212529" }}
-        >
           <i className="bi bi-telephone me-2"></i> Phone Number
         </label>
         <input
@@ -351,7 +298,6 @@ export default function Settings() {
           }}
         />
       </div>
-
       <button
         type="submit"
         disabled={loading}
@@ -379,7 +325,7 @@ export default function Settings() {
           className="p-4 rounded-4"
           style={{
             backgroundColor: isDark ? "#1c1c1e" : "#fff",
-            border: `2px solid ${kycVerified ? primary : "#dc3545"}`,
+            border: `2px solid ${kycVerified ? primary : "#ff4500"}`,
           }}
         >
           <div className="d-flex justify-content-between align-items-center">
@@ -390,7 +336,7 @@ export default function Settings() {
               >
                 KYC Verification
               </h6>
-              <small style={{ color: kycVerified ? primary : "#dc3545" }}>
+              <small style={{ color: kycVerified ? primary : "#ff4500" }}>
                 {kycVerified ? "Verified" : "Not Verified"}
               </small>
             </div>
@@ -408,7 +354,6 @@ export default function Settings() {
           </div>
         </div>
       </div>
-
       <div className="col-md-6">
         <div
           className="p-4 rounded-4 cursor-pointer"
@@ -430,7 +375,6 @@ export default function Settings() {
           </small>
         </div>
       </div>
-
       <div className="col-md-6">
         <div
           className="p-4 rounded-4 cursor-pointer"
@@ -442,7 +386,7 @@ export default function Settings() {
         >
           <i
             className="bi bi-box-arrow-right fs-3 mb-3"
-            style={{ color: "#dc3545" }}
+            style={{ color: "#ff4500" }}
           ></i>
           <h6
             className="fw-bold mb-2"
@@ -512,7 +456,6 @@ export default function Settings() {
           <i className={`bi bi-${isDark ? "sun" : "moon"}`}></i>
         </button>
       </div>
-
       <div className="d-flex flex-wrap justify-content-center gap-2 mb-4">
         {tabs.map((tab) => (
           <button
@@ -535,7 +478,6 @@ export default function Settings() {
           </button>
         ))}
       </div>
-
       <div
         className="rounded-4 p-4 shadow-sm"
         style={{ background: isDark ? "#1c1c1e" : "#fff" }}
@@ -546,9 +488,8 @@ export default function Settings() {
         {activeTab === "payments" && renderPaymentsTab()}
         {activeTab === "privacy" && renderPrivacyTab()}
       </div>
-
       <div className="text-center mt-4">
-        <button onClick={logout} className="btn btn-link text-danger">
+        <button onClick={logout} className="btn btn-link text-light">
           <i className="bi bi-box-arrow-right me-2"></i> Logout
         </button>
       </div>

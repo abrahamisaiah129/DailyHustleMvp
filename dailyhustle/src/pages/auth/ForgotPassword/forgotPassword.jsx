@@ -79,12 +79,10 @@ export default function ForgotPassword() {
         style={{
           maxWidth: "400px",
           borderRadius: "16px",
-          borderTop: "5px solid #dc3545",
+          borderTop: "5px solid #ff4500",
         }}
       >
-        <h2 className="fw-bold text-center mb-3 text-danger">
-          Forgot Password
-        </h2>
+        <h2 className="fw-bold text-center mb-3 text-light">Forgot Password</h2>
         <form onSubmit={step === 1 ? handleSendOtp : handleResetPassword}>
           {/* Step 1: Enter email */}
           {step === 1 && (
@@ -103,7 +101,7 @@ export default function ForgotPassword() {
               />
               <button
                 type="submit"
-                className="btn btn-danger w-100 fw-bold"
+                className="btn btn-light w-100 fw-bold"
                 disabled={loading || !formFields.email}
               >
                 {loading ? (
@@ -160,7 +158,7 @@ export default function ForgotPassword() {
               </div>
               <button
                 type="submit"
-                className="btn btn-danger w-100 fw-bold mt-1"
+                className="btn btn-light w-100 fw-bold mt-1"
                 disabled={
                   loading || !formFields.otp || !formFields.new_password
                 }
@@ -178,7 +176,7 @@ export default function ForgotPassword() {
           )}
         </form>
         <p className="text-center mt-3 mb-0">
-          <a href="/login" className="text-danger fw-semibold">
+          <a href="/login" className="text-light fw-semibold">
             Back to Login
           </a>
         </p>

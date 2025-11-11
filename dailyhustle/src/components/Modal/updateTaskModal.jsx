@@ -289,9 +289,7 @@ export default function UpdateTaskModal({ task, show, onClose, onApply }) {
                   color: textColor,
                   borderColor: isDark ? "#343a40" : "#ced4da",
                 }}
-                className={
-                  proofText.trim() ? "border-success" : "border-danger"
-                }
+                className={proofText.trim() ? "border-success" : "border-light"}
                 required
               />
             </Form.Group>

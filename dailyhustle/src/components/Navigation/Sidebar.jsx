@@ -2,6 +2,9 @@ import { useState, useCallback, useMemo } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
+import logo from "../../../public/assets/logo.png";
+// Logo image – replace with your actual logo if desired
+const LOGO = logo;
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -32,6 +35,8 @@ export default function Sidebar() {
       { name: "Referrals", path: "/referrals", icon: "bi-people-fill" },
       { name: "Support", path: "/support", icon: "bi-headset" },
       { name: "Settings", path: "/settings", icon: "bi-gear-fill" },
+      { name: "Login", path: "/login", icon: "bi-box-arrow-in-right" },
+      { name: "Signup", path: "/signup", icon: "bi-box-arrow-in-right" },
     ],
     []
   );
@@ -52,9 +57,26 @@ export default function Sidebar() {
         minHeight: "100vh",
       }}
     >
+      {/* Logo */}
+      <div className="text-center mb-3">
+        <img
+          src={LOGO}
+          alt="Daily Hustle Logo"
+          style={{
+            width: collapsed ? "38px" : "54px",
+            height: collapsed ? "38px" : "54px",
+            objectFit: "contain",
+            borderRadius: "14px",
+            margin: "0 auto",
+            background: "transparent",
+            transition: "width 0.3s,height 0.3s",
+          }}
+        />
+      </div>
+
       {/* Collapse Toggle */}
       <button
-        className="btn btn-sm btn-outline-danger mb-3"
+        className="btn btn-sm btn-outline-light mb-3"
         onClick={() => setCollapsed(!collapsed)}
       >
         <i
@@ -111,7 +133,7 @@ export default function Sidebar() {
             className="nav-link-item"
             key={link.name}
             style={({ isActive }) => ({
-              backgroundColor: isActive ? "#dc3545" : "transparent",
+              backgroundColor: isActive ? "#ff4500" : "transparent",
               color: isActive ? "#fff" : isDark ? "#f8f9fa" : "#212529",
               borderRadius: "10px",
               padding: "8px 10px",
@@ -125,7 +147,7 @@ export default function Sidebar() {
         ))}
 
         {/* Logout */}
-        <button className="btn btn-outline-danger mt-3" onClick={handleLogout}>
+        <button className="btn btn-outline-light mt-3" onClick={handleLogout}>
           <i className="bi bi-box-arrow-left" />
           {!collapsed && <span className="ms-2">Logout</span>}
         </button>

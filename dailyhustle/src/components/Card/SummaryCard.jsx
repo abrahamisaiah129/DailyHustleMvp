@@ -19,7 +19,7 @@ export default function SummaryCard({
     trend?.direction === "up"
       ? "text-success"
       : trend?.direction === "down"
-      ? "text-danger"
+      ? "text-light"
       : "";
 
   return (

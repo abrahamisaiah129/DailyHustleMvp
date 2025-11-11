@@ -90,7 +90,10 @@ export default function QuickSignup() {
     }
     setLoading(true);
     try {
-      await advertiserValidateRegistrationToken({ email: formData.email, token: otpCode });
+      await advertiserValidateRegistrationToken({
+        email: formData.email,
+        verification_code: otpCode,
+      });
       toast.success("Account verified! Welcome aboard! 🎉");
       setOtpVerified(true);
 
@@ -104,7 +107,7 @@ export default function QuickSignup() {
           toast.success("Login successful!");
           localStorage.setItem("token", loginRes.data.data.token);
           localStorage.setItem("isAuth", "true");
-          setTimeout(() => (window.location.href = "/dashboard"), 1200);
+          setTimeout(() => (window.location.href = "/"), 1200);
         }
       } catch (loginErr) {
         toast.error(

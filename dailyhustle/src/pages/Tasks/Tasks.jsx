@@ -31,7 +31,6 @@ export default function Tasks() {
   // FILTER TASKS — show only never attempted for "Available"
   useEffect(() => {
     if (activeTab === "available") {
-      // Collect all attempted tasks by ID (tried at least once)
       const attemptedTaskIds = new Set(
         (userData.tasks || []).map(
           (my) => my.task_id || (my.task && my.task._id)
@@ -106,9 +105,7 @@ export default function Tasks() {
       {/* Task List */}
       {visible.length > 0 ? (
         visible.map((t, index) => {
-          // available: t is task; myTasks: t.task is actual task
           const task = activeTab === "available" ? t : t.task || t;
-          // for 'myTasks', get submission_progress for status
           const userStatus =
             activeTab === "myTasks"
               ? String(t.submission_progress || t.status || "").toUpperCase()
@@ -146,7 +143,7 @@ export default function Tasks() {
                   >
                     {task.category}
                   </p>
-                  <p className="small mb-2">{task.description}</p>
+                  {/* <p className="small mb-2">{task.description}</p> */}
                   <div className="d-flex flex-wrap align-items-center gap-3 small">
                     <span>
                       <b>Reward:</b> {task.reward?.currency}{" "}

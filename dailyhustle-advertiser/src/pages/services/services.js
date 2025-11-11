@@ -7,8 +7,7 @@ import api from "./api";
 
 /**
  * Register a new advertiser
- * POST /auths/advertisers/register
- * @param {Object} data - { ...registrationFields }
+ * POST /auths/advertisers/register 
  * Body:
  * {
  *   // registration fields (e.g., name, email, password, etc.)
@@ -20,10 +19,13 @@ export const advertiserRegister = (data) =>
 /**
  * Validate advertiser registration token
  * POST /auths/advertisers/register/validate-token
- * @param {Object} data - { token: string }
+ * 
+//  
+ * 
  * Body:
  * {
- *   "token": "string"
+ *   "token": "string",
+ *   "email": "string"
  * }
  */
 export const advertiserValidateRegistrationToken = (data) =>
@@ -31,8 +33,7 @@ export const advertiserValidateRegistrationToken = (data) =>
 
 /**
  * Advertiser login
- * POST /auths/advertisers/login
- * @param {Object} data - { email: string, password: string }
+ * POST /auths/advertisers/login 
  * Body:
  * {
  *   "email": "string",
@@ -55,8 +56,7 @@ export const advertiserListTasks = () => api.get("/tasks/advertisers");
 
 /**
  * Create a new task
- * POST /tasks
- * @param {Object} data - { ...taskFields }
+ * POST /tasks 
  * Body:
  * {
  *   // task fields (e.g., title, description, reward, etc.)
@@ -66,8 +66,7 @@ export const advertiserCreateTask = (data) => api.post("/tasks", data);
 
 /**
  * View a single task
- * GET /tasks/{taskId}/advertisers
- * @param {string} taskId
+ * GET /tasks/{taskId}/advertisers 
  * No body
  */
 export const advertiserViewTask = (taskId) =>
@@ -79,9 +78,7 @@ export const advertiserViewTask = (taskId) =>
 
 /**
  * Approve or reject a task proof
- * PATCH /task-proof/{taskProofId}
- * @param {string} taskProofId
- * @param {Object} data - { status: "approved" | "rejected", ... }
+ * PATCH /task-proof/{taskProofId} 
  * Body:
  * {
  *   "status": "approved" | "rejected",
@@ -92,9 +89,7 @@ export const advertiserUpdateTaskProofStatus = (taskProofId, data) =>
   api.patch(`/task-proof/${taskProofId}`, data);
 /**
  * Update a task
- * PATCH /tasks/{taskId}/advertisers
- * @param {string} taskId
- * @param {Object} data - { ...fieldsToUpdate }
+ * PATCH /tasks/{taskId}/advertisers 
  * Body:
  * {
  *   // fields to update (e.g., title, description, reward, etc.)
@@ -104,8 +99,7 @@ export const advertiserUpdateTask = (taskId, data) =>
   api.patch(`/tasks/${taskId}/advertisers`, data);
 /**
  * List submissions for a task
- * GET /task-proof?task_id={taskId}
- * @param {string} taskId
+ * GET /task-proof?task_id={taskId} 
  * No body. Query param: task_id
  */
 export const advertiserListSubmissions = (taskId) =>
@@ -113,8 +107,7 @@ export const advertiserListSubmissions = (taskId) =>
 
 /**
  * Get submission stats for a task
- * GET /task-proof/submission-stats?task_id={taskId}
- * @param {string} taskId
+ * GET /task-proof/submission-stats?task_id={taskId} 
  * No body. Query param: task_id
  */
 export const advertiserSubmissionStats = (taskId) =>

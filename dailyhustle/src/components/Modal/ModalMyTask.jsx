@@ -32,7 +32,11 @@ export default function ModalMyTask({ task, show, onClose }) {
           <i className="bi bi-list-task me-2"></i>
           {task.title}
         </h5>
-        <button type="button" className="btn-close btn-close-white" onClick={onClose}></button>
+        <button
+          type="button"
+          className="btn-close btn-close-white"
+          onClick={onClose}
+        ></button>
       </div>
 
       <div
@@ -58,7 +62,9 @@ export default function ModalMyTask({ task, show, onClose }) {
               color: "#fff",
               border: "none",
             }}
-            onClick={() => window.open(task.link, "_blank", "noopener,noreferrer")}
+            onClick={() =>
+              window.open(task.link, "_blank", "noopener,noreferrer")
+            }
           >
             <i className="bi bi-globe2 me-2"></i> Go to Task Website
           </Button>
@@ -105,7 +111,7 @@ export default function ModalMyTask({ task, show, onClose }) {
             <Button
               size="sm"
               onClick={handleCopy}
-              variant="outline-danger"
+              variant="outline-light"
               className="rounded-pill fw-semibold"
             >
               {copySuccess ? "Copied!" : "Copy Review"}

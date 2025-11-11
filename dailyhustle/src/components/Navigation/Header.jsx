@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTheme } from "../../hooks/useThemeContext";
 import { useAppData } from "../../hooks/AppDataContext";
-
+import logo from "../../../public/assets/logo.png";
 const NAV = [
   { name: "Dashboard", path: "/dashboard", icon: "bi-house-door-fill" },
   { name: "Tasks", path: "/tasks", icon: "bi-briefcase-fill" },
@@ -13,7 +13,14 @@ const NAV = [
   { name: "Referrals", path: "/referrals", icon: "bi-people-fill" },
   { name: "Support", path: "/support", icon: "bi-headset" },
   { name: "Settings", path: "/settings", icon: "bi-gear" },
+  { name: "Login", path: "/login", icon: "bi-box-arrow-in-right" },
+  { name: "Signup", path: "/signup", icon: "bi-box-arrow-in-right" },
 ];
+
+// Provide a logo image; you can replace the src below with your actual logo url
+
+// Logo image – replace with your actual logo if desired
+const LOGO = logo; // EXAMPLE Daily Hustle logo
 
 export default function Header() {
   const navigate = useNavigate();
@@ -28,7 +35,6 @@ export default function Header() {
     userData.photo || "https://cdn-icons-png.flaticon.com/512/847/847969.png";
   const balance = userData.balance ?? 0;
 
-  // Prevent scroll bleed when menu is open
   useEffect(() => {
     if (menuOpen) {
       document.body.classList.add("menu-open");
@@ -62,8 +68,24 @@ export default function Header() {
 
       <header className="mobile-header d-flex d-md-none">
         <div className="d-flex align-items-center justify-content-between w-100 px-3 py-2">
-          <span className="h5 mb-0 fw-bold" style={{ color: "var(--dh-red)" }}>
-            🔥 Daily Hustle
+          <span
+            className="h5 mb-0 fw-bold d-flex align-items-center"
+            style={{ color: "var(--dh-red)" }}
+          >
+            {/* LOGO IMAGE */}
+            <img
+              src={LOGO}
+              alt="Daily Hustle Logo"
+              style={{
+                height: 30,
+                width: 30,
+                marginRight: 10,
+                objectFit: "contain",
+                borderRadius: "8px",
+                background: "transparent",
+              }}
+            />
+            Daily Hustle
           </span>
           {/* Controls */}
           <div className="d-flex align-items-center gap-2">
@@ -123,7 +145,7 @@ export default function Header() {
                 }}
               />
               <div className="mt-2">
-                <button className="btn btn-outline-danger btn-sm rounded-pill px-3">
+                <button className="btn btn-outline-light btn-sm rounded-pill px-3">
                   Change Avatar
                 </button>
               </div>

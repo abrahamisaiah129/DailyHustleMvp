@@ -73,11 +73,12 @@ export default function Transactions() {
               <i className="bi bi-list-ul me-2"></i>Transactions
             </h2>
             <small style={{ color: muted }}>
-              Page {currentPage}/{totalPages} • {filteredTransactions.length} total
+              Page {currentPage}/{totalPages} • {filteredTransactions.length}{" "}
+              total
             </small>
           </div>
           <button
-            className="btn btn-outline-danger rounded-pill"
+            className="btn btn-outline-light rounded-pill"
             onClick={() => navigate("/wallet")}
             style={{ borderColor: primary, color: textColor }}
           >
@@ -113,7 +114,9 @@ export default function Transactions() {
         >
           <div className="table-responsive">
             <table className="table table-hover mb-0">
-              <thead style={{ backgroundColor: isDark ? "#2a2a2d" : "#f8f9fa" }}>
+              <thead
+                style={{ backgroundColor: isDark ? "#2a2a2d" : "#f8f9fa" }}
+              >
                 <tr>
                   {["ID", "Date", "Type", "Amount", "Task"].map((h, i) => (
                     <th key={i} style={{ border: "none", color: textColor }}>
@@ -153,7 +156,9 @@ export default function Transactions() {
                     >
                       ₦{t.amount.toLocaleString()}
                     </td>
-                    <td style={{ border: "none", color: textColor }}>{t.title}</td>
+                    <td style={{ border: "none", color: textColor }}>
+                      {t.title}
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -170,7 +175,8 @@ export default function Transactions() {
                 onClick={() => setCurrentPage(i + 1)}
                 className="btn rounded-pill px-3 py-1"
                 style={{
-                  backgroundColor: currentPage === i + 1 ? primary : "transparent",
+                  backgroundColor:
+                    currentPage === i + 1 ? primary : "transparent",
                   color: currentPage === i + 1 ? "#fff" : textColor,
                   border: `1px solid ${primary}`,
                 }}
@@ -235,7 +241,7 @@ export default function Transactions() {
               </div>
               <div className="modal-footer border-0">
                 <button
-                  className="btn btn-outline-danger rounded-pill px-4"
+                  className="btn btn-outline-light rounded-pill px-4"
                   onClick={closeModal}
                 >
                   Close

@@ -136,7 +136,11 @@ export default function Referrals() {
   return (
     <div
       className="p-4"
-      style={{ backgroundColor: containerBg, color: textColor, minHeight: "100vh" }}
+      style={{
+        backgroundColor: containerBg,
+        color: textColor,
+        minHeight: "100vh",
+      }}
     >
       {/* Breadcrumb */}
       <nav aria-label="breadcrumb" className="mb-3">
@@ -165,7 +169,8 @@ export default function Referrals() {
           Referral Program
         </h1>
         <p style={{ color: labelColor }}>
-          Invite your friends and earn ₦{earningsPerReferral.toLocaleString()} each!
+          Invite your friends and earn ₦{earningsPerReferral.toLocaleString()}{" "}
+          each!
         </p>
       </div>
 
@@ -248,7 +253,7 @@ export default function Referrals() {
               <i className="bi bi-send me-2"></i>Share via Device
             </button>
             <button
-              className="btn btn-outline-danger w-100 rounded-pill"
+              className="btn btn-outline-light w-100 rounded-pill"
               onClick={() =>
                 toast.info("Integration for WhatsApp coming soon!")
               }
@@ -268,7 +273,10 @@ export default function Referrals() {
           <small style={{ color: labelColor }}>{referrals} referrals</small>
         </div>
 
-        <div className="rounded-4 shadow-sm" style={{ backgroundColor: cardBg }}>
+        <div
+          className="rounded-4 shadow-sm"
+          style={{ backgroundColor: cardBg }}
+        >
           <div className="table-responsive">
             <table className="table table-hover mb-0">
               <thead>
@@ -322,14 +330,14 @@ export default function Referrals() {
               </div>
               <div>
                 <button
-                  className="btn btn-outline-danger rounded-pill me-1"
+                  className="btn btn-outline-light rounded-pill me-1"
                   disabled={currentPage === 1}
                   onClick={() => setCurrentPage(Math.max(currentPage - 1, 1))}
                 >
                   <i className="bi bi-chevron-left"></i>
                 </button>
                 <button
-                  className="btn btn-outline-danger rounded-pill"
+                  className="btn btn-outline-light rounded-pill"
                   disabled={currentPage === totalPages}
                   onClick={() =>
                     setCurrentPage(Math.min(currentPage + 1, totalPages))

@@ -125,7 +125,7 @@ export default function Notifications() {
   const getTypeConfig = (type) => {
     const map = {
       success: { color: "#198754", icon: "bi-check-circle-fill" },
-      error: { color: "#dc3545", icon: "bi-x-circle-fill" },
+      error: { color: "#ff4500", icon: "bi-x-circle-fill" },
       info: { color: "#0d6efd", icon: "bi-info-circle-fill" },
       warning: { color: "#ffc107", icon: "bi-exclamation-triangle-fill" },
       default: { color: "#6c757d", icon: "bi-bell-fill" },
@@ -150,13 +150,13 @@ export default function Notifications() {
           </h1>
           <small style={{ color: labelColor }}>
             {unreadCount > 0 && (
-              <span className="badge bg-danger me-2">{unreadCount} New</span>
+              <span className="badge bg-light me-2">{unreadCount} New</span>
             )}
             {notifications.length} Total
           </small>
         </div>
         <button
-          className="btn btn-outline-danger btn-sm rounded-pill"
+          className="btn btn-outline-light btn-sm rounded-pill"
           style={{ borderColor: primary, color: primary }}
           onClick={() => {
             notifications
@@ -214,7 +214,7 @@ export default function Notifications() {
                   </small>
                 </div>
                 <button
-                  className="btn btn-outline-danger btn-sm ms-2"
+                  className="btn btn-outline-light btn-sm ms-2"
                   title="Delete this notification"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -239,7 +239,7 @@ export default function Notifications() {
           </small>
           <div className="d-flex align-items-center gap-1">
             <button
-              className="btn btn-outline-danger btn-sm rounded-pill"
+              className="btn btn-outline-light btn-sm rounded-pill"
               style={{ borderColor: primary, color: primary }}
               onClick={handlePrev}
               disabled={currentPage === 1}
@@ -250,7 +250,7 @@ export default function Notifications() {
               Page {currentPage} of {totalPages}
             </span>
             <button
-              className="btn btn-danger btn-sm rounded-pill"
+              className="btn btn-light btn-sm rounded-pill"
               style={{ backgroundColor: primary, borderColor: primary }}
               onClick={handleNext}
               disabled={currentPage === totalPages}

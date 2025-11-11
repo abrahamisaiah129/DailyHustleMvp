@@ -15,7 +15,7 @@ const jobssMenu = [
 ];
 
 const mainMenu = [
-  { to: "/dashboard", label: "Dashboard", icon: "bi-house-door-fill" },
+  { to: "/", label: "Dashboard", icon: "bi-house-door-fill" },
   {
     label: "jobss",
     icon: "bi-briefcase-fill",

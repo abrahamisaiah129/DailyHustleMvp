@@ -65,7 +65,7 @@ const Login = () => {
         style={{
           maxWidth: "400px",
           borderRadius: "16px",
-          borderTop: "5px solid #dc3545",
+          borderTop: "5px solid #ff4500",
         }}
       >
         <h2 className="fw-bold text-center mb-3 text-danger">Welcome Back</h2>

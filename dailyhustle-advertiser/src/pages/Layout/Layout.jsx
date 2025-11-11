@@ -38,7 +38,7 @@ export default function Layout() {
   const menu = [
     { to: "/", icon: "bi-house-door-fill", label: "Dashboard" },
     { to: "/jobs/allcampaigns", icon: "bi-bullseye", label: "Campaigns" },
-    { to: "/jobs/my-campaigns", icon: "bi-list-jobs", label: "My Campaigns" },
+    { to: "/jobs/my-campaigns", icon: "bi-list", label: "My Campaigns" },
     { to: "/jobs/new", icon: "bi-plus-circle", label: "New Campaign" },
     { to: "/wallet", icon: "bi-wallet2", label: "Wallet" },
     { to: "/login", icon: "bi-box-arrow-in-right", label: "Login" },
