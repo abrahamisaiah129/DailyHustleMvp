@@ -7,8 +7,9 @@ import {
   advertiserValidateRegistrationToken,
   advertiserLogin,
 } from "../../services/services";
+// Add this import:
+import {  useAdvertiserData } from "../../hooks/useAppDataContext"; // Adjust path as needed
 
-// Password strength utils
 const getPasswordStrength = (pw) => {
   let score = 0;
   if (!pw) return 0;
@@ -23,6 +24,9 @@ const strengthLabels = ["Too Short", "Weak", "Fair", "Good", "Strong"];
 const strengthColors = ["#dc3545", "#ffc107", "#1ab7ea", "#198754", "#28a745"];
 
 export default function QuickSignup() {
+  // Add this:
+  const { setUserLoggedIn } = useAdvertiserData();
+
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -33,7 +37,6 @@ export default function QuickSignup() {
     email: "",
     password: "",
     referral_code: "",
-    // role: "Advertiser",
     country: "Ghana",
   });
   const [showPassword, setShowPassword] = useState(false);
@@ -49,7 +52,6 @@ export default function QuickSignup() {
     }
   }, [step]);
 
-  // Registration Step
   const handleRegister = async (e) => {
     e.preventDefault();
     if (passwordStrength < 4) {
@@ -68,7 +70,6 @@ export default function QuickSignup() {
     }
   };
 
-  // OTP Input handlers
   const handleOtpChange = (value, index) => {
     if (!/^\d*$/.test(value)) return;
     const newOtp = [...otp];
@@ -81,7 +82,6 @@ export default function QuickSignup() {
       otpRefs.current[index - 1].current?.focus();
   };
 
-  // OTP Verification & Auto Login
   const handleVerifyOtp = async () => {
     const otpCode = otp.join("");
     if (otpCode.length !== 6) {
@@ -107,6 +107,8 @@ export default function QuickSignup() {
           toast.success("Login successful!");
           localStorage.setItem("token", loginRes.data.data.token);
           localStorage.setItem("isAuth", "true");
+          // Add this to trigger logged-in state:
+          setUserLoggedIn(true);
           setTimeout(() => (window.location.href = "/"), 1200);
         }
       } catch (loginErr) {
@@ -140,7 +142,6 @@ export default function QuickSignup() {
               {step === 0 ? "Sign Up" : "Verify OTP"}
             </h3>
           </div>
-          {/* Registration Step */}
           {step === 0 && (
             <form onSubmit={handleRegister}>
               <div className="row g-3">
@@ -289,7 +290,6 @@ export default function QuickSignup() {
               </button>
             </form>
           )}
-          {/* OTP Verification Step */}
           {step === 1 && (
             <div>
               <p className="text-center text-muted small mb-3">
@@ -344,4 +344,3 @@ export default function QuickSignup() {
     </>
   );
 }
-//just here to trigger a change to git 

@@ -27,8 +27,7 @@ export default function QuickSignup() {
     phone: "",
     email: "",
     password: "",
-    referral_code: "",
-    role: "User",
+    referral_code: "", 
     country: "Ghana",
   });
   const [showPassword, setShowPassword] = useState(false);

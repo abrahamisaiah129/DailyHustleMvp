@@ -13,7 +13,7 @@ import { AppDataContext } from "../../hooks/AppDataContext";
 
 const DEFAULT_USER_DATA = {
   username: "tester",
-  balance: 10000,
+  balance: 0,
   currency: "NGN",
   isAuthenticated: false,
   kyc: { status: "verified", date: new Date().toISOString() },

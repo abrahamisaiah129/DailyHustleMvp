@@ -228,7 +228,7 @@ export default function Layout() {
               opacity: sidebarOpen ? 1 : 0,
             }}
           >
-            <div className="user-info d-flex align-items-center gap-3">
+            {/* <div className="user-info d-flex align-items-center gap-3">
               <div
                 className="avatar"
                 style={{
@@ -270,7 +270,7 @@ export default function Layout() {
                   </div>
                 </div>
               )}
-            </div>
+            </div> */}
             {sidebarOpen && (
               <button
                 onClick={() => setTheme(theme === "light" ? "dark" : "light")}

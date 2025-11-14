@@ -1,13 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import {
-  Card,
-  Row,
-  Col,
-  ListGroup,
-  Button,
-  Badge,
-  Spinner,
-} from "react-bootstrap";
+import { Row, Col, Button, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import {
   BarChart2,
@@ -19,11 +11,20 @@ import {
 } from "lucide-react";
 import { useTheme } from "../../context/ThemeContext";
 import { useAdvertiserData } from "../hooks/useAppDataContext";
-import { advertiserListTasks, advertiserTaskStats } from "../services/services";
+import {
+  advertiserListMyTasks,
+  advertiserTaskStats,
+} from "../services/services";
 
+/* ---- MOCKS FOR GUESTS ---- */
+const MOCK_STATS = { active_tasks: 0, completed_tasks: 0 };
+const MOCK_CAMPAIGNS = [];
+const MOCK_WALLET = { balance: 0 };
+
+/* ---- MAIN DASHBOARD COMPONENT ---- */
 export default function AdvertiserDashboard() {
   const { theme } = useTheme();
-  const { wallet } = useAdvertiserData();
+  const { wallet, userAppData } = useAdvertiserData();
   const isDark = theme === "dark";
 
   const palette = useMemo(
@@ -42,30 +43,34 @@ export default function AdvertiserDashboard() {
     [isDark]
   );
 
-  const [stats, setStats] = useState({
-    active_tasks: 0,
-    completed_tasks: 0,
-  });
-  const [campaigns, setCampaigns] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState(MOCK_STATS);
+  const [campaigns, setCampaigns] = useState(MOCK_CAMPAIGNS);
+  const [loading, setLoading] = useState(false);
 
+  // Show mock data until user logs in and real data loads
   useEffect(() => {
     async function fetchDashboard() {
+      if (!userAppData?.isAuthenticated) {
+        // Show mock demo data and don't fetch
+        setStats(MOCK_STATS);
+        setCampaigns(MOCK_CAMPAIGNS);
+        setLoading(false);
+        return;
+      }
       setLoading(true);
       try {
         // Fetch stats
         const statsRes = await advertiserTaskStats();
         setStats(
-          statsRes.data?.data || { active_tasks: 0, completed_tasks: 0 }
+          statsRes?.data?.data || { active_tasks: 0, completed_tasks: 0 }
         );
 
         // Fetch all tasks
-        const tasksRes = await advertiserListTasks(1);
-        const rawData = tasksRes.data?.data || {};
+        const tasksRes = await advertiserListMyTasks(1);
+        const rawData = tasksRes?.data?.data || {};
         const allTasks = Array.isArray(rawData.data) ? rawData.data : [];
         setCampaigns(allTasks);
       } catch (err) {
-        console.error("Dashboard fetch error:", err);
         setStats({ active_tasks: 0, completed_tasks: 0 });
         setCampaigns([]);
       } finally {
@@ -73,7 +78,7 @@ export default function AdvertiserDashboard() {
       }
     }
     fetchDashboard();
-  }, []);
+  }, [userAppData?.isAuthenticated]);
 
   // Get first 3 campaigns sorted by date (newest first)
   const latestCampaigns = campaigns
@@ -102,7 +107,10 @@ export default function AdvertiserDashboard() {
         : "warning",
   }));
 
-  // Stats cards with real data
+  // Use mock wallet if not logged in
+  const walletToShow = userAppData?.isAuthenticated ? wallet : MOCK_WALLET;
+
+  // Stats cards use live or demo data
   const statCards = [
     {
       label: "Active Campaigns",
@@ -124,7 +132,7 @@ export default function AdvertiserDashboard() {
     },
     {
       label: "Wallet Balance",
-      value: `₦${(wallet?.balance || 0).toLocaleString()}`,
+      value: `₦${(walletToShow?.balance || 0).toLocaleString()}`,
       icon: Wallet,
       color: palette.red,
     },
@@ -139,6 +147,7 @@ export default function AdvertiserDashboard() {
         padding: "40px 20px",
       }}
     >
+      {/* Container */}
       <div className="container">
         {/* Header */}
         <div
@@ -186,6 +195,7 @@ export default function AdvertiserDashboard() {
           </Button>
         </div>
 
+        {/* Loading spinner */}
         {loading ? (
           <div style={{ textAlign: "center", padding: "60px 20px" }}>
             <Spinner
@@ -316,7 +326,6 @@ export default function AdvertiserDashboard() {
                       View All <ArrowRightCircle size={14} />
                     </Button>
                   </div>
-
                   {/* Content */}
                   <div style={{ padding: "20px" }}>
                     {latestCampaigns.length === 0 ? (
@@ -452,7 +461,6 @@ export default function AdvertiserDashboard() {
                   </div>
                 </div>
               </Col>
-
               {/* Recent Activity */}
               <Col md={5}>
                 <div
@@ -487,7 +495,6 @@ export default function AdvertiserDashboard() {
                       Recent Activity
                     </h5>
                   </div>
-
                   {/* Content */}
                   <div style={{ padding: "20px" }}>
                     {recentActivity.length === 0 ? (

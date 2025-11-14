@@ -26,8 +26,9 @@ function Logout() {
     // localStorage.clear();
 
     // Or if you want to be specific:
-    localStorage.removeItem("userToken");
+    localStorage.removeItem("token");
     localStorage.removeItem("user");
+    localStorage.removeItem("isAuth");
     localStorage.removeItem("userData");
 
     // Redirect to login

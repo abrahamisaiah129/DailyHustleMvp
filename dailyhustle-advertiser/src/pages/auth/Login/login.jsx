@@ -4,8 +4,12 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap-icons/font/bootstrap-icons.css";
 import "react-toastify/dist/ReactToastify.css";
 import { advertiserLogin } from "../../services/services";
+// Add this line:
+import { useAdvertiserData } from "../../hooks/useAppDataContext"; // Adjust import path if needed
 
 const Login = () => {
+  // Add this line:
+  const { setUserLoggedIn } = useAdvertiserData();
   const [formData, setFormData] = useState({
     identifier: "",
     password: "",
@@ -33,6 +37,8 @@ const Login = () => {
         toast.success("Login successful!");
         localStorage.setItem("token", res.data.data.token);
         localStorage.setItem("isAuth", "true");
+        // Add this line to update context:
+        setUserLoggedIn(true);
         setTimeout(() => (window.location.href = "/"), 1200);
       } else {
         const msg = res.data?.message || "Invalid credentials";
@@ -119,7 +125,7 @@ const Login = () => {
             {loading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2"></span>
-                Logging in... 
+                Logging in...
               </>
             ) : (
               "Login"

@@ -1,69 +1,21 @@
-// src/context/Advertiser/AppDataProvider.jsx
-import React, {
-  // createContext,
-  // useContext,
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-} from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { AdvertiserDataContext } from "../../pages/hooks/useAppDataContext";
+
 /* --------------------------  DEFAULT DATA  -------------------------- */
-const DEFAULT_CAMPAIGNS = [
-  {
-    id: "c1",
-    title: "Instagram Followers Campaign",
-    category: "Social Media",
-    budget: 10000,
-    status: "active",
-    description: "Grow our Instagram follower count.",
-    completedjobs: 18,
-    totaljobs: 25,
-    spent: 7200,
-  },
-  {
-    id: "c2",
-    title: "App Review Blitz",
-    category: "App Review",
-    budget: 30000,
-    status: "completed",
-    description: "Get positive reviews on Google Play and App Store.",
-    completedjobs: 50,
-    totaljobs: 50,
-    spent: 30000,
-  },
-];
+const DEFAULT_CAMPAIGNS = [];
 
 const DEFAULT_WALLET = {
-  balance: 15000,
-  transactions: [
-    { id: "w1", type: "Deposit", amount: 20000, date: "2025-09-16" },
-    { id: "w2", type: "Payment", amount: -5000, date: "2025-09-17" },
-  ],
+  balance: 0,
+  transactions: [],
 };
 
-const DEFAULT_SUBMISSIONS = [
-  {
-    id: "s1",
-    campaignId: "c1",
-    workerName: "Tester1",
-    proof: "Screenshot",
-    status: "pending",
-  },
-  {
-    id: "s2",
-    campaignId: "c1",
-    workerName: "Tester2",
-    proof: "Profile link",
-    status: "approved",
-  },
-];
+const DEFAULT_SUBMISSIONS = [];
 
 const DEFAULT_USER = {
   username: "tester",
-  balance: 10000,
+  balance: 0,
   currency: "NGN",
   isAuthenticated: false,
   kyc: { status: "verified", date: new Date().toISOString() },
@@ -72,27 +24,21 @@ const DEFAULT_USER = {
   transactions: [],
 };
 
-/* --------------------------  CONTEXT  -------------------------- */
-//   const AdvertiserDataContext = useContext(undefined);
-
-// export const useAdvertiserData = () => {
-//   const ctx = useContext(AdvertiserDataContext);
-//   if (!ctx) {
-//     throw new Error(
-//       "useAdvertiserData must be used within AdvertiserDataProvider"
-//     );
-//   }
-//   return ctx;
-// };
-
 /* --------------------------  PROVIDER  -------------------------- */
 export default function AdvertiserDataProvider({ children }) {
   // ---------- state ----------
   const [campaigns, setCampaigns] = useState(DEFAULT_CAMPAIGNS);
   const [wallet, setWallet] = useState(DEFAULT_WALLET);
   const [submissions, setSubmissions] = useState(DEFAULT_SUBMISSIONS);
-  const [userAppData, setUserAppData] = useState(DEFAULT_USER);
+  const [userAppData, setUserAppData] = useState(
+    () => JSON.parse(localStorage.getItem("dh_user")) || DEFAULT_USER
+  );
   const [isUserLoggedIn, setUserLoggedIn] = useState(false);
+
+  // ---------- persist dh_user whenever changed! ----------
+  useEffect(() => {
+    localStorage.setItem("dh_user", JSON.stringify(userAppData));
+  }, [userAppData]);
 
   // ---------- toast helper ----------
   const showNotification = useCallback((msg, type = "info") => {
@@ -105,21 +51,29 @@ export default function AdvertiserDataProvider({ children }) {
 
   // ---------- fetch advertiser profile ----------
   const fetchAdvertiser = useCallback(async () => {
-    const token = localStorage.getItem("userToken");
-    if (!token) return;
+    const token = localStorage.getItem("TOKENy"); // NOTE: Make sure all app uses "TOKENy" key!
+    if (!token) {
+      console.log("fetchAdvertiser: No token found, aborting.");
+      return;
+    }
+    console.log("fetchAdvertiser: Token found, attempting to fetch profile...");
 
     try {
       const { data } = await axios.get(
         "https://daily-hustle-backend-ob8r9.sevalla.app/api/v1/advertiser/profile",
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
       const fetched = data?.data ?? data;
-      setUserAppData((prev) => ({
-        ...prev,
-        ...fetched,
-        isAuthenticated: true,
-      }));
+      console.log("fetchAdvertiser: Successfully fetched data:", fetched); // SUCCESS LOG
+      setUserAppData((prev) => {
+        const newState = {
+          ...prev,
+          ...fetched,
+          isAuthenticated: true,
+        };
+        console.log("fetchAdvertiser: Updating userAppData to:", newState); // SUCCESS LOG
+        return newState;
+      });
     } catch (err) {
       console.error("Failed to load advertiser:", err);
     }
@@ -127,7 +81,12 @@ export default function AdvertiserDataProvider({ children }) {
 
   // run when login flag flips
   useEffect(() => {
-    if (isUserLoggedIn) fetchAdvertiser();
+    if (isUserLoggedIn) {
+      console.log(
+        "isUserLoggedIn state changed to true. Calling fetchAdvertiser..."
+      );
+      fetchAdvertiser();
+    }
   }, [isUserLoggedIn, fetchAdvertiser]);
 
   // ---------- campaign actions ----------
@@ -237,8 +196,6 @@ export default function AdvertiserDataProvider({ children }) {
         showNotification("Payment couldn't be processed.", "warning");
         return;
       }
-      // simulate the payments
-      // change the ui
       onApproveSubmission(id);
     },
     [onApproveSubmission, showNotification]
@@ -287,6 +244,7 @@ export default function AdvertiserDataProvider({ children }) {
     [
       userAppData,
       stat,
+      setUserLoggedIn,
       campaigns,
       wallet,
       submissions,

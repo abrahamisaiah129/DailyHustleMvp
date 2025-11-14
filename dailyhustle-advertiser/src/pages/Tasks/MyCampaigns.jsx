@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { advertiserListTasks } from "../services/services";
+import { advertiserListMyTasks } from "../services/services";
 import { useTheme } from "../../context/ThemeContext";
 
 const statusOptions = [
@@ -62,7 +62,7 @@ export default function MyCampaigns() {
       setLoading(true);
       setError("");
       try {
-        const res = await advertiserListTasks(pageNum);
+        const res = await advertiserListMyTasks(pageNum);
         const raw =
           res.data?.data && typeof res.data.data === "object"
             ? res.data.data

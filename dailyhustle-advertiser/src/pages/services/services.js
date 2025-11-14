@@ -52,7 +52,11 @@ export const advertiserLogin = (data) =>
  * GET /tasks/advertisers
  * No params or body
  */
-export const advertiserListTasks = () => api.get("/tasks/advertisers");
+export const advertiserListAllTasks = () => api.get("/tasks/advertisers");
+// the error i had here was due to the fact that the  route i added was /advertisers instead of beloe 
+// so now i will use this below as the bckedne route should have been , hopefully this fixes the error i had  been called to
+// \\\\\\\\\\\\\\\\\|||||||||||||||//this next line\\|||||||||||||||||////////////////// \\
+export const advertiserListMyTasks = () => api.get("/tasks");
 
 /**
  * Create a new task
